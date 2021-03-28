@@ -139,20 +139,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="figure_fabric.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="grafic_editor.h" />
+    <ClInclude Include="main_window.h" />
+    <ClInclude Include="models.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="figure_fabric.cpp" />
     <ClCompile Include="grafic_editor.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="grafic_editor.rc" />
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="grafic_editor.ico" />
-    <Image Include="small.ico" />
+    <ClCompile Include="main_window.cpp" />
+    <ClCompile Include="models.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
