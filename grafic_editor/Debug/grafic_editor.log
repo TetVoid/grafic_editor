@@ -1,2 +1,5 @@
-﻿  figure_fabric.cpp
+﻿  grafic_editor.cpp
+C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\grafic_editor.cpp(54,25): warning C4018: <: несоответствие типов со знаком и без знака
+C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\grafic_editor.cpp(76,27): warning C4018: <: несоответствие типов со знаком и без знака
+C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\grafic_editor.cpp(40,10): warning C4101: rect: неиспользованная локальная переменная
   grafic_editor.vcxproj -> C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\Debug\grafic_editor.exe

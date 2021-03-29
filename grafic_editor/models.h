@@ -13,10 +13,14 @@ public:
 	void set_move(BOOL condition);
 	void update(HWND hwnd);
 	void init(HWND hwnd);
+	void rotate(HWND hWnd);
 
 private:
-	POINT pt,pos,prev;
-	BOOL move = false, first=true;
+	POINT center;
+	POINT points[4];
+	POINT pt,prev;
+	BOOL move = false, first=true,select=false,rotate_flag=false;
 	int height, width;
+	int rotate_angle = 0;
 
 };

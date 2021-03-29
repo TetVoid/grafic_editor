@@ -38,13 +38,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     HDC hDC; // создаём дескриптор ориентации текста на экране
     PAINTSTRUCT ps; // структура, сод-щая информацию о клиентской области (размеры, цвет и тп)
     RECT rect; 
-    HCURSOR hcur = LoadCursor(NULL, IDC_SIZEALL);
-    HCURSOR scur = LoadCursor(NULL, IDC_ARROW);
+    static HCURSOR hcur = LoadCursor(NULL, IDC_SIZEALL);
+    static HCURSOR scur = LoadCursor(NULL, IDC_ARROW);
     static BOOL create_flag = true;
 
     static Figure_fabric fabric;
 
-   
+    SetCursor(scur);
     switch (uMsg) {
     case WM_PAINT: 
     {
@@ -61,8 +61,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
         PostQuitMessage(NULL); // отправляем WinMain() сообщение WM_QUIT
         break;
     case WM_MOUSEMOVE:
-        if (figure_index!=-1 && figure_list[figure_index].is_move())
+        if (figure_index != -1 && figure_list[figure_index].is_move())
+        {
             figure_list[figure_index].update(hWnd);
+            figure_list[figure_index].rotate(hWnd);
+        }
+
         if (fabric.is_draw())
             fabric.draw_focus(hWnd);
             
@@ -100,6 +104,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
                 EndPaint(hWnd, &ps);
             }
             
+        break;
+    case WM_SETCURSOR:
+        if (figure_index != -1 && !figure_list[figure_index].is_move())
+            return DefWindowProc(hWnd, uMsg, wParam, lParam);
         break;
     default:
         return DefWindowProc(hWnd, uMsg, wParam, lParam); // если закрыли окошко
