@@ -12,6 +12,7 @@ LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 
 std::vector<Figure> figure_list;
 int figure_index=-1;
+std::ofstream fout("log.txt", std::ios::app);
 
 int WINAPI WinMain(HINSTANCE hInstance,
     HINSTANCE hPrevInstance,
@@ -35,7 +36,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
 
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
-    HDC hDC; // создаём дескриптор ориентации текста на экране
+    HDC hDC; 
     PAINTSTRUCT ps; // структура, сод-щая информацию о клиентской области (размеры, цвет и тп)
     RECT rect; 
     static HCURSOR hcur = LoadCursor(NULL, IDC_SIZEALL);
@@ -43,39 +44,61 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     static BOOL create_flag = true;
 
     static Figure_fabric fabric;
-
     SetCursor(scur);
     switch (uMsg) {
     case WM_PAINT: 
     {
     
-        hDC = BeginPaint(hWnd, &ps); // инициализируем контекст устройств
+        hDC = BeginPaint(hWnd, &ps); 
 
         for(int i = 0; i<figure_list.size();i++)
             figure_list[i].draw(hDC);
 
-        EndPaint(hWnd, &ps); // заканчиваем рисовать
+        EndPaint(hWnd, &ps); 
         break;
     }
-    case WM_DESTROY: // если окошко закрылось, то:
-        PostQuitMessage(NULL); // отправляем WinMain() сообщение WM_QUIT
+    case WM_DESTROY: 
+        PostQuitMessage(NULL);
         break;
     case WM_MOUSEMOVE:
         if (figure_index!=-1 && figure_list[figure_index].is_move())
+            figure_list[figure_index].update(hWnd);
+
+        if (figure_index != -1 && figure_list[figure_index].is_rotate())
             figure_list[figure_index].rotate(hWnd);
 
         if (fabric.is_draw())
             fabric.draw_focus(hWnd);
+
+        if (figure_index != -1)
+            figure_list[figure_index].set_prev_cords(hWnd);
             
         break;
-    case WM_LBUTTONDOWN:
-        create_flag = true;
+    case WM_RBUTTONDOWN://WM_LBUTTONDBLCLK:
+        OutputDebugStringW(L"1");
         for (int i = 0; i < figure_list.size(); i++)
+        {
+            int prev_index = figure_index;
+            if (figure_list[i].select(hWnd))
+            {
+                if (figure_index != -1 && figure_index!=i)
+                    figure_list[figure_index].stop_select();
+                figure_index = i;
+                figure_list[i].init(hWnd);
+            }
+            if(prev_index!=-1)
+                figure_list[prev_index].init(hWnd);
+        }
+
+
+        break;
+    case WM_LBUTTONDOWN:
+        OutputDebugStringW(L"2");
+        create_flag = true;
+        for (int i =0; i < figure_list.size(); i++)
             if (figure_list[i].check_position(hWnd))
             {
-                figure_index = i;
                 create_flag = false;
-                SetCursor(hcur);
                 break;
             }
 
@@ -87,7 +110,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 
             if (figure_index!=-1 && figure_list[figure_index].is_move())
             {
-                figure_list[figure_index].set_move(false);
+                figure_list[figure_index].stop_move();
+                SetCursor(scur);
+            }
+            if (figure_index != -1 && figure_list[figure_index].is_rotate())
+            {
+                figure_list[figure_index].stop_rotate();
                 SetCursor(scur);
             }
             else if(create_flag)
@@ -96,9 +124,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
                 Figure new_pict = fabric.create_figure(hWnd);
                 figure_list.push_back(new_pict);
 
-                hDC = BeginPaint(hWnd, &ps);
                 new_pict.init(hWnd);
-                EndPaint(hWnd, &ps);
             }
             
         break;
@@ -109,7 +135,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     default:
         return DefWindowProc(hWnd, uMsg, wParam, lParam); // если закрыли окошко
     }
+  
     return NULL;
+    
 }
 
 

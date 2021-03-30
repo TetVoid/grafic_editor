@@ -7,7 +7,7 @@ MainWindow::MainWindow(HINSTANCE hInstance, WNDPROC WndProc)
 
     WNDCLASSEX wc; // создаЄм экземпл€р, дл€ обращени€ к членам класса WNDCLASSEX
     wc.cbSize = sizeof(wc); // размер структуры (в байтах)
-    wc.style = CS_HREDRAW | CS_VREDRAW; // стиль класса окошка
+    wc.style = CS_HREDRAW | CS_VREDRAW| CS_DBLCLKS; // стиль класса окошка
     wc.lpfnWndProc = WndProc; // указатель на пользовательскую функцию
     wc.lpszMenuName = NULL; // указатель на им€ меню (у нас его нет)
     wc.lpszClassName = szClassName; // указатель на им€ класса
