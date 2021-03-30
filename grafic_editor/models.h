@@ -17,7 +17,7 @@ public:
 
 private:
 	POINT center;
-	POINT points[4];
+	double cords_x[4], cords_y[4];
 	POINT pt,prev;
 	BOOL move = false, first=true,select=false,rotate_flag=false;
 	int height, width;

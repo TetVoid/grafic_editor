@@ -1,5 +1,31 @@
-﻿  grafic_editor.cpp
-C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\grafic_editor.cpp(54,25): warning C4018: <: несоответствие типов со знаком и без знака
-C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\grafic_editor.cpp(76,27): warning C4018: <: несоответствие типов со знаком и без знака
-C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\grafic_editor.cpp(40,10): warning C4101: rect: неиспользованная локальная переменная
+﻿  models.cpp
+C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\models.cpp(21,23): warning C4244: =: преобразование "double" в "LONG", возможна потеря данных
+C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\models.cpp(22,23): warning C4244: =: преобразование "double" в "LONG", возможна потеря данных
+C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\models.cpp(41,43): warning C4244: аргумент: преобразование "double" в "int", возможна потеря данных
+C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\models.cpp(41,24): warning C4244: аргумент: преобразование "double" в "int", возможна потеря данных
+C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\models.cpp(42,41): warning C4244: аргумент: преобразование "double" в "int", возможна потеря данных
+C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\models.cpp(42,22): warning C4244: аргумент: преобразование "double" в "int", возможна потеря данных
+C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\models.cpp(43,41): warning C4244: аргумент: преобразование "double" в "int", возможна потеря данных
+C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\models.cpp(43,22): warning C4244: аргумент: преобразование "double" в "int", возможна потеря данных
+C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\models.cpp(44,41): warning C4244: аргумент: преобразование "double" в "int", возможна потеря данных
+C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\models.cpp(44,22): warning C4244: аргумент: преобразование "double" в "int", возможна потеря данных
+C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\models.cpp(45,41): warning C4244: аргумент: преобразование "double" в "int", возможна потеря данных
+C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\models.cpp(45,22): warning C4244: аргумент: преобразование "double" в "int", возможна потеря данных
+C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\models.cpp(131,72): warning C4244: аргумент: преобразование "double" в "int", возможна потеря данных
+C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\models.cpp(131,57): warning C4244: аргумент: преобразование "double" в "int", возможна потеря данных
+C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\models.cpp(131,42): warning C4244: аргумент: преобразование "double" в "int", возможна потеря данных
+C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\models.cpp(131,28): warning C4244: аргумент: преобразование "double" в "int", возможна потеря данных
+C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\models.cpp(145,72): warning C4244: аргумент: преобразование "double" в "int", возможна потеря данных
+C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\models.cpp(145,57): warning C4244: аргумент: преобразование "double" в "int", возможна потеря данных
+C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\models.cpp(145,42): warning C4244: аргумент: преобразование "double" в "int", возможна потеря данных
+C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\models.cpp(145,28): warning C4244: аргумент: преобразование "double" в "int", возможна потеря данных
+C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\models.cpp(155,94): warning C4244: аргумент: преобразование "double" в "int", возможна потеря данных
+C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\models.cpp(155,69): warning C4244: аргумент: преобразование "double" в "int", возможна потеря данных
+C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\models.cpp(155,45): warning C4244: аргумент: преобразование "double" в "int", возможна потеря данных
+C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\models.cpp(155,29): warning C4244: аргумент: преобразование "double" в "int", возможна потеря данных
+C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\models.cpp(164,73): warning C4244: аргумент: преобразование "double" в "int", возможна потеря данных
+C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\models.cpp(164,53): warning C4244: аргумент: преобразование "double" в "int", возможна потеря данных
+C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\models.cpp(164,39): warning C4244: аргумент: преобразование "double" в "int", возможна потеря данных
+C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\models.cpp(164,27): warning C4244: аргумент: преобразование "double" в "int", возможна потеря данных
+C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\models.cpp(173): warning C4715: Figure::check_position: значение возвращается не при всех путях выполнения
   grafic_editor.vcxproj -> C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\Debug\grafic_editor.exe

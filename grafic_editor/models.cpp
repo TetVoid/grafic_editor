@@ -6,18 +6,20 @@ Figure::Figure(){}
 
 Figure::Figure(HDC hDC, int x, int y, int width,int height)
 {
-    points[0].x = x;
-    points[0].y = y;
+    cords_x[0] = x;
+    cords_y[0] = y;
 
-    points[1].x = x + width;
-    points[1].y = y;
+    cords_x[1] = x + width;
+    cords_y[1] = y;
 
-    points[2].x = x + width;
-    points[2].y = y + height;
+    cords_x[2] = x + width;
+    cords_y[2] = y + height;
 
-    points[3].x = x;
-    points[3].y = y + height;
-    prev = points[0];
+    cords_x[3] = x;
+    cords_y[3] = y + height;
+
+    prev.x = cords_x[0];
+    prev.y = cords_y[0];
 
     this->height = height;
     this->width = width;
@@ -36,11 +38,11 @@ void Figure::draw(HDC hDC)
     SelectObject(hDC, yBrush);
    
     BeginPath(hDC);
-    MoveToEx(hDC, points[0].x, points[0].y, nullptr);
-    LineTo(hDC, points[1].x, points[1].y);
-    LineTo(hDC, points[2].x, points[2].y);
-    LineTo(hDC, points[3].x, points[3].y);
-    LineTo(hDC, points[0].x, points[0].y);
+    MoveToEx(hDC, round(cords_x[0]), round(cords_y[0]), nullptr);
+    LineTo(hDC, round(cords_x[1]), round(cords_y[1]));
+    LineTo(hDC, round(cords_x[2]), round(cords_y[2]));
+    LineTo(hDC, round(cords_x[3]), round(cords_y[3]));
+    LineTo(hDC, round(cords_x[0]), round(cords_y[0]));
     EndPath(hDC);
     FillPath(hDC);
 }
@@ -76,14 +78,10 @@ void Figure::rotate(HWND hWnd)
         index = -1;
 
     a = a * index;
-
     for (int i = 0; i < 4; i++)
     {
-       
-
-        int  relative_x = points[i].x - center.x;
-        int  relative_y = points[i].y - center.y;
-
+        double  relative_x = cords_x[i] - center.x;
+        double  relative_y = cords_y[i] - center.y;
 
         double p = sqrt(relative_x * relative_x + relative_y * relative_y);
         double b = 0.0;
@@ -93,37 +91,31 @@ void Figure::rotate(HWND hWnd)
             b = a + atan(abs(double(relative_x) / double(relative_y)));
             b += 3.14 / 2.0;
         }
-
         else if (relative_x < 0 && relative_y <= 0)
         {
             b = a + atan(abs(double(relative_y) / double(relative_x)));
             b += 3.14;
         }
-
         else if (relative_x >= 0 && relative_y < 0)
         {
             b = a + atan(abs(double(relative_x) / double(relative_y)));
             b += 3.14*3/2;
         }
-
         else if (relative_x > 0 && relative_y >= 0)
-        {
             b = a + atan(abs(double(relative_y) / double(relative_x)));
-        }
        
 
-        relative_x = round(p * cos(b));
-        relative_y = round(p * sin(b));
+        relative_x = p * cos(b);
+        relative_y = p * sin(b);
 
-        points[i].x = center.x + relative_x;
-        points[i].y = center.y + relative_y;
+        cords_x[i] = center.x + relative_x;
+        cords_y[i] = center.y + relative_y;
        
         
-        prev.x = pt.x;
-        prev.y = pt.y;
+        
     }
-    //fout << "\n\n";
-    //fout.close();
+    prev.x = pt.x;
+    prev.y = pt.y;
 
     
 
@@ -136,7 +128,7 @@ void Figure::update(HWND hWnd)
     GetCursorPos(&pt);
     ScreenToClient(hWnd, &pt);
 
-    SetRect(&rc, points[0].x-1, points[0].y-1, points[2].x +1, points[2].y +1);
+    SetRect(&rc, cords_x[0]-1, cords_y[0]-1, cords_x[2] +1, cords_y[2] +1);
     InvalidateRect(hWnd, &rc, TRUE);
 
     int x = prev.x - pt.x;
@@ -145,12 +137,12 @@ void Figure::update(HWND hWnd)
     prev.y = pt.y;
     for (int i = 0; i < 4; i++)
     {
-        points[i].x -= x;
-        points[i].y -= y;
+        cords_x[i] -= x;
+        cords_y[i] -= y;
     }
     
 
-    SetRect(&rc, points[0].x-1, points[0].y-1, points[2].x +1, points[2].y +1);
+    SetRect(&rc, cords_x[0]-1, cords_y[0]-1, cords_x[2] +1, cords_y[2] +1);
     InvalidateRect(hWnd, &rc, TRUE);
 }
 
@@ -160,7 +152,7 @@ void Figure::init(HWND hwnd)
     GetCursorPos(&pt);
     ScreenToClient(hwnd, &pt);
 
-    SetRect(&rc, points[0].x - 1, points[0].y - 1, points[0].x + width + 1, points[0].y + height + 1);
+    SetRect(&rc, cords_x[0] - 1, cords_y[0] - 1, cords_x[0] + width + 1, cords_y[0] + height + 1);
     InvalidateRect(hwnd, &rc, TRUE);
 }
 
@@ -169,7 +161,7 @@ BOOL Figure::check_position(HWND hwnd)
     RECT rc;
     GetCursorPos(&pt);
     ScreenToClient(hwnd, &pt);
-    SetRect(&rc, points[0].x, points[0].y, points[0].x + width, points[0].y + height);
+    SetRect(&rc, cords_x[0], cords_y[0], cords_x[0] + width, cords_y[0] + height);
     
     if (PtInRect(&rc, pt)) 
     {

@@ -61,11 +61,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
         PostQuitMessage(NULL); // отправляем WinMain() сообщение WM_QUIT
         break;
     case WM_MOUSEMOVE:
-        if (figure_index != -1 && figure_list[figure_index].is_move())
-        {
-            figure_list[figure_index].update(hWnd);
+        if (figure_index!=-1 && figure_list[figure_index].is_move())
             figure_list[figure_index].rotate(hWnd);
-        }
 
         if (fabric.is_draw())
             fabric.draw_focus(hWnd);
