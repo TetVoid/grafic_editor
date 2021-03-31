@@ -57,9 +57,8 @@ Figure::~Figure()
 
 void Figure::draw(HDC hDC)
 {
-    HBRUSH yBrush;
-    yBrush = CreateSolidBrush(RGB(255, 0, 0));
-    SelectObject(hDC, yBrush);
+    HBRUSH brush = CreateSolidBrush(RGB(255, 0, 0));
+    SelectObject(hDC, brush);
    
     BeginPath(hDC);
     MoveToEx(hDC, round(cords_x[0]), round(cords_y[0]), nullptr);
@@ -69,34 +68,64 @@ void Figure::draw(HDC hDC)
     LineTo(hDC, round(cords_x[0]), round(cords_y[0]));
     EndPath(hDC);
     FillPath(hDC);
+
     if(select_flag)
         draw_borders(hDC);
+    DeleteObject(brush);
 }
 
 void Figure::draw_borders(HDC hDC)
 {
     RECT rc;
+    HBRUSH brush = CreateSolidBrush(RGB(0, 0, 0));
     SetRect(&rc, update_cords_x[0], update_cords_y[0], update_cords_x[0] + half_side+half_side, update_cords_y[0] +half_side);
-    FillRect(hDC, &rc, (HBRUSH)CreateSolidBrush(RGB(0, 0, 0)));
+    FillRect(hDC, &rc, brush);
     SetRect(&rc, update_cords_x[0], update_cords_y[0], update_cords_x[0] + half_side , update_cords_y[0] + half_side + half_side);
-    FillRect(hDC, &rc, (HBRUSH)CreateSolidBrush(RGB(0, 0, 0)));
+    FillRect(hDC, &rc, brush);
 
     SetRect(&rc, update_cords_x[1]-half_side-half_side, update_cords_y[1], update_cords_x[1], update_cords_y[1] + half_side);
-    FillRect(hDC, &rc, (HBRUSH)CreateSolidBrush(RGB(0, 0, 0)));
+    FillRect(hDC, &rc, brush);
     SetRect(&rc, update_cords_x[1]-half_side, update_cords_y[1], update_cords_x[1], update_cords_y[1] + half_side + half_side);
-    FillRect(hDC, &rc, (HBRUSH)CreateSolidBrush(RGB(0, 0, 0)));
+    FillRect(hDC, &rc, brush);
 
     SetRect(&rc, update_cords_x[2], update_cords_y[2], update_cords_x[2] - half_side - half_side, update_cords_y[2] - half_side);
-    FillRect(hDC, &rc, (HBRUSH)CreateSolidBrush(RGB(0, 0, 0)));
+    FillRect(hDC, &rc, brush);
     SetRect(&rc, update_cords_x[2], update_cords_y[2], update_cords_x[2] - half_side, update_cords_y[2] - half_side - half_side);
-    FillRect(hDC, &rc, (HBRUSH)CreateSolidBrush(RGB(0, 0, 0)));
+    FillRect(hDC, &rc, brush);
 
     SetRect(&rc, update_cords_x[3] + half_side + half_side, update_cords_y[3], update_cords_x[3], update_cords_y[3] - half_side);
-    FillRect(hDC, &rc, (HBRUSH)CreateSolidBrush(RGB(0, 0, 0)));
+    FillRect(hDC, &rc, brush);
     SetRect(&rc, update_cords_x[3] + half_side, update_cords_y[3], update_cords_x[3], update_cords_y[3] - half_side - half_side);
-    FillRect(hDC, &rc, (HBRUSH)CreateSolidBrush(RGB(0, 0, 0)));
+    FillRect(hDC, &rc, brush);
 
-    
+    int start_x = update_cords_x[3];
+    int start_y = (update_cords_y[3] + update_cords_y[0]) / 2 - half_side - half_side;
+    int finish_x = update_cords_x[3]+half_side;
+    int finish_y = (update_cords_y[3] + update_cords_y[0]) / 2 + half_side + half_side;
+    SetRect(&rc, start_x, start_y, finish_x, finish_y);
+    FillRect(hDC, &rc, brush);
+
+    start_x = update_cords_x[2]-half_side;
+    start_y = (update_cords_y[3] + update_cords_y[0]) / 2 - half_side - half_side;
+    finish_x = update_cords_x[2] ;
+    finish_y = (update_cords_y[3] + update_cords_y[0]) / 2 + half_side + half_side;
+    SetRect(&rc, start_x, start_y, finish_x, finish_y);
+    FillRect(hDC, &rc, brush);
+
+    start_x = (update_cords_x[0]+ update_cords_x[1])/2 - half_side - half_side;
+    start_y = update_cords_y[0];
+    finish_x = (update_cords_x[0] + update_cords_x[1]) / 2 + half_side + half_side;
+    finish_y = update_cords_y[0]+half_side;
+    SetRect(&rc, start_x, start_y, finish_x, finish_y);
+    FillRect(hDC, &rc, brush);
+
+    start_x = (update_cords_x[2] + update_cords_x[3]) / 2 - half_side - half_side;
+    start_y = update_cords_y[2] - half_side;
+    finish_x = (update_cords_x[2] + update_cords_x[3]) / 2 + half_side + half_side;
+    finish_y = update_cords_y[2];
+    SetRect(&rc, start_x, start_y, finish_x, finish_y);
+    FillRect(hDC, &rc, brush);
+    DeleteObject(brush);
 }
 
 void Figure::rotate(HWND hWnd)
@@ -223,25 +252,90 @@ void Figure::update(HWND hWnd)
         update_cords_y[i] -= y;
     }
     
+    center.x -= x;
+    center.y -= y;
 
     SetRect(&rc, update_cords_x[0]-1, update_cords_y[0]-1, update_cords_x[2] +1, update_cords_y[2] +1);
     InvalidateRect(hWnd, &rc, TRUE);
 }
 
-void Figure::init(HWND hwnd)
+void Figure::resize(HWND hWnd)
 {
     RECT rc;
     GetCursorPos(&pt);
-    ScreenToClient(hwnd, &pt);
+    ScreenToClient(hWnd, &pt);
+    int delta_x = pt.x - prev.x;
+    int delta_y = pt.y - prev.y;
 
     SetRect(&rc, update_cords_x[0] - 1, update_cords_y[0] - 1, update_cords_x[2] + 1, update_cords_y[2] + 1);
-    InvalidateRect(hwnd, &rc, TRUE);
+    InvalidateRect(hWnd, &rc, TRUE);
+
+    switch (resize_index)
+    {
+        
+    case 0:
+       
+        update_cords_x[0] += delta_x;
+        update_cords_x[3] += delta_x;
+
+        center.x += delta_x / 2;
+
+        start_cords_x[0] += delta_x;
+        start_cords_x[3] += delta_x;
+
+        cords_x[0] += delta_x;
+        cords_x[3] += delta_x;
+        break;
+    case 1:
+        update_cords_x[2] += delta_x;
+        update_cords_x[1] += delta_x;
+
+        center.x += delta_x / 2;
+
+        start_cords_x[2] += delta_x;
+        start_cords_x[1] += delta_x;
+
+        cords_x[2] += delta_x;
+        cords_x[1] += delta_x;
+        break;
+    case 2:
+        update_cords_y[0] += delta_y;
+        update_cords_y[1] += delta_y;
+
+        center.y += delta_y / 2;
+
+        start_cords_y[0] += delta_y;
+        start_cords_y[1] += delta_y;
+
+        cords_y[0] += delta_y;
+        cords_y[1] += delta_y;
+        break;
+        break;
+    case 3:
+        update_cords_y[2] += delta_y;
+        update_cords_y[3] += delta_y;
+
+        center.y += delta_y / 2;
+
+        start_cords_y[2] += delta_y;
+        start_cords_y[3] += delta_y;
+
+        cords_y[2] += delta_y;
+        cords_y[3] += delta_y;
+        
+        break;
+    }
+
+    SetRect(&rc, update_cords_x[0] - 1, update_cords_y[0] - 1, update_cords_x[2] + 1, update_cords_y[2] + 1);
+    InvalidateRect(hWnd, &rc, TRUE);
+
 }
+
 
 BOOL Figure::check_position(HWND hWnd)
 {
     BOOL flag = false;
-    RECT rc[5];
+    RECT rc[5], resize_rc[4];
     GetCursorPos(&pt);
     ScreenToClient(hWnd, &pt);
     SetRect(&rc[0], update_cords_x[0], update_cords_y[0], update_cords_x[2], update_cords_y[2]);
@@ -250,6 +344,30 @@ BOOL Figure::check_position(HWND hWnd)
     SetRect(&rc[2], update_cords_x[1] - half_side - half_side, update_cords_y[1], update_cords_x[1], update_cords_y[1] + half_side + half_side);
     SetRect(&rc[3], update_cords_x[2] - half_side - half_side, update_cords_y[2] - half_side - half_side, update_cords_x[2], update_cords_y[2]);
     SetRect(&rc[4], update_cords_x[3], update_cords_y[3] - half_side - half_side, update_cords_x[3] + half_side + half_side, update_cords_y[3]);
+
+    int start_x = update_cords_x[3];
+    int start_y = (update_cords_y[3] + update_cords_y[0]) / 2 - half_side - half_side;
+    int finish_x = update_cords_x[3] + half_side;
+    int finish_y = (update_cords_y[3] + update_cords_y[0]) / 2 + half_side + half_side;
+    SetRect(&resize_rc[0], start_x, start_y, finish_x, finish_y);
+
+    start_x = update_cords_x[2] - half_side;
+    start_y = (update_cords_y[3] + update_cords_y[0]) / 2 - half_side - half_side;
+    finish_x = update_cords_x[2];
+    finish_y = (update_cords_y[3] + update_cords_y[0]) / 2 + half_side + half_side;
+    SetRect(&resize_rc[1], start_x, start_y, finish_x, finish_y);
+
+    start_x = (update_cords_x[0] + update_cords_x[1]) / 2 - half_side - half_side;
+    start_y = update_cords_y[0];
+    finish_x = (update_cords_x[0] + update_cords_x[1]) / 2 + half_side + half_side;
+    finish_y = update_cords_y[0] + half_side;
+    SetRect(&resize_rc[2], start_x, start_y, finish_x, finish_y);
+
+    start_x = (update_cords_x[2] + update_cords_x[3]) / 2 - half_side - half_side;
+    start_y = update_cords_y[2] - half_side;
+    finish_x = (update_cords_x[2] + update_cords_x[3]) / 2 + half_side + half_side;
+    finish_y = update_cords_y[2];
+    SetRect(&resize_rc[3], start_x, start_y, finish_x, finish_y);
 
     for (int i = 1; i < 5; i++)
     {
@@ -261,14 +379,36 @@ BOOL Figure::check_position(HWND hWnd)
         }
     }
 
-    if (PtInRect(&rc[0], pt) && !rotate_flag )
+    for (int i = 0; i < 4; i++)
+    {
+        if (PtInRect(&resize_rc[i], pt) && select_flag)
+        {
+            resize_index = i;
+            resize_flag = true;
+            flag = true;
+            break;
+        }
+    }
+
+    if (PtInRect(&rc[0], pt) && !rotate_flag && !resize_flag)
     {
         if(select_flag)
             move_flag = true;
         flag = true;
     }
 
+
     return flag;
+}
+
+void Figure::init(HWND hwnd)
+{
+    RECT rc;
+    GetCursorPos(&pt);
+    ScreenToClient(hwnd, &pt);
+
+    SetRect(&rc, update_cords_x[0] - 1, update_cords_y[0] - 1, update_cords_x[2] + 1, update_cords_y[2] + 1);
+    InvalidateRect(hwnd, &rc, TRUE);
 }
 
 BOOL Figure::select(HWND hWnd)
@@ -305,11 +445,16 @@ BOOL Figure::is_rotate()
     return rotate_flag;
 }
 
-
-BOOL  Figure::is_move()
+BOOL Figure::is_move()
 {
     return move_flag;
 }
+
+BOOL Figure::is_resize()
+{
+    return resize_flag;
+}
+
 void Figure::stop_move()
 {
     move_flag = false;
@@ -323,6 +468,12 @@ void Figure::stop_rotate()
 void Figure::stop_select()
 {
     select_flag = false;
+}
+
+void Figure::stop_resize()
+{
+    resize_flag = false;
+    resize_index = -1;
 }
 
 

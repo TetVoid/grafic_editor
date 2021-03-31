@@ -67,6 +67,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
         if (figure_index != -1 && figure_list[figure_index].is_rotate())
             figure_list[figure_index].rotate(hWnd);
 
+        if (figure_index != -1 && figure_list[figure_index].is_resize())
+            figure_list[figure_index].resize(hWnd);
+
         if (fabric.is_draw())
             fabric.draw_focus(hWnd);
 
@@ -74,8 +77,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
             figure_list[figure_index].set_prev_cords(hWnd);
             
         break;
-    case WM_RBUTTONDOWN://WM_LBUTTONDBLCLK:
-        OutputDebugStringW(L"1");
+    case WM_LBUTTONDBLCLK://WM_RBUTTONDOWN:
         for (int i = 0; i < figure_list.size(); i++)
         {
             int prev_index = figure_index;
@@ -93,7 +95,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 
         break;
     case WM_LBUTTONDOWN:
-        OutputDebugStringW(L"2");
         create_flag = true;
         for (int i =0; i < figure_list.size(); i++)
             if (figure_list[i].check_position(hWnd))
@@ -113,9 +114,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
                 figure_list[figure_index].stop_move();
                 SetCursor(scur);
             }
-            if (figure_index != -1 && figure_list[figure_index].is_rotate())
+            else if (figure_index != -1 && figure_list[figure_index].is_rotate())
             {
                 figure_list[figure_index].stop_rotate();
+                SetCursor(scur);
+            }
+            else if (figure_index != -1 && figure_list[figure_index].is_resize())
+            {
+                figure_list[figure_index].stop_resize();
                 SetCursor(scur);
             }
             else if(create_flag)
