@@ -9,6 +9,7 @@ public:
 	HWND get_window();
 
 private:
+	void init_color_buttoms();
 	HINSTANCE hInst;
 	HWND hMainWnd; 
 };

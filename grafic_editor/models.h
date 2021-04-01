@@ -1,11 +1,18 @@
 #pragma once
 #include <windows.h>
 
+struct COLOR
+{
+	int R;
+	int G;
+	int B;
+};
+
 class Figure
 {
 public:
 	Figure();
-	Figure(HDC hDC, int x, int y, int width, int height);
+	Figure(HDC hDC, int x, int y, int width, int height,COLOR color);
 	~Figure();
 	void draw(HDC hDC);
 	void update(HWND hwnd);
@@ -19,6 +26,8 @@ public:
 	void stop_select();
 	void stop_resize();
 
+	void set_color(COLOR color, HWND hWnd);
+
 	BOOL check_position(HWND hwnd);
 	BOOL select(HWND hWnd);
 	BOOL is_rotate();
@@ -29,6 +38,7 @@ public:
 
 private:
 	POINT center;
+	COLOR color;
 	double start_cords_x[4], start_cords_y[4];
 	double cords_x[4], cords_y[4];
 	double update_cords_x[4], update_cords_y[4];

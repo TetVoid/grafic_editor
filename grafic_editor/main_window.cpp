@@ -39,6 +39,215 @@ MainWindow::MainWindow(HINSTANCE hInstance, WNDPROC WndProc)
     if (!hMainWnd) {
         MessageBox(NULL, L"Не получилось создать окно!", L"Ошибка", MB_OK);
     }
+    init_color_buttoms();
+}
+
+void MainWindow:: init_color_buttoms()
+{
+    RECT rect;
+    GetWindowRect(hMainWnd, &rect);
+    int start_x = (rect.right - rect.left) / 7 * 4;
+    HWND black = CreateWindow(L"BUTTON", L"", WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON | BS_OWNERDRAW,
+
+        start_x,         // starting x position 
+        0,         // starting y position 
+        20,        // button width 
+        20,        // button height 
+        hMainWnd,
+        (HMENU)1010,
+        (HINSTANCE)GetWindowLong(hMainWnd, GWL_HINSTANCE),
+        NULL);
+
+    HWND gray = CreateWindow(L"BUTTON", L"", WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON | BS_OWNERDRAW,
+
+        start_x + 23,         // starting x position 
+        0,         // starting y position 
+        20,        // button width 
+        20,        // button height 
+        hMainWnd,
+        (HMENU)1011,
+        (HINSTANCE)GetWindowLong(hMainWnd, GWL_HINSTANCE),
+        NULL);
+
+    HWND red = CreateWindow(L"BUTTON", L"", WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON|BS_OWNERDRAW,
+
+        start_x + 46,         // starting x position 
+        0,         // starting y position 
+        20,        // button width 
+        20,        // button height 
+        hMainWnd,       
+        (HMENU)1012,
+        (HINSTANCE)GetWindowLong(hMainWnd, GWL_HINSTANCE),
+        NULL);
+
+    HWND green = CreateWindow(L"BUTTON", L"", WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON | BS_OWNERDRAW,
+
+        start_x + 69,         // starting x position 
+        0,         // starting y position 
+        20,        // button width 
+        20,        // button height 
+        hMainWnd,      
+        (HMENU)1013,       
+        (HINSTANCE)GetWindowLong(hMainWnd, GWL_HINSTANCE),
+        NULL);
+
+    HWND blue = CreateWindow(L"BUTTON", L"", WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON | BS_OWNERDRAW,
+
+        start_x + 92,         // starting x position 
+        0,         // starting y position 
+        20,        // button width 
+        20,        // button height 
+        hMainWnd,       
+        (HMENU)1014,      
+        (HINSTANCE)GetWindowLong(hMainWnd, GWL_HINSTANCE),
+        NULL);
+
+    HWND orange = CreateWindow(L"BUTTON", L"", WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON | BS_OWNERDRAW,
+
+        start_x + 115,         // starting x position 
+        0,         // starting y position 
+        20,        // button width 
+        20,        // button height 
+        hMainWnd,
+        (HMENU)1015,
+        (HINSTANCE)GetWindowLong(hMainWnd, GWL_HINSTANCE),
+        NULL);
+
+    HWND purple = CreateWindow(L"BUTTON", L"", WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON | BS_OWNERDRAW,
+
+        start_x + 138,         // starting x position 
+        0,         // starting y position 
+        20,        // button width 
+        20,        // button height 
+        hMainWnd,
+        (HMENU)1016,
+        (HINSTANCE)GetWindowLong(hMainWnd, GWL_HINSTANCE),
+        NULL);
+
+    HWND light_blue = CreateWindow(L"BUTTON", L"", WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON | BS_OWNERDRAW,
+
+        start_x + 161,         // starting x position 
+        0,         // starting y position 
+        20,        // button width 
+        20,        // button height 
+        hMainWnd,
+        (HMENU)1017,
+        (HINSTANCE)GetWindowLong(hMainWnd, GWL_HINSTANCE),
+        NULL);
+
+    HWND dark_green = CreateWindow(L"BUTTON", L"", WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON | BS_OWNERDRAW,
+
+        start_x + 184,         // starting x position 
+        0,         // starting y position 
+        20,        // button width 
+        20,        // button height 
+        hMainWnd,
+        (HMENU)1018,
+        (HINSTANCE)GetWindowLong(hMainWnd, GWL_HINSTANCE),
+        NULL);
+
+
+    HWND white = CreateWindow(L"BUTTON", L"", WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON | BS_OWNERDRAW,
+
+        start_x,         // starting x position 
+        23,         // starting y position 
+        20,        // button width 
+        20,        // button height 
+        hMainWnd,
+        (HMENU)1110,
+        (HINSTANCE)GetWindowLong(hMainWnd, GWL_HINSTANCE),
+        NULL);
+
+    HWND light_gray = CreateWindow(L"BUTTON", L"", WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON | BS_OWNERDRAW,
+
+        start_x + 23,         // starting x position 
+        23,         // starting y position 
+        20,        // button width 
+        20,        // button height 
+        hMainWnd,
+        (HMENU)1111,
+        (HINSTANCE)GetWindowLong(hMainWnd, GWL_HINSTANCE),
+        NULL);
+
+    HWND light_red = CreateWindow(L"BUTTON", L"", WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON | BS_OWNERDRAW,
+
+        start_x + 46,         // starting x position 
+        23,         // starting y position 
+        20,        // button width 
+        20,        // button height 
+        hMainWnd,
+        (HMENU)1112,
+        (HINSTANCE)GetWindowLong(hMainWnd, GWL_HINSTANCE),
+        NULL);
+
+    HWND light_green = CreateWindow(L"BUTTON", L"", WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON | BS_OWNERDRAW,
+
+        start_x + 69,         // starting x position 
+        23,         // starting y position 
+        20,        // button width 
+        20,        // button height 
+        hMainWnd,
+        (HMENU)1113,
+        (HINSTANCE)GetWindowLong(hMainWnd, GWL_HINSTANCE),
+        NULL);
+
+    HWND light_blue_1 = CreateWindow(L"BUTTON", L"", WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON | BS_OWNERDRAW,
+
+        start_x + 92,         // starting x position 
+        23,         // starting y position 
+        20,        // button width 
+        20,        // button height 
+        hMainWnd,
+        (HMENU)1114,
+        (HINSTANCE)GetWindowLong(hMainWnd, GWL_HINSTANCE),
+        NULL);
+
+    HWND light_orange = CreateWindow(L"BUTTON", L"", WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON | BS_OWNERDRAW,
+
+        start_x + 115,         // starting x position 
+        23,         // starting y position 
+        20,        // button width 
+        20,        // button height 
+        hMainWnd,
+        (HMENU)1115,
+        (HINSTANCE)GetWindowLong(hMainWnd, GWL_HINSTANCE),
+        NULL);
+
+    HWND light_purple = CreateWindow(L"BUTTON", L"", WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON | BS_OWNERDRAW,
+
+        start_x + 138,         // starting x position 
+        23,         // starting y position 
+        20,        // button width 
+        20,        // button height 
+        hMainWnd,
+        (HMENU)1116,
+        (HINSTANCE)GetWindowLong(hMainWnd, GWL_HINSTANCE),
+        NULL);
+
+    HWND light_light_blue = CreateWindow(L"BUTTON", L"", WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON | BS_OWNERDRAW,
+
+        start_x + 161,         // starting x position 
+        23,         // starting y position 
+        20,        // button width 
+        20,        // button height 
+        hMainWnd,
+        (HMENU)1117,
+        (HINSTANCE)GetWindowLong(hMainWnd, GWL_HINSTANCE),
+        NULL);
+
+    HWND light_dark_green = CreateWindow(L"BUTTON", L"", WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON | BS_OWNERDRAW,
+
+        start_x + 184,         // starting x position 
+        23,         // starting y position 
+        20,        // button width 
+        20,        // button height 
+        hMainWnd,
+        (HMENU)1118,
+        (HINSTANCE)GetWindowLong(hMainWnd, GWL_HINSTANCE),
+        NULL);
+
+    
+
 
 }
 

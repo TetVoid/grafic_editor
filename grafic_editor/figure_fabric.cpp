@@ -6,6 +6,10 @@ Figure_fabric::Figure_fabric()
 	prev_rc.right = 0;
 	prev_rc.top = 0;
 	prev_rc.bottom = 0;
+
+	color.R = 0;
+	color.G = 0;
+	color.B = 0;
 }
 void Figure_fabric:: set_start_cords(HWND hWnd)
 {
@@ -40,7 +44,7 @@ void  Figure_fabric::set_width_height(HWND hWnd)
 }
 Figure Figure_fabric::create_figure(HWND hWnd)
 {
-	Figure pict = Figure(GetDC(hWnd), x, y, width, height);
+	Figure pict = Figure(GetDC(hWnd), x, y, width, height,color);
 	return pict;
 }
 
@@ -71,11 +75,18 @@ void Figure_fabric::draw_focus(HWND hWnd)
 	FillRect(GetDC(hWnd), &prev_rc, (HBRUSH)CreateSolidBrush(RGB(255, 255, 255)));
 	SetRect(&prev_rc, x-1, y-1, pt.x+1, pt.y+1);
 
-	FillRect(GetDC(hWnd), &rc, (HBRUSH)CreateSolidBrush(RGB(255, 0,0)));
+	FillRect(GetDC(hWnd), &rc, (HBRUSH)CreateSolidBrush(RGB(color.R,color.G,color.B)));
 }
 
 BOOL Figure_fabric::is_draw()
 {
 	return draw;
+}
+
+void Figure_fabric::set_color(COLOR color)
+{
+	this->color.R = color.R;
+	this->color.G = color.G;
+	this->color.B = color.B;
 }
 

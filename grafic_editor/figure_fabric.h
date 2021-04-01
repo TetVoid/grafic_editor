@@ -11,8 +11,10 @@ public:
 	Figure create_figure(HWND hWnd);
 	BOOL is_draw();
 	void draw_focus(HWND hWnd);
+	void set_color(COLOR color);
 
 private:
+	COLOR color;
 	int x;
 	int y;
 	int width;

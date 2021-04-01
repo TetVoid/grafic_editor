@@ -7,6 +7,26 @@
 #include "models.h"
 #include "figure_fabric.h"
 
+HBRUSH brushes[] = {
+   CreateSolidBrush(RGB(0, 0, 0)),
+   CreateSolidBrush(RGB(125, 125, 125)),
+   CreateSolidBrush(RGB(255, 0, 0)),
+   CreateSolidBrush(RGB(0, 255, 0)),
+   CreateSolidBrush(RGB(0, 0, 255)),
+   CreateSolidBrush(RGB(255, 153, 51)),
+   CreateSolidBrush(RGB(204, 0, 153)),
+   CreateSolidBrush(RGB(51, 204, 255)),
+   CreateSolidBrush(RGB(0, 102, 0)),
+   CreateSolidBrush(RGB(255, 255, 255)),
+   CreateSolidBrush(RGB(175, 175, 175)),
+   CreateSolidBrush(RGB(255, 100, 100)),
+   CreateSolidBrush(RGB(100, 255, 100)),
+   CreateSolidBrush(RGB(100, 100, 255)),
+   CreateSolidBrush(RGB(255, 203, 101)),
+   CreateSolidBrush(RGB(254, 50, 203)),
+   CreateSolidBrush(RGB(101, 254, 255)),
+   CreateSolidBrush(RGB(50, 152, 50))
+} ;
 
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 
@@ -42,7 +62,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     static HCURSOR hcur = LoadCursor(NULL, IDC_SIZEALL);
     static HCURSOR scur = LoadCursor(NULL, IDC_ARROW);
     static BOOL create_flag = true;
-
+    COLOR color;
+    std::ofstream fout("log.txt", std::ios::app);
+    
     static Figure_fabric fabric;
     SetCursor(scur);
     switch (uMsg) {
@@ -133,6 +155,164 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
                 new_pict.init(hWnd);
             }
             
+        break;
+    case WM_CTLCOLORBTN:
+        switch (GetWindowLong((HWND)lParam, GWL_ID))
+        {
+        case 1010:
+            return (LRESULT)brushes[0];
+            break;
+        case 1011:
+            return (LRESULT)brushes[1];
+            break;
+        case 1012:
+            return (LRESULT)brushes[2];
+            break;
+        case 1013:
+            return (LRESULT)brushes[3];
+            break;
+        case 1014:
+            return (LRESULT)brushes[4];
+            break;
+        case 1015:
+            return (LRESULT)brushes[5];
+            break;
+        case 1016:
+            return (LRESULT)brushes[6];
+            break;
+        case 1017:
+            return (LRESULT)brushes[7];
+            break;
+        case 1018:
+            return (LRESULT)brushes[8];
+            break;
+        case 1110:
+            return (LRESULT)brushes[9];
+            break;
+        case 1111:
+            return (LRESULT)brushes[10];
+            break;
+        case 1112:
+            return (LRESULT)brushes[11];
+            break;
+        case 1113:
+            return (LRESULT)brushes[12];
+            break;
+        case 1114:
+            return (LRESULT)brushes[13];
+            break;
+        case 1115:
+            return (LRESULT)brushes[14];
+            break;
+        case 1116:
+            return (LRESULT)brushes[15];
+            break;
+        case 1117:
+            return (LRESULT)brushes[16];
+            break;
+        case 1118:
+            return (LRESULT)brushes[17];
+            break;
+        }
+       
+        break;
+    case WM_COMMAND:
+        switch (LOWORD(wParam))
+        {
+        case 1010:
+            color.R = 0;
+            color.G = 0;
+            color.B = 0;
+            break;
+        case 1011:
+            color.R = 125;
+            color.G = 125;
+            color.B = 125;
+            break;
+        case 1012:
+            color.R = 255;
+            color.G = 0;
+            color.B = 0;
+            break;
+        case 1013:
+            color.R = 0;
+            color.G = 255;
+            color.B = 0;
+            break;
+        case 1014:
+            color.R = 0;
+            color.G = 0;
+            color.B = 255;
+            break;
+        case 1015:
+            color.R = 255;
+            color.G = 153;
+            color.B = 51;
+            break;
+        case 1016:
+            color.R = 204;
+            color.G = 0;
+            color.B = 153;
+            break;
+        case 1017:
+            color.R = 51;
+            color.G = 204;
+            color.B = 155;
+            break;
+        case 1018:
+            color.R = 0;
+            color.G = 102;
+            color.B = 0;
+            break;
+        case 1110:
+            color.R = 255;
+            color.G = 255;
+            color.B = 255;
+            break;
+        case 1111:
+            color.R = 175;
+            color.G = 175;
+            color.B = 175;
+            break;
+        case 1112:
+            color.R = 255;
+            color.G = 100;
+            color.B = 100;
+            break;
+        case 1113:
+            color.R = 100;
+            color.G = 255;
+            color.B = 100;
+            break;
+        case 1114:
+            color.R = 100;
+            color.G = 100;
+            color.B = 255;
+            break;
+        case 1115:
+            color.R = 255;
+            color.G = 203;
+            color.B = 101;
+            break;
+        case 1116:
+            color.R = 254;
+            color.G = 50;
+            color.B = 203;
+            break;
+        case 1117:
+            color.R = 101;
+            color.G = 254;
+            color.B = 255;
+            break;
+        case 1118:
+            color.R = 50;
+            color.G = 152;
+            color.B = 50;
+            break;
+        }
+        fabric.set_color(color);
+        if (figure_index != -1)
+            figure_list[figure_index].set_color(color,hWnd);
         break;
     case WM_SETCURSOR:
         if (figure_index != -1 && !figure_list[figure_index].is_move())

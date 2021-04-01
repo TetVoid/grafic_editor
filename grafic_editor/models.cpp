@@ -4,8 +4,12 @@
 
 Figure::Figure(){}
 
-Figure::Figure(HDC hDC, int x, int y, int width,int height)
+Figure::Figure(HDC hDC, int x, int y, int width,int height, COLOR color)
 {
+
+    this->color.R = color.R;
+    this->color.G = color.G;
+    this->color.B = color.B;
     cords_x[0] = x;
     cords_y[0] = y;
 
@@ -57,7 +61,7 @@ Figure::~Figure()
 
 void Figure::draw(HDC hDC)
 {
-    HBRUSH brush = CreateSolidBrush(RGB(255, 0, 0));
+    HBRUSH brush = CreateSolidBrush(RGB(color.R, color.G, color.B));
     SelectObject(hDC, brush);
    
     BeginPath(hDC);
@@ -476,6 +480,13 @@ void Figure::stop_resize()
     resize_index = -1;
 }
 
+void Figure::set_color(COLOR color,HWND hWnd)
+{
+    this->color.R = color.R;
+    this->color.G = color.G;
+    this->color.B = color.B;
+    init(hWnd);
+}
 
 
 /*std::ofstream fout("log.txt", std::ios::app);
