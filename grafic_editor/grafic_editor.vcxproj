@@ -142,6 +142,7 @@
     <ClInclude Include="figure_fabric.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="grafic_editor.h" />
+    <ClInclude Include="interface.h" />
     <ClInclude Include="main_window.h" />
     <ClInclude Include="models.h" />
     <ClInclude Include="Resource.h" />
@@ -150,6 +151,7 @@
   <ItemGroup>
     <ClCompile Include="figure_fabric.cpp" />
     <ClCompile Include="grafic_editor.cpp" />
+    <ClCompile Include="interface.cpp" />
     <ClCompile Include="main_window.cpp" />
     <ClCompile Include="models.cpp" />
   </ItemGroup>

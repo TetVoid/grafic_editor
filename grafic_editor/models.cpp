@@ -293,19 +293,23 @@ void Figure::resize(HWND hWnd)
     {
         
     case 0:
-       
-        update_cords_x[0] += delta_x;
-        update_cords_x[3] += delta_x;
+        if (abs(start_cords_x[2]-start_cords_x[0]) > 2 | delta_x<0)
+        {
+            update_cords_x[0] += delta_x;
+            update_cords_x[3] += delta_x;
 
-        center.x += delta_x / 2;
+            center.x += delta_x / 2;
 
-        start_cords_x[0] += delta_x;
-        start_cords_x[3] += delta_x;
+            start_cords_x[0] += delta_x;
+            start_cords_x[3] += delta_x;
 
-        cords_x[0] += delta_x;
-        cords_x[3] += delta_x;
+            cords_x[0] += delta_x;
+            cords_x[3] += delta_x;
+        }
         break;
     case 1:
+    if(abs(start_cords_x[2] - start_cords_x[0]) > 2 | delta_x>0)
+    {
         update_cords_x[2] += delta_x;
         update_cords_x[1] += delta_x;
 
@@ -316,31 +320,37 @@ void Figure::resize(HWND hWnd)
 
         cords_x[2] += delta_x;
         cords_x[1] += delta_x;
+    }
         break;
     case 2:
-        update_cords_y[0] += delta_y;
-        update_cords_y[1] += delta_y;
+        if (abs(start_cords_y[2] - start_cords_y[0]) > 2 | delta_y<0)
+        {
+            update_cords_y[0] += delta_y;
+            update_cords_y[1] += delta_y;
 
-        center.y += delta_y / 2;
+            center.y += delta_y / 2;
 
-        start_cords_y[0] += delta_y;
-        start_cords_y[1] += delta_y;
+            start_cords_y[0] += delta_y;
+            start_cords_y[1] += delta_y;
 
-        cords_y[0] += delta_y;
-        cords_y[1] += delta_y;
-        break;
+            cords_y[0] += delta_y;
+            cords_y[1] += delta_y;
+        }
         break;
     case 3:
-        update_cords_y[2] += delta_y;
-        update_cords_y[3] += delta_y;
+        if (abs(start_cords_y[2] - start_cords_y[0]) > 2|delta_y>0)
+        {
+            update_cords_y[2] += delta_y;
+            update_cords_y[3] += delta_y;
 
-        center.y += delta_y / 2;
+            center.y += delta_y / 2;
 
-        start_cords_y[2] += delta_y;
-        start_cords_y[3] += delta_y;
+            start_cords_y[2] += delta_y;
+            start_cords_y[3] += delta_y;
 
-        cords_y[2] += delta_y;
-        cords_y[3] += delta_y;
+            cords_y[2] += delta_y;
+            cords_y[3] += delta_y;
+        }
         
         break;
     }

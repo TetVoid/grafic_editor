@@ -47,10 +47,11 @@ void MainWindow:: init_color_buttoms()
     RECT rect;
     GetWindowRect(hMainWnd, &rect);
     int start_x = (rect.right - rect.left) / 7 * 4;
+    int start_y = 5;
     HWND black = CreateWindow(L"BUTTON", L"", WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON | BS_OWNERDRAW,
 
         start_x,         // starting x position 
-        0,         // starting y position 
+        start_y,         // starting y position 
         20,        // button width 
         20,        // button height 
         hMainWnd,
@@ -61,7 +62,7 @@ void MainWindow:: init_color_buttoms()
     HWND gray = CreateWindow(L"BUTTON", L"", WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON | BS_OWNERDRAW,
 
         start_x + 23,         // starting x position 
-        0,         // starting y position 
+        start_y,         // starting y position 
         20,        // button width 
         20,        // button height 
         hMainWnd,
@@ -72,7 +73,7 @@ void MainWindow:: init_color_buttoms()
     HWND red = CreateWindow(L"BUTTON", L"", WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON|BS_OWNERDRAW,
 
         start_x + 46,         // starting x position 
-        0,         // starting y position 
+        start_y,         // starting y position 
         20,        // button width 
         20,        // button height 
         hMainWnd,       
@@ -83,7 +84,7 @@ void MainWindow:: init_color_buttoms()
     HWND green = CreateWindow(L"BUTTON", L"", WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON | BS_OWNERDRAW,
 
         start_x + 69,         // starting x position 
-        0,         // starting y position 
+        start_y,         // starting y position 
         20,        // button width 
         20,        // button height 
         hMainWnd,      
@@ -94,7 +95,7 @@ void MainWindow:: init_color_buttoms()
     HWND blue = CreateWindow(L"BUTTON", L"", WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON | BS_OWNERDRAW,
 
         start_x + 92,         // starting x position 
-        0,         // starting y position 
+        start_y,         // starting y position 
         20,        // button width 
         20,        // button height 
         hMainWnd,       
@@ -105,7 +106,7 @@ void MainWindow:: init_color_buttoms()
     HWND orange = CreateWindow(L"BUTTON", L"", WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON | BS_OWNERDRAW,
 
         start_x + 115,         // starting x position 
-        0,         // starting y position 
+        start_y,         // starting y position 
         20,        // button width 
         20,        // button height 
         hMainWnd,
@@ -116,7 +117,7 @@ void MainWindow:: init_color_buttoms()
     HWND purple = CreateWindow(L"BUTTON", L"", WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON | BS_OWNERDRAW,
 
         start_x + 138,         // starting x position 
-        0,         // starting y position 
+        start_y,         // starting y position 
         20,        // button width 
         20,        // button height 
         hMainWnd,
@@ -127,7 +128,7 @@ void MainWindow:: init_color_buttoms()
     HWND light_blue = CreateWindow(L"BUTTON", L"", WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON | BS_OWNERDRAW,
 
         start_x + 161,         // starting x position 
-        0,         // starting y position 
+        start_y,         // starting y position 
         20,        // button width 
         20,        // button height 
         hMainWnd,
@@ -138,7 +139,7 @@ void MainWindow:: init_color_buttoms()
     HWND dark_green = CreateWindow(L"BUTTON", L"", WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON | BS_OWNERDRAW,
 
         start_x + 184,         // starting x position 
-        0,         // starting y position 
+        start_y,         // starting y position 
         20,        // button width 
         20,        // button height 
         hMainWnd,
@@ -150,7 +151,7 @@ void MainWindow:: init_color_buttoms()
     HWND white = CreateWindow(L"BUTTON", L"", WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON | BS_OWNERDRAW,
 
         start_x,         // starting x position 
-        23,         // starting y position 
+        start_y + 23,         // starting y position 
         20,        // button width 
         20,        // button height 
         hMainWnd,
@@ -161,7 +162,7 @@ void MainWindow:: init_color_buttoms()
     HWND light_gray = CreateWindow(L"BUTTON", L"", WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON | BS_OWNERDRAW,
 
         start_x + 23,         // starting x position 
-        23,         // starting y position 
+        start_y + 23,         // starting y position 
         20,        // button width 
         20,        // button height 
         hMainWnd,
@@ -172,7 +173,7 @@ void MainWindow:: init_color_buttoms()
     HWND light_red = CreateWindow(L"BUTTON", L"", WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON | BS_OWNERDRAW,
 
         start_x + 46,         // starting x position 
-        23,         // starting y position 
+        start_y + 23,         // starting y position 
         20,        // button width 
         20,        // button height 
         hMainWnd,
@@ -183,7 +184,7 @@ void MainWindow:: init_color_buttoms()
     HWND light_green = CreateWindow(L"BUTTON", L"", WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON | BS_OWNERDRAW,
 
         start_x + 69,         // starting x position 
-        23,         // starting y position 
+        start_y + 23,         // starting y position 
         20,        // button width 
         20,        // button height 
         hMainWnd,
@@ -194,7 +195,7 @@ void MainWindow:: init_color_buttoms()
     HWND light_blue_1 = CreateWindow(L"BUTTON", L"", WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON | BS_OWNERDRAW,
 
         start_x + 92,         // starting x position 
-        23,         // starting y position 
+        start_y + 23,         // starting y position 
         20,        // button width 
         20,        // button height 
         hMainWnd,
@@ -205,7 +206,7 @@ void MainWindow:: init_color_buttoms()
     HWND light_orange = CreateWindow(L"BUTTON", L"", WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON | BS_OWNERDRAW,
 
         start_x + 115,         // starting x position 
-        23,         // starting y position 
+        start_y + 23,         // starting y position 
         20,        // button width 
         20,        // button height 
         hMainWnd,
@@ -216,7 +217,7 @@ void MainWindow:: init_color_buttoms()
     HWND light_purple = CreateWindow(L"BUTTON", L"", WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON | BS_OWNERDRAW,
 
         start_x + 138,         // starting x position 
-        23,         // starting y position 
+        start_y + 23,         // starting y position 
         20,        // button width 
         20,        // button height 
         hMainWnd,
@@ -227,7 +228,7 @@ void MainWindow:: init_color_buttoms()
     HWND light_light_blue = CreateWindow(L"BUTTON", L"", WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON | BS_OWNERDRAW,
 
         start_x + 161,         // starting x position 
-        23,         // starting y position 
+        start_y + 23,         // starting y position 
         20,        // button width 
         20,        // button height 
         hMainWnd,
@@ -238,7 +239,7 @@ void MainWindow:: init_color_buttoms()
     HWND light_dark_green = CreateWindow(L"BUTTON", L"", WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON | BS_OWNERDRAW,
 
         start_x + 184,         // starting x position 
-        23,         // starting y position 
+        start_y + 23,         // starting y position 
         20,        // button width 
         20,        // button height 
         hMainWnd,
@@ -249,7 +250,7 @@ void MainWindow:: init_color_buttoms()
     HWND show_color = CreateWindow(L"BUTTON", L"", WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON | BS_OWNERDRAW,
 
         start_x - 50,         // starting x position 
-        0,         // starting y position 
+        start_y,         // starting y position 
         40,        // button width 
         40,        // button height 
         hMainWnd,
@@ -260,7 +261,7 @@ void MainWindow:: init_color_buttoms()
     HWND show_border_color = CreateWindow(L"BUTTON", L"", WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON | BS_OWNERDRAW,
 
         start_x - 100,         // starting x position 
-        0,         // starting y position 
+        start_y,         // starting y position 
         40,        // button width 
         40,        // button height 
         hMainWnd,

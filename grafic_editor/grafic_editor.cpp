@@ -6,6 +6,7 @@
 #include "main_window.h"
 #include "models.h"
 #include "figure_fabric.h"
+#include "interface.h"
 
 HBRUSH brushes[] = {
    CreateSolidBrush(RGB(0, 0, 0)),
@@ -32,7 +33,9 @@ LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 
 std::vector<Figure> figure_list;
 int figure_index=-1;
-std::ofstream fout("log.txt", std::ios::app);
+Interface window_interface = Interface();
+
+//std::ofstream fout("log.txt", std::ios::app);
 
 int WINAPI WinMain(HINSTANCE hInstance,
     HINSTANCE hPrevInstance,
@@ -51,7 +54,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
         TranslateMessage(&msg); // интерпретируем сообщения
         DispatchMessage(&msg); // передаём сообщения обратно ОС
     }
-    fout.close();
+    //fout.close();
     return msg.wParam; 
 }
 
@@ -79,6 +82,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
         hDC = BeginPaint(hWnd, &ps); 
         for(int i = 0; i<figure_list.size();i++)
             figure_list[i].draw(hDC);
+        window_interface.draw(hWnd);
+
 
         EndPaint(hWnd, &ps); 
         break;
@@ -171,7 +176,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
             break;
     }
     case WM_CTLCOLORBTN:
-        fout << brush_index << "\n";
         switch (GetWindowLong((HWND)lParam, GWL_ID))
         {
         case 1010:
@@ -441,10 +445,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
         case 1200:
             pen_or_brus = true;
             set_color_flag = false;
+            window_interface.set_brush();
             break;
         case 1201:
             pen_or_brus = false;
             set_color_flag = false;
+            window_interface.set_pen();
             break;
         }
 
@@ -454,6 +460,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
                 fabric.set_color(color);
             else
                 fabric.set_border_color(color);
+            
 
             if (figure_index != -1)
                 if (pen_or_brus)
