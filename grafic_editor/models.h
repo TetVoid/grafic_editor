@@ -12,7 +12,7 @@ class Figure
 {
 public:
 	Figure();
-	Figure(HDC hDC, int x, int y, int width, int height,COLOR color);
+	Figure(HDC hDC, int x, int y, int width, int height,COLOR color, COLOR border_color);
 	~Figure();
 	void draw(HDC hDC);
 	void update(HWND hwnd);
@@ -27,6 +27,7 @@ public:
 	void stop_resize();
 
 	void set_color(COLOR color, HWND hWnd);
+	void set_border_color(COLOR color, HWND hWnd);
 
 	BOOL check_position(HWND hwnd);
 	BOOL select(HWND hWnd);
@@ -39,6 +40,7 @@ public:
 private:
 	POINT center;
 	COLOR color;
+	COLOR border_color;
 	double start_cords_x[4], start_cords_y[4];
 	double cords_x[4], cords_y[4];
 	double update_cords_x[4], update_cords_y[4];

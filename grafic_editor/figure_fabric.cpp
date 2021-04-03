@@ -7,9 +7,13 @@ Figure_fabric::Figure_fabric()
 	prev_rc.top = 0;
 	prev_rc.bottom = 0;
 
-	color.R = 0;
-	color.G = 0;
-	color.B = 0;
+	color.R = 255;
+	color.G = 255;
+	color.B = 255;
+	border_color.R = 0;
+	border_color.G = 0;
+	border_color.B = 0;
+
 }
 void Figure_fabric:: set_start_cords(HWND hWnd)
 {
@@ -44,12 +48,18 @@ void  Figure_fabric::set_width_height(HWND hWnd)
 }
 Figure Figure_fabric::create_figure(HWND hWnd)
 {
-	Figure pict = Figure(GetDC(hWnd), x, y, width, height,color);
+	Figure pict = Figure(GetDC(hWnd), x, y, width, height,color,border_color);
 	return pict;
 }
 
 void Figure_fabric::draw_focus(HWND hWnd)
 {
+	HBRUSH brush = CreateSolidBrush(RGB(color.R, color.G, color.B));
+
+	HPEN pen = CreatePen(PS_SOLID, 2, RGB(border_color.R, border_color.G, border_color.B));
+	SelectObject(GetDC(hWnd), pen);
+	SelectObject(GetDC(hWnd), brush);
+
 	POINT pt;
 	GetCursorPos(&pt);
 	ScreenToClient(hWnd, &pt);
@@ -71,11 +81,30 @@ void Figure_fabric::draw_focus(HWND hWnd)
 		pt.y = buf;
 	}
 
-	SetRect(&rc, x, y, pt.x, pt.y);
-	FillRect(GetDC(hWnd), &prev_rc, (HBRUSH)CreateSolidBrush(RGB(255, 255, 255)));
-	SetRect(&prev_rc, x-1, y-1, pt.x+1, pt.y+1);
+	HBRUSH white_brush = CreateSolidBrush(RGB(255, 255, 255));
 
-	FillRect(GetDC(hWnd), &rc, (HBRUSH)CreateSolidBrush(RGB(color.R,color.G,color.B)));
+	FillRect(GetDC(hWnd), &prev_rc, white_brush);
+	SetRect(&prev_rc, x - 2, y - 2, pt.x + 2, pt.y + 2);
+	DeleteObject(white_brush);
+
+	HDC hDC = GetDC(hWnd);
+	BeginPath(hDC);
+	MoveToEx(hDC, x, y, nullptr);
+	LineTo(hDC, pt.x, y);
+	LineTo(hDC, pt.x, pt.y);
+	LineTo(hDC, x, pt.y);
+	LineTo(hDC, x, y);
+	EndPath(hDC);
+	FillPath(hDC);
+
+	MoveToEx(hDC, x, y, nullptr);
+	LineTo(hDC, pt.x, y);
+	LineTo(hDC, pt.x, pt.y);
+	LineTo(hDC, x, pt.y);
+	LineTo(hDC, x, y);
+
+	DeleteObject(brush);
+	DeleteObject(pen);
 }
 
 BOOL Figure_fabric::is_draw()
@@ -88,5 +117,12 @@ void Figure_fabric::set_color(COLOR color)
 	this->color.R = color.R;
 	this->color.G = color.G;
 	this->color.B = color.B;
+}
+
+void  Figure_fabric::set_border_color(COLOR color)
+{
+	this->border_color.R = color.R;
+	this->border_color.G = color.G;
+	this->border_color.B = color.B;
 }
 

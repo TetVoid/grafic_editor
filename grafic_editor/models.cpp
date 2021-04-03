@@ -4,12 +4,16 @@
 
 Figure::Figure(){}
 
-Figure::Figure(HDC hDC, int x, int y, int width,int height, COLOR color)
+Figure::Figure(HDC hDC, int x, int y, int width,int height, COLOR color, COLOR border_color)
 {
 
     this->color.R = color.R;
     this->color.G = color.G;
     this->color.B = color.B;
+
+    this->border_color.R = border_color.R;
+    this->border_color.G = border_color.G;
+    this->border_color.B = border_color.B;
     cords_x[0] = x;
     cords_y[0] = y;
 
@@ -62,7 +66,10 @@ Figure::~Figure()
 void Figure::draw(HDC hDC)
 {
     HBRUSH brush = CreateSolidBrush(RGB(color.R, color.G, color.B));
+
+    HPEN pen = CreatePen(PS_SOLID,2,RGB(border_color.R, border_color.G, border_color.B));
     SelectObject(hDC, brush);
+    SelectObject(hDC, pen);
    
     BeginPath(hDC);
     MoveToEx(hDC, round(cords_x[0]), round(cords_y[0]), nullptr);
@@ -73,9 +80,16 @@ void Figure::draw(HDC hDC)
     EndPath(hDC);
     FillPath(hDC);
 
+    MoveToEx(hDC, round(cords_x[0]), round(cords_y[0]), nullptr);
+    LineTo(hDC, round(cords_x[1]), round(cords_y[1]));
+    LineTo(hDC, round(cords_x[2]), round(cords_y[2]));
+    LineTo(hDC, round(cords_x[3]), round(cords_y[3]));
+    LineTo(hDC, round(cords_x[0]), round(cords_y[0]));
+
     if(select_flag)
         draw_borders(hDC);
     DeleteObject(brush);
+    DeleteObject(pen);
 }
 
 void Figure::draw_borders(HDC hDC)
@@ -129,6 +143,7 @@ void Figure::draw_borders(HDC hDC)
     finish_y = update_cords_y[2];
     SetRect(&rc, start_x, start_y, finish_x, finish_y);
     FillRect(hDC, &rc, brush);
+
     DeleteObject(brush);
 }
 
@@ -485,6 +500,14 @@ void Figure::set_color(COLOR color,HWND hWnd)
     this->color.R = color.R;
     this->color.G = color.G;
     this->color.B = color.B;
+    init(hWnd);
+}
+
+void Figure::set_border_color(COLOR color, HWND hWnd)
+{
+    this->border_color.R = color.R;
+    this->border_color.G = color.G;
+    this->border_color.B = color.B;
     init(hWnd);
 }
 
