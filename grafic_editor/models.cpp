@@ -1,6 +1,19 @@
 #include "models.h"
 #include <fstream>
 #include <string>
+#include <vector>
+#include <algorithm>
+
+bool comparator_max_min(double* a, double* b)
+{
+    return *a > *b;
+}
+
+
+bool comparator_min_max(double* a, double* b)
+{
+    return *a < *b;
+}
 
 Figure::Figure(){}
 
@@ -288,72 +301,239 @@ void Figure::resize(HWND hWnd)
 
     SetRect(&rc, update_cords_x[0] - 1, update_cords_y[0] - 1, update_cords_x[2] + 1, update_cords_y[2] + 1);
     InvalidateRect(hWnd, &rc, TRUE);
+    
+    std::vector<double*> up_x_cords;
+    std::vector<double*> down_x_cords;
+
+    std::vector<double*> left_y_cords;
+    std::vector<double*> right_y_cords;
+
+    std::vector<double*> start_up_x_cords;
+    std::vector<double*> start_down_x_cords;
+
+    std::vector<double*> start_left_y_cords;
+    std::vector<double*> start_right_y_cords;
+
+    for (int i = 0; i < 4; i++)
+    {
+        if (cords_y[i] - center.y > 0)
+        {
+            down_x_cords.push_back(&cords_x[i]);
+            start_down_x_cords.push_back(&start_cords_x[i]);
+        }
+        else
+        {
+            up_x_cords.push_back(&cords_x[i]);
+            start_up_x_cords.push_back(&start_cords_x[i]);
+        }
+    }
+
+    for (int i = 0; i < 4; i++)
+    {
+        if (cords_x[i] - center.x > 0)
+        {
+            right_y_cords.push_back(&cords_y[i]);
+            start_right_y_cords.push_back(&start_cords_y[i]);
+        }
+        else
+        {
+            left_y_cords.push_back(&cords_y[i]);
+            start_left_y_cords.push_back(&start_cords_y[i]);
+        }
+    }
+
 
     switch (resize_index)
     {
-        
+   
     case 0:
-        if (abs(start_cords_x[2]-start_cords_x[0]) > 2 | delta_x<0)
+    {     
+        std::sort(down_x_cords.begin(), down_x_cords.end(), comparator_max_min);
+        std::sort(up_x_cords.begin(), up_x_cords.end(), comparator_max_min);
+        double need_point;
+        if (*down_x_cords[0] < *up_x_cords[0])
+            need_point = *down_x_cords[0];
+        else
+            need_point = *up_x_cords[0];
+        if (abs(need_point - update_cords_x[0]) > 10 | delta_x < 0)
         {
+            std::sort(start_down_x_cords.begin(), start_down_x_cords.end(), comparator_max_min);
+            std::sort(start_up_x_cords.begin(), start_up_x_cords.end(), comparator_max_min);
+
+           
+
             update_cords_x[0] += delta_x;
             update_cords_x[3] += delta_x;
 
-            center.x += delta_x / 2;
+            if(delta_x % 2==0)
+                center.x += delta_x / 2;
+            else
+            {
+                center.x += (delta_x + center_control_x) / 2;
+                center_control_x *= -1;
+            }
 
-            start_cords_x[0] += delta_x;
-            start_cords_x[3] += delta_x;
+            double new_delta_up_x = double(delta_x) / (up_x_cords.size() - 1);
+            for (int i = 1; i < up_x_cords.size(); i++)
+            {
+                *(up_x_cords[i]) += new_delta_up_x * i;
+                *(start_up_x_cords[i]) += new_delta_up_x * i;
 
-            cords_x[0] += delta_x;
-            cords_x[3] += delta_x;
+            }
+
+            double new_delta_down_x = double(delta_x) / (down_x_cords.size() - 1);
+            for (int i = 1; i < down_x_cords.size(); i++)
+            {
+                *(down_x_cords[i]) += new_delta_down_x * i;
+                *(start_down_x_cords[i]) += new_delta_down_x * i;
+            }
+
         }
         break;
-    case 1:
-    if(abs(start_cords_x[2] - start_cords_x[0]) > 2 | delta_x>0)
-    {
-        update_cords_x[2] += delta_x;
-        update_cords_x[1] += delta_x;
-
-        center.x += delta_x / 2;
-
-        start_cords_x[2] += delta_x;
-        start_cords_x[1] += delta_x;
-
-        cords_x[2] += delta_x;
-        cords_x[1] += delta_x;
     }
-        break;
-    case 2:
-        if (abs(start_cords_y[2] - start_cords_y[0]) > 2 | delta_y<0)
+    case 1:
+    {   
+        std::sort(down_x_cords.begin(), down_x_cords.end(), comparator_min_max);
+        std::sort(up_x_cords.begin(), up_x_cords.end(), comparator_min_max);
+        double need_point;
+        if (*down_x_cords[0] > *up_x_cords[0])
+            need_point = *down_x_cords[0];
+        else
+            need_point = *up_x_cords[0];
+        if (abs(need_point- update_cords_x[1]) > 10 | delta_x > 0)
         {
+            std::sort(start_down_x_cords.begin(), start_down_x_cords.end(), comparator_min_max);
+            std::sort(start_up_x_cords.begin(), start_up_x_cords.end(), comparator_min_max);
+
+            update_cords_x[2] += delta_x;
+            update_cords_x[1] += delta_x;
+
+            if (delta_x % 2 == 0)
+                center.x += delta_x / 2;
+            else
+            {
+                center.x += (delta_x + center_control_x) / 2;
+                center_control_x *= -1;
+            }
+
+
+            double new_delta_up_x = double(delta_x) / (up_x_cords.size() - 1);
+            for (int i = 1; i < up_x_cords.size(); i++)
+            {
+                *(up_x_cords[i]) += new_delta_up_x * i;
+                *(start_up_x_cords[i]) += new_delta_up_x * i;
+            }
+
+
+            double new_delta_down_x = double(delta_x) / (down_x_cords.size() - 1);
+            for (int i = 1; i < down_x_cords.size(); i++)
+            {
+                *(down_x_cords[i]) += new_delta_down_x * i;
+                *(start_down_x_cords[i]) += new_delta_down_x * i;
+
+            }
+        }
+        break;
+    }
+    case 2:
+    {
+        std::sort(left_y_cords.begin(), left_y_cords.end(), comparator_max_min);
+        std::sort(right_y_cords.begin(), right_y_cords.end(), comparator_max_min);
+
+        double need_point;
+        if (*left_y_cords[0] < *right_y_cords[0])
+            need_point = *left_y_cords[0];
+        else
+            need_point = *right_y_cords[0];
+        if (abs(need_point - update_cords_y[0]) > 10| delta_y < 0)
+        {
+
+            std::sort(start_left_y_cords.begin(), start_left_y_cords.end(), comparator_max_min);
+            std::sort(start_right_y_cords.begin(), start_right_y_cords.end(), comparator_max_min);
+
+
+            
+
             update_cords_y[0] += delta_y;
             update_cords_y[1] += delta_y;
 
-            center.y += delta_y / 2;
+            if (delta_y % 2 == 0)
+                center.y += delta_y / 2;
+            else
+            {
+                center.y += (delta_y + center_control_y) / 2;
+                center_control_y *= -1;
+            }
 
-            start_cords_y[0] += delta_y;
-            start_cords_y[1] += delta_y;
 
-            cords_y[0] += delta_y;
-            cords_y[1] += delta_y;
+            double new_delta_left_y = double(delta_y) / (left_y_cords.size() - 1);
+            for (int i = 1; i < left_y_cords.size(); i++)
+            {
+                *(left_y_cords[i]) += new_delta_left_y * i;
+                *(start_left_y_cords[i]) += new_delta_left_y * i;
+            }
+
+
+            double new_delta_right_y = double(delta_y) / (right_y_cords.size() - 1);
+            for (int i = 1; i < right_y_cords.size(); i++)
+            {
+                *(right_y_cords[i]) += new_delta_right_y * i;
+                *(start_right_y_cords[i]) += new_delta_right_y * i;
+            }
         }
         break;
+    }
     case 3:
-        if (abs(start_cords_y[2] - start_cords_y[0]) > 2|delta_y>0)
+    {
+
+        std::sort(left_y_cords.begin(), left_y_cords.end(), comparator_min_max);
+        std::sort(right_y_cords.begin(), right_y_cords.end(), comparator_min_max);
+
+        double need_point;
+        if (*left_y_cords[0] > *right_y_cords[0])
+            need_point = *left_y_cords[0];
+        else
+            need_point = *right_y_cords[0];
+
+        if (abs(need_point - update_cords_y[2]) > 14 | delta_y > 0)
         {
+
+            std::sort(start_left_y_cords.begin(), start_left_y_cords.end(), comparator_min_max);
+            std::sort(start_right_y_cords.begin(), start_right_y_cords.end(), comparator_min_max);
+
+
             update_cords_y[2] += delta_y;
             update_cords_y[3] += delta_y;
 
-            center.y += delta_y / 2;
+            if (delta_y % 2 == 0)
+                center.y += delta_y / 2;
+            else
+            {
+                center.y += (delta_y + center_control_y) / 2;
+                center_control_y *= -1;
+            }
 
-            start_cords_y[2] += delta_y;
-            start_cords_y[3] += delta_y;
 
-            cords_y[2] += delta_y;
-            cords_y[3] += delta_y;
+            double new_delta_left_y = double(delta_y) / (left_y_cords.size() - 1);
+            for (int i = 1; i < left_y_cords.size(); i++)
+            {
+                *(left_y_cords[i]) += new_delta_left_y * i;
+                *(start_left_y_cords[i]) += new_delta_left_y * i;
+            }
+
+
+            double new_delta_right_y = double(delta_y) / (right_y_cords.size() - 1);
+            for (int i = 1; i < right_y_cords.size(); i++)
+            {
+                *(right_y_cords[i]) += new_delta_right_y * i;
+                *(start_right_y_cords[i]) += new_delta_right_y * i;
+            }
         }
-        
+
         break;
     }
+    }
+
 
     SetRect(&rc, update_cords_x[0] - 1, update_cords_y[0] - 1, update_cords_x[2] + 1, update_cords_y[2] + 1);
     InvalidateRect(hWnd, &rc, TRUE);
@@ -501,6 +681,13 @@ void Figure::stop_select()
 
 void Figure::stop_resize()
 {
+    rotate_angle = 0;
+
+    for (int i = 0; i < 4; i++)
+    {
+        start_cords_x[i] = cords_x[i];
+        start_cords_y[i] = cords_y[i];
+    }
     resize_flag = false;
     resize_index = -1;
 }

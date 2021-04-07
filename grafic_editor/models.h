@@ -51,5 +51,8 @@ private:
 	int half_side = 5;
 	int resize_index = -1;
 
+	int center_control_x = 1;
+	int center_control_y = 1;
+
 	void draw_borders(HDC hDC);
 };
