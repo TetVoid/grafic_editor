@@ -269,6 +269,28 @@ void MainWindow:: init_color_buttoms()
         (HINSTANCE)GetWindowLong(hMainWnd, GWL_HINSTANCE),
         NULL);
 
+    HWND rect_buttom = CreateWindow(L"BUTTON", L"Rect", WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON ,
+
+        start_x - 170,         // starting x position 
+        start_y,         // starting y position 
+        60,        // button width 
+        40,        // button height 
+        hMainWnd,
+        (HMENU)1300,
+        (HINSTANCE)GetWindowLong(hMainWnd, GWL_HINSTANCE),
+        NULL);
+
+    HWND ellips_buttom = CreateWindow(L"BUTTON", L"Ellips", WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
+
+        start_x - 240,         // starting x position 
+        start_y,         // starting y position 
+        60,        // button width 
+        40,        // button height 
+        hMainWnd,
+        (HMENU)1301,
+        (HINSTANCE)GetWindowLong(hMainWnd, GWL_HINSTANCE),
+        NULL);
+
     
 
 

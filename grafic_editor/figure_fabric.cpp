@@ -46,9 +46,16 @@ void  Figure_fabric::set_width_height(HWND hWnd)
 	prev_rc.top = 0;
 	prev_rc.bottom = 0;
 }
-Figure Figure_fabric::create_figure(HWND hWnd)
+Figure* Figure_fabric::create_figure(HWND hWnd,std::string figure_class)
 {
-	Figure pict = Figure(GetDC(hWnd), x, y, width, height,color,border_color);
+	Figure* pict = NULL;
+	if (figure_class == "ellips")
+	{
+		OutputDebugStringW(L"1");
+		pict = new Elipse(GetDC(hWnd), x, y, width, height, color, border_color);
+	}
+	else if (figure_class == "rect")
+		pict = new Figure(GetDC(hWnd), x, y, width, height, color, border_color);
 	return pict;
 }
 

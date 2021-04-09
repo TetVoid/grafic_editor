@@ -1,5 +1,6 @@
 #pragma once
 #include <windows.h>
+#include <string>
 
 struct COLOR
 {
@@ -18,13 +19,13 @@ public:
 	void update(HWND hwnd);
 	void init(HWND hwnd);
 	void rotate(HWND hWnd);
-	void resize(HWND hWnd);
+	void virtual resize(HWND hWnd);
 
 	void set_prev_cords(HWND hWnd);
 	void stop_move();
 	void stop_rotate();
 	void stop_select();
-	void stop_resize();
+	void virtual stop_resize();
 
 	void set_color(COLOR color, HWND hWnd);
 	void set_border_color(COLOR color, HWND hWnd);
@@ -37,12 +38,12 @@ public:
 	BOOL is_resize();
 
 
-private:
+protected:
 	POINT center;
 	COLOR color;
 	COLOR border_color;
-	double start_cords_x[4], start_cords_y[4];
-	double cords_x[4], cords_y[4];
+	double *start_cords_x, *start_cords_y;
+	double *cords_x, *cords_y;
 	double update_cords_x[4], update_cords_y[4];
 	POINT pt,prev;
 	BOOL move_flag = false, resize_flag=false,select_flag=false,rotate_flag=false;
@@ -55,4 +56,15 @@ private:
 	int center_control_y = 1;
 
 	void draw_borders(HDC hDC);
+	void calculate_rotation();
+};
+
+class Elipse : public Figure
+{
+public:
+	Elipse(HDC hDC, int x, int y, int width, int height, COLOR color, COLOR border_color);
+	void virtual resize(HWND hWnd);
+	void stop_resize();
+private:
+	void calculate_cords();
 };

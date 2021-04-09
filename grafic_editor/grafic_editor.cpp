@@ -31,7 +31,7 @@ HBRUSH brushes[] = {
 
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 
-std::vector<Figure> figure_list;
+std::vector<Figure*> figure_list;
 int figure_index=-1;
 Interface window_interface = Interface();
 
@@ -69,6 +69,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     static int brush_index = 9;
     static int border_brush_index = 0;
     static BOOL pen_or_brus = true;
+    static std::string figure_class = "rect";
 
     COLOR color;
 
@@ -81,7 +82,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
         
         hDC = BeginPaint(hWnd, &ps); 
         for(int i = 0; i<figure_list.size();i++)
-            figure_list[i].draw(hDC);
+            figure_list[i]->draw(hDC);
         window_interface.draw(hWnd);
 
 
@@ -92,36 +93,36 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
         PostQuitMessage(NULL);
         break;
     case WM_MOUSEMOVE:
-        if (figure_index!=-1 && figure_list[figure_index].is_move())
-            figure_list[figure_index].update(hWnd);
+        if (figure_index!=-1 && figure_list[figure_index]->is_move())
+            figure_list[figure_index]->update(hWnd);
 
-        if (figure_index != -1 && figure_list[figure_index].is_rotate())
-            figure_list[figure_index].rotate(hWnd);
+        if (figure_index != -1 && figure_list[figure_index]->is_rotate())
+            figure_list[figure_index]->rotate(hWnd);
 
-        if (figure_index != -1 && figure_list[figure_index].is_resize())
-            figure_list[figure_index].resize(hWnd);
+        if (figure_index != -1 && figure_list[figure_index]->is_resize())
+            figure_list[figure_index]->resize(hWnd);
 
         if (fabric.is_draw())
             fabric.draw_focus(hWnd);
 
         if (figure_index != -1)
-            figure_list[figure_index].set_prev_cords(hWnd);
+            figure_list[figure_index]->set_prev_cords(hWnd);
             
         break;
     case WM_LBUTTONDBLCLK://WM_RBUTTONDOWN:
         for (int i = 0; i < figure_list.size(); i++)
         {
             int prev_index = figure_index;
-            if (figure_list[i].select(hWnd))
+            if (figure_list[i]->select(hWnd))
             {
                 if (figure_index != -1 && figure_index != i)
-                    figure_list[figure_index].stop_select();
+                    figure_list[figure_index]->stop_select();
                 figure_index = i;
-                figure_list[i].init(hWnd);
+                figure_list[i]->init(hWnd);
             }
            
             if(prev_index!=-1)
-                figure_list[prev_index].init(hWnd);
+                figure_list[prev_index]->init(hWnd);
         }
 
 
@@ -129,7 +130,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     case WM_LBUTTONDOWN:
         create_flag = true;
         for (int i =0; i < figure_list.size(); i++)
-            if (figure_list[i].check_position(hWnd))
+            if (figure_list[i]->check_position(hWnd))
             {
                 create_flag = false;
                 break;
@@ -142,33 +143,33 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     case WM_LBUTTONUP:
     {
 
-        if (figure_index != -1 && figure_list[figure_index].is_move())
+        if (figure_index != -1 && figure_list[figure_index]->is_move())
         {
-            figure_list[figure_index].stop_move();
+            figure_list[figure_index]->stop_move();
             SetCursor(scur);
         }
-        else if (figure_index != -1 && figure_list[figure_index].is_rotate())
+        else if (figure_index != -1 && figure_list[figure_index]->is_rotate())
         {
-            figure_list[figure_index].stop_rotate();
+            figure_list[figure_index]->stop_rotate();
             SetCursor(scur);
         }
-        else if (figure_index != -1 && figure_list[figure_index].is_resize())
+        else if (figure_index != -1 && figure_list[figure_index]->is_resize())
         {
-            figure_list[figure_index].stop_resize();
+            figure_list[figure_index]->stop_resize();
             SetCursor(scur);
         }
         else if (create_flag)
         {
             fabric.set_width_height(hWnd);
-            Figure new_pict = fabric.create_figure(hWnd);
+            Figure *new_pict = fabric.create_figure(hWnd,figure_class);
             figure_list.push_back(new_pict);
 
-            new_pict.init(hWnd);
+            new_pict->init(hWnd);
         }
         
         BOOL select_flag = true;
         for (int i = 0; i < figure_list.size(); i++)
-            if (figure_list[i].is_selected())
+            if (figure_list[i]->is_selected())
                 select_flag = false;
 
         if (select_flag)
@@ -452,6 +453,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
             set_color_flag = false;
             window_interface.set_pen();
             break;
+        case 1300:
+            set_color_flag = false;
+            figure_class = "rect";
+            break;
+        case 1301:
+            set_color_flag = false;
+            figure_class = "ellips";
+            break;
+
         }
 
         if (set_color_flag)
@@ -464,9 +474,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 
             if (figure_index != -1)
                 if (pen_or_brus)
-                    figure_list[figure_index].set_color(color, hWnd);
+                    figure_list[figure_index]->set_color(color, hWnd);
                 else
-                    figure_list[figure_index].set_border_color(color, hWnd);
+                    figure_list[figure_index]->set_border_color(color, hWnd);
         }
 
         InvalidateRect(hWnd, NULL, TRUE);
@@ -474,7 +484,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
         break;
     }
     case WM_SETCURSOR:
-        if (figure_index != -1 && !figure_list[figure_index].is_move())
+        if (figure_index != -1 && !figure_list[figure_index]->is_move())
             return DefWindowProc(hWnd, uMsg, wParam, lParam);
         break;
     default:

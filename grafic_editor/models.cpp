@@ -1,8 +1,8 @@
 #include "models.h"
 #include <fstream>
-#include <string>
 #include <vector>
 #include <algorithm>
+
 
 bool comparator_max_min(double* a, double* b)
 {
@@ -19,6 +19,11 @@ Figure::Figure(){}
 
 Figure::Figure(HDC hDC, int x, int y, int width,int height, COLOR color, COLOR border_color)
 {
+    cords_x = new double[4];
+    cords_y = new double[4];
+
+    start_cords_x = new double[4];
+    start_cords_y = new double[4];
 
     this->color.R = color.R;
     this->color.G = color.G;
@@ -85,18 +90,18 @@ void Figure::draw(HDC hDC)
     SelectObject(hDC, pen);
    
     BeginPath(hDC);
+
     MoveToEx(hDC, round(cords_x[0]), round(cords_y[0]), nullptr);
-    LineTo(hDC, round(cords_x[1]), round(cords_y[1]));
-    LineTo(hDC, round(cords_x[2]), round(cords_y[2]));
-    LineTo(hDC, round(cords_x[3]), round(cords_y[3]));
+    for(int i =1; i< _msize(cords_x) / sizeof(cords_x[0]);i++)
+        LineTo(hDC, round(cords_x[i]), round(cords_y[i]));
     LineTo(hDC, round(cords_x[0]), round(cords_y[0]));
+
     EndPath(hDC);
     FillPath(hDC);
 
     MoveToEx(hDC, round(cords_x[0]), round(cords_y[0]), nullptr);
-    LineTo(hDC, round(cords_x[1]), round(cords_y[1]));
-    LineTo(hDC, round(cords_x[2]), round(cords_y[2]));
-    LineTo(hDC, round(cords_x[3]), round(cords_y[3]));
+   for(int i =1; i< _msize(cords_x) / sizeof(cords_x[0]);i++)
+        LineTo(hDC, round(cords_x[i]), round(cords_y[i]));
     LineTo(hDC, round(cords_x[0]), round(cords_y[0]));
 
     if(select_flag)
@@ -192,7 +197,17 @@ void Figure::rotate(HWND hWnd)
 
     a = a * index;
     rotate_angle += a;
-    for (int i = 0; i < 4; i++)
+    calculate_rotation();
+   
+
+    
+
+    //InvalidateRect(hWnd, &rc, TRUE);
+}
+
+void Figure::calculate_rotation()
+{
+    for (int i = 0; i < _msize(cords_x) / sizeof(cords_x[0]); i++)
     {
         double  relative_x = start_cords_x[i] - center.x;
         double  relative_y = start_cords_y[i] - center.y;
@@ -213,11 +228,11 @@ void Figure::rotate(HWND hWnd)
         else if (relative_x >= 0 && relative_y < 0)
         {
             b = rotate_angle + atan(abs(double(relative_x) / double(relative_y)));
-            b += 3.14*3/2;
+            b += 3.14 * 3 / 2;
         }
         else if (relative_x > 0 && relative_y >= 0)
             b = rotate_angle + atan(abs(double(relative_y) / double(relative_x)));
-       
+
 
         relative_x = p * cos(b);
         relative_y = p * sin(b);
@@ -228,7 +243,7 @@ void Figure::rotate(HWND hWnd)
 
     int max_x = cords_x[0], min_x = cords_x[0], max_y = cords_y[0], min_y = cords_y[0];
 
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < _msize(cords_x) / sizeof(cords_x[0]); i++)
     {
         if (max_x < cords_x[i])
             max_x = cords_x[i];
@@ -240,23 +255,19 @@ void Figure::rotate(HWND hWnd)
             min_y = cords_y[i];
     }
 
-    update_cords_x[0] = min_x-half_side;
-    update_cords_y[0] = min_y-half_side;
+    update_cords_x[0] = min_x - half_side;
+    update_cords_y[0] = min_y - half_side;
 
-    update_cords_x[1] = max_x+half_side;
-    update_cords_y[1] = min_y-half_side;
+    update_cords_x[1] = max_x + half_side;
+    update_cords_y[1] = min_y - half_side;
 
-    update_cords_x[2] = max_x+half_side;
-    update_cords_y[2] = max_y+half_side;
+    update_cords_x[2] = max_x + half_side;
+    update_cords_y[2] = max_y + half_side;
 
-    update_cords_x[3] = min_x-half_side;
-    update_cords_y[3] = max_y+half_side;
+    update_cords_x[3] = min_x - half_side;
+    update_cords_y[3] = max_y + half_side;
     prev.x = pt.x;
     prev.y = pt.y;
-
-    
-
-    //InvalidateRect(hWnd, &rc, TRUE);
 }
 
 void Figure::update(HWND hWnd)
@@ -272,14 +283,17 @@ void Figure::update(HWND hWnd)
     int y = prev.y - pt.y;
     prev.x = pt.x;
     prev.y = pt.y;
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < _msize(cords_x) / sizeof(cords_x[0]); i++)
     {
         cords_x[i] -= x;
         cords_y[i] -= y;
 
         start_cords_x[i] -= x;
         start_cords_y[i] -= y;
+    }
 
+    for (int i = 0; i < 4; i++)
+    {
         update_cords_x[i] -= x;
         update_cords_y[i] -= y;
     }
@@ -314,7 +328,7 @@ void Figure::resize(HWND hWnd)
     std::vector<double*> start_left_y_cords;
     std::vector<double*> start_right_y_cords;
 
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < _msize(cords_x)/sizeof(cords_x[0]); i++)
     {
         if (cords_y[i] - center.y > 0)
         {
@@ -328,7 +342,7 @@ void Figure::resize(HWND hWnd)
         }
     }
 
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < _msize(cords_x) / sizeof(cords_x[0]); i++)
     {
         if (cords_x[i] - center.x > 0)
         {
@@ -683,7 +697,7 @@ void Figure::stop_resize()
 {
     rotate_angle = 0;
 
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < _msize(cords_x) / sizeof(cords_x[0]); i++)
     {
         start_cords_x[i] = cords_x[i];
         start_cords_y[i] = cords_y[i];
@@ -708,6 +722,241 @@ void Figure::set_border_color(COLOR color, HWND hWnd)
     init(hWnd);
 }
 
+
+Elipse::Elipse(HDC hDC, int x, int y, int width, int height, COLOR color, COLOR border_color)
+{
+    this->height = height;
+    this->width = width;
+
+    cords_x = new double[96];
+    cords_y = new double[96];
+
+    start_cords_x = new double[96];
+    start_cords_y = new double[96];
+
+    this->color.R = color.R;
+    this->color.G = color.G;
+    this->color.B = color.B;
+
+    this->border_color.R = border_color.R;
+    this->border_color.G = border_color.G;
+    this->border_color.B = border_color.B;
+    
+    center.x = x + int(width / 2);
+    center.y = y + int(height / 2);
+    
+  
+    calculate_cords();
+
+    update_cords_x[0] = x - half_side;
+    update_cords_y[0] = y - half_side;
+
+    update_cords_x[1] = x + width + half_side;
+    update_cords_y[1] = y - half_side;
+
+    update_cords_x[2] = x + width + half_side;
+    update_cords_y[2] = y + height + half_side;
+
+    update_cords_x[3] = x - half_side;
+    update_cords_y[3] = y + height + half_side;
+
+    prev.x = x;
+    prev.y = y;
+
+    
+
+}
+
+void Elipse::calculate_cords()
+{
+    int size = _msize(cords_x) / sizeof(cords_x[0]);
+    double delta = double(width / 6) / (size / 8);
+    double delta_x = center.x;
+    double delta_y = center.y;
+    double delta_sum = 0;
+
+    for (int i = 1; i < size / 8; i++)
+    {
+        delta_sum += delta;
+        cords_x[i] = (-width) / 2 + delta_sum;
+        start_cords_x[i] = (-width) / 2 + delta_sum;
+
+        cords_x[size - i] = (-width) / 2 + delta_sum;
+        start_cords_x[size - i] = (-width) / 2 + delta_sum;
+
+        cords_y[i] = delta_y - sqrt((pow(double(height) / 2, 2) / pow(double(width) / 2, 2)) * (pow(double(width) / 2, 2) - pow(cords_x[i], 2)));
+        start_cords_y[i] = delta_y - sqrt((pow(double(height) / 2, 2) / pow(double(width) / 2, 2)) * (pow(double(width) / 2, 2) - pow(cords_x[i], 2)));
+
+        cords_y[size - i] = delta_y + sqrt((pow(double(height) / 2, 2) / pow(double(width) / 2, 2)) * (pow(double(width) / 2, 2) - pow(cords_x[i], 2)));
+        start_cords_y[size - i] = delta_y + sqrt((pow(double(height) / 2, 2) / pow(double(width) / 2, 2)) * (pow(double(width) / 2, 2) - pow(cords_x[i], 2)));
+
+        cords_x[i] += delta_x;
+        start_cords_x[i] += delta_x;
+
+        cords_x[size - i] += delta_x;
+        start_cords_x[size - i] += delta_x;
+
+    }
+    delta = double((width / 3) * 2) / (size / 4);
+    for (int i = size / 8; i < size / 8 + size / 4; i++)
+    {
+        delta_sum += delta;
+
+        cords_x[i] = (-width) / 2 + delta_sum;
+        start_cords_x[i] = (-width) / 2 + delta_sum;
+
+        cords_x[size - i] = (-width) / 2 + delta_sum;
+        start_cords_x[size - i] = (-width) / 2 + delta_sum;
+
+        cords_y[i] = delta_y - sqrt((pow(double(height) / 2, 2) / pow(double(width) / 2, 2)) * (pow(double(width) / 2, 2) - pow(cords_x[i], 2)));
+        start_cords_y[i] = delta_y - sqrt((pow(double(height) / 2, 2) / pow(double(width) / 2, 2)) * (pow(double(width) / 2, 2) - pow(cords_x[i], 2)));
+
+        cords_y[size - i] = delta_y + sqrt((pow(double(height) / 2, 2) / pow(double(width) / 2, 2)) * (pow(double(width) / 2, 2) - pow(cords_x[i], 2)));
+        start_cords_y[size - i] = delta_y + sqrt((pow(double(height) / 2, 2) / pow(double(width) / 2, 2)) * (pow(double(width) / 2, 2) - pow(cords_x[i], 2)));
+
+        cords_x[i] += delta_x;
+        start_cords_x[i] += delta_x;
+
+        cords_x[size - i] += delta_x;
+        start_cords_x[size - i] += delta_x;
+
+    }
+
+    delta = double(width / 6) / (size / 8);
+    for (int i = size / 8 + size / 4; i < size / 2; i++)
+    {
+        delta_sum += delta;
+
+        cords_x[i] = (-width) / 2 + delta_sum;
+        start_cords_x[i] = (-width) / 2 + delta_sum;
+
+        cords_x[size - i] = (-width) / 2 + delta_sum;
+        start_cords_x[size - i] = (-width) / 2 + delta_sum;
+
+        cords_y[i] = delta_y - sqrt((pow(double(height) / 2, 2) / pow(double(width) / 2, 2)) * (pow(double(width) / 2, 2) - pow(cords_x[i], 2)));
+        start_cords_y[i] = delta_y - sqrt((pow(double(height) / 2, 2) / pow(double(width) / 2, 2)) * (pow(double(width) / 2, 2) - pow(cords_x[i], 2)));
+
+        cords_y[size - i] = delta_y + sqrt((pow(double(height) / 2, 2) / pow(double(width) / 2, 2)) * (pow(double(width) / 2, 2) - pow(cords_x[i], 2)));
+        start_cords_y[size - i] = delta_y + sqrt((pow(double(height) / 2, 2) / pow(double(width) / 2, 2)) * (pow(double(width) / 2, 2) - pow(cords_x[i], 2)));
+
+        cords_x[i] += delta_x;
+        start_cords_x[i] += delta_x;
+
+        cords_x[size - i] += delta_x;
+        start_cords_x[size - i] += delta_x;
+
+    }
+
+
+    cords_x[0] = -width / 2;
+    start_cords_x[0] = -width / 2;
+
+    cords_y[0] = delta_y - sqrt((pow(double(height) / 2, 2) / pow(double(width) / 2, 2)) * (pow(double(width) / 2, 2) - pow(cords_x[0], 2)));
+    start_cords_y[0] = delta_y - sqrt((pow(double(height) / 2, 2) / pow(double(width) / 2, 2)) * (pow(double(width) / 2, 2) - pow(cords_x[0], 2)));
+
+    cords_x[0] += delta_x;
+    start_cords_x[0] += delta_x;
+
+
+    cords_x[size / 2] = width / 2;
+    start_cords_x[size / 2] = width / 2;
+
+    cords_y[size / 2] = delta_y - sqrt((pow(double(height) / 2, 2) / pow(double(width) / 2, 2)) * (pow(double(width) / 2, 2) - pow(cords_x[size / 2], 2)));
+    start_cords_y[size / 2] = delta_y - sqrt((pow(double(height) / 2, 2) / pow(double(width) / 2, 2)) * (pow(double(width) / 2, 2) - pow(cords_x[size / 2], 2)));
+
+
+    cords_x[size / 2] += delta_x;
+    start_cords_x[size / 2] += delta_x;
+}
+
+void  Elipse::resize(HWND hWnd)
+{
+    RECT rc;
+    GetCursorPos(&pt);
+    ScreenToClient(hWnd, &pt);
+    int delta_x = pt.x - prev.x;
+    int delta_y = pt.y - prev.y;
+
+    SetRect(&rc, update_cords_x[0] - 1, update_cords_y[0] - 1, update_cords_x[2] + 1, update_cords_y[2] + 1);
+    InvalidateRect(hWnd, &rc, TRUE);
+
+
+    switch (resize_index)
+    {
+
+    case 0:
+    {
+        update_cords_x[0] += delta_x;
+        update_cords_x[3] += delta_x;
+
+        width -= delta_x;
+
+        if (delta_x % 2 == 0)
+            center.x += delta_x / 2;
+        else
+        {
+            center.x += (delta_x + center_control_x) / 2;
+            center_control_x *= -1;
+        }
+        break;
+    }
+    case 1:
+    {
+        update_cords_x[2] += delta_x;
+        update_cords_x[1] += delta_x;
+
+        width += delta_x;
+        if (delta_x % 2 == 0)
+            center.x += delta_x / 2;
+        else
+        {
+            center.x += (delta_x + center_control_x) / 2;
+            center_control_x *= -1;
+        }
+        break;
+    }
+    case 2:
+    {
+        update_cords_y[0] += delta_y;
+        update_cords_y[1] += delta_y;
+
+        height -= delta_y;
+        if (delta_y % 2 == 0)
+            center.y += delta_y / 2;
+        else
+        {
+            center.y += (delta_y + center_control_y) / 2;
+            center_control_y *= -1;
+        }
+        break;
+    }
+    case 3:
+    {
+        update_cords_y[2] += delta_y;
+        update_cords_y[3] += delta_y;
+
+        height += delta_y;
+        if (delta_y % 2 == 0)
+            center.y += delta_y / 2;
+        else
+        {
+            center.y += (delta_y + center_control_y) / 2;
+            center_control_y *= -1;
+        }
+        break;
+    }
+
+    }
+    calculate_cords();
+    if(rotate_angle!=0)
+        calculate_rotation();
+}
+
+void  Elipse::stop_resize()
+{
+    resize_flag = false;
+    resize_index = -1;
+}
 
 /*std::ofstream fout("log.txt", std::ios::app);
     fout << pos.x<<" "<< prev.x<<" "<< pt.x<<" "<< delta.x<<"\n";
