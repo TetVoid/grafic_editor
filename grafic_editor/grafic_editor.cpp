@@ -69,7 +69,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     static int brush_index = 9;
     static int border_brush_index = 0;
     static BOOL pen_or_brus = true;
-    static std::string figure_class = "rect";
 
     COLOR color;
 
@@ -161,10 +160,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
         else if (create_flag)
         {
             fabric.set_width_height(hWnd);
-            Figure *new_pict = fabric.create_figure(hWnd,figure_class);
-            figure_list.push_back(new_pict);
+            if (!fabric.is_draw())
+            {
+                Figure* new_pict = fabric.create_figure(hWnd);
+                figure_list.push_back(new_pict);
 
-            new_pict->init(hWnd);
+                new_pict->init(hWnd);
+            }
         }
         
         BOOL select_flag = true;
@@ -454,13 +456,27 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
             window_interface.set_pen();
             break;
         case 1300:
+        {
             set_color_flag = false;
-            figure_class = "rect";
+            std::string figure_class = "rect";
+            fabric.set_figure_class(figure_class);
             break;
+        }
         case 1301:
+        {
             set_color_flag = false;
-            figure_class = "ellips";
+            std::string figure_class = "ellips";
+            fabric.set_figure_class(figure_class);
             break;
+        }
+
+        case 1302:
+        {
+            set_color_flag = false;
+            std::string figure_class = "triangle";
+            fabric.set_figure_class(figure_class);
+            break;
+        }
 
         }
 

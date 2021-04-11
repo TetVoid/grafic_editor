@@ -291,9 +291,16 @@ void MainWindow:: init_color_buttoms()
         (HINSTANCE)GetWindowLong(hMainWnd, GWL_HINSTANCE),
         NULL);
 
-    
+    HWND triangle_buttom = CreateWindow(L"BUTTON", L"Triangle", WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
 
-
+        start_x - 310,         // starting x position 
+        start_y,         // starting y position 
+        60,        // button width 
+        40,        // button height 
+        hMainWnd,
+        (HMENU)1302,
+        (HINSTANCE)GetWindowLong(hMainWnd, GWL_HINSTANCE),
+        NULL);
 }
 
 MainWindow::~MainWindow()

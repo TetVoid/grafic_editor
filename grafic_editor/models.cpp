@@ -958,6 +958,184 @@ void  Elipse::stop_resize()
     resize_index = -1;
 }
 
+Triangle::Triangle(HDC hDC, int* x, int* y, COLOR color, COLOR border_color)
+{
+    this->color.R = color.R;
+    this->color.G = color.G;
+    this->color.B = color.B;
+
+    this->border_color.R = border_color.R;
+    this->border_color.G = border_color.G;
+    this->border_color.B = border_color.B;
+    
+    cords_x = new double[3];
+    cords_y = new double[3];
+
+    start_cords_x = new double[3];
+    start_cords_y = new double[3];
+
+    for(int i = 0; i < 3; i++)
+    {
+        cords_x[i] = x[i];
+        cords_y[i] = y[i];
+
+        start_cords_x[i] = x[i];
+        start_cords_y[i] = y[i];
+    }
+
+    int max_x = x[0], max_y = y[0], min_x = x[0], min_y = y[0];
+    for (int i = 0; i < 3; i++)
+    {
+        if (max_x < x[i])
+            max_x = x[i];
+        if (min_x > x[i])
+            min_x = x[i];
+        if (max_y < y[i])
+            max_y = y[i];
+        if (min_y > y[i])
+            min_y = y[i];
+    }
+    center.x = min_x + int((max_x-min_x) / 2);
+    center.y = min_y + int((max_x-min_x) / 2);
+
+    update_cords_x[0] = min_x - half_side;
+    update_cords_y[0] = min_y - half_side;
+
+    update_cords_x[1] = max_x + width + half_side;
+    update_cords_y[1] = min_y - half_side;
+
+    update_cords_x[2] = max_x + width + half_side;
+    update_cords_y[2] = max_y + height + half_side;
+
+    update_cords_x[3] = min_x - half_side;
+    update_cords_y[3] = max_y + height + half_side;
+
+    prev.x = min_x;
+    prev.y = min_y;
+}
+
+void Triangle::resize(HWND hWnd)
+{
+    RECT rc;
+    GetCursorPos(&pt);
+    ScreenToClient(hWnd, &pt);
+    int delta_x = pt.x - prev.x;
+    int delta_y = pt.y - prev.y;
+
+    SetRect(&rc, update_cords_x[0] - 1, update_cords_y[0] - 1, update_cords_x[2] + 1, update_cords_y[2] + 1);
+    InvalidateRect(hWnd, &rc, TRUE);
+    int index_min_x=0;
+    int index_max_x=0;
+    int index_min_y=0;
+    int index_max_y=0;
+
+    switch (resize_index)
+    {
+
+    case 0:
+    {
+        update_cords_x[0] += delta_x;
+        update_cords_x[3] += delta_x;
+
+        for (int i = 0; i < 3; i++)
+            if (cords_x[index_max_x] < cords_x[i])
+                index_max_x = i;
+        for (int i = 0; i < 3; i++)
+        {
+            if (i == index_max_x)
+                continue;
+            cords_x[i] += delta_x;
+            start_cords_x[i] += delta_x;
+        }
+
+        if (delta_x % 2 == 0)
+            center.x += delta_x / 2;
+        else
+        {
+            center.x += (delta_x + center_control_x) / 2;
+            center_control_x *= -1;
+        }
+        break;
+    }
+    case 1:
+    {
+        update_cords_x[2] += delta_x;
+        update_cords_x[1] += delta_x;
+
+        for (int i = 0; i < 3; i++)
+            if (cords_x[index_min_x] > cords_x[i])
+                index_min_x = i;
+        for (int i = 0; i < 3; i++)
+        {
+            if (i == index_min_x)
+                continue;
+            cords_x[i] += delta_x;
+            start_cords_x[i] += delta_x;
+        }
+
+        if (delta_x % 2 == 0)
+            center.x += delta_x / 2;
+        else
+        {
+            center.x += (delta_x + center_control_x) / 2;
+            center_control_x *= -1;
+        }
+        break;
+    }
+    case 2:
+    {
+        update_cords_y[0] += delta_y;
+        update_cords_y[1] += delta_y;
+
+        for (int i = 0; i < 3; i++)
+            if (cords_y[index_max_y] < cords_y[i])
+                index_max_y = i;
+        for (int i = 0; i < 3; i++)
+        {
+            if (i == index_max_y)
+                continue;
+            cords_y[i] += delta_y;
+            start_cords_y[i] += delta_y;
+        }
+
+        if (delta_y % 2 == 0)
+            center.y += delta_y / 2;
+        else
+        {
+            center.y += (delta_y + center_control_y) / 2;
+            center_control_y *= -1;
+        }
+        break;
+    }
+    case 3:
+    {
+        update_cords_y[2] += delta_y;
+        update_cords_y[3] += delta_y;
+
+        for (int i = 0; i < 3; i++)
+            if (cords_y[index_min_y] > cords_y[i])
+                index_min_y = i;
+        for (int i = 0; i < 3; i++)
+        {
+            if (i == index_min_y)
+                continue;
+            cords_y[i] += delta_y;
+            start_cords_y[i] += delta_y;
+        }
+
+        if (delta_y % 2 == 0)
+            center.y += delta_y / 2;
+        else
+        {
+            center.y += (delta_y + center_control_y) / 2;
+            center_control_y *= -1;
+        }
+        break;
+    }
+
+    }
+}
+
 /*std::ofstream fout("log.txt", std::ios::app);
     fout << pos.x<<" "<< prev.x<<" "<< pt.x<<" "<< delta.x<<"\n";
     fout.close();*/

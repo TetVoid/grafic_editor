@@ -63,8 +63,15 @@ class Elipse : public Figure
 {
 public:
 	Elipse(HDC hDC, int x, int y, int width, int height, COLOR color, COLOR border_color);
-	void virtual resize(HWND hWnd);
+	void resize(HWND hWnd);
 	void stop_resize();
 private:
 	void calculate_cords();
+};
+
+class Triangle : public Figure
+{
+public:
+	Triangle(HDC hDC, int *x, int *y, COLOR color, COLOR border_color);
+	void resize(HWND hWnd);
 };

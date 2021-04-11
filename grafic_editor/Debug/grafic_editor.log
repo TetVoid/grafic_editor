@@ -1,9 +1,29 @@
-﻿  grafic_editor.cpp
-C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\grafic_editor.cpp(84,25): warning C4018: <: несоответствие типов со знаком и без знака
-C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\grafic_editor.cpp(113,27): warning C4018: <: несоответствие типов со знаком и без знака
-C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\grafic_editor.cpp(132,26): warning C4018: <: несоответствие типов со знаком и без знака
-C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\grafic_editor.cpp(171,27): warning C4018: <: несоответствие типов со знаком и без знака
-C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\grafic_editor.cpp(65,10): warning C4101: rect: неиспользованная локальная переменная
-  main_window.cpp
-  Создание кода...
+﻿  figure_fabric.cpp
+C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\figure_fabric.cpp(153,41): warning C4244: аргумент: преобразование "double" в "int", возможна потеря данных
+C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\figure_fabric.cpp(153,22): warning C4244: аргумент: преобразование "double" в "int", возможна потеря данных
+C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\figure_fabric.cpp(154,21): warning C4018: <: несоответствие типов со знаком и без знака
+C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\figure_fabric.cpp(155,40): warning C4244: аргумент: преобразование "double" в "int", возможна потеря данных
+C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\figure_fabric.cpp(155,21): warning C4244: аргумент: преобразование "double" в "int", возможна потеря данных
+C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\figure_fabric.cpp(156,39): warning C4244: аргумент: преобразование "double" в "int", возможна потеря данных
+C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\figure_fabric.cpp(156,20): warning C4244: аргумент: преобразование "double" в "int", возможна потеря данных
+C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\figure_fabric.cpp(161,41): warning C4244: аргумент: преобразование "double" в "int", возможна потеря данных
+C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\figure_fabric.cpp(161,22): warning C4244: аргумент: преобразование "double" в "int", возможна потеря данных
+C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\figure_fabric.cpp(162,21): warning C4018: <: несоответствие типов со знаком и без знака
+C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\figure_fabric.cpp(163,40): warning C4244: аргумент: преобразование "double" в "int", возможна потеря данных
+C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\figure_fabric.cpp(163,21): warning C4244: аргумент: преобразование "double" в "int", возможна потеря данных
+C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\figure_fabric.cpp(164,39): warning C4244: аргумент: преобразование "double" в "int", возможна потеря данных
+C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\figure_fabric.cpp(164,20): warning C4244: аргумент: преобразование "double" в "int", возможна потеря данных
+C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\figure_fabric.cpp(178,44): warning C4244: аргумент: преобразование "double" в "int", возможна потеря данных
+C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\figure_fabric.cpp(178,22): warning C4244: аргумент: преобразование "double" в "int", возможна потеря данных
+C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\figure_fabric.cpp(180,43): warning C4244: аргумент: преобразование "double" в "int", возможна потеря данных
+C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\figure_fabric.cpp(180,21): warning C4244: аргумент: преобразование "double" в "int", возможна потеря данных
+C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\figure_fabric.cpp(181,42): warning C4244: аргумент: преобразование "double" в "int", возможна потеря данных
+C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\figure_fabric.cpp(181,20): warning C4244: аргумент: преобразование "double" в "int", возможна потеря данных
+C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\figure_fabric.cpp(186,44): warning C4244: аргумент: преобразование "double" в "int", возможна потеря данных
+C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\figure_fabric.cpp(186,22): warning C4244: аргумент: преобразование "double" в "int", возможна потеря данных
+C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\figure_fabric.cpp(188,43): warning C4244: аргумент: преобразование "double" в "int", возможна потеря данных
+C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\figure_fabric.cpp(188,21): warning C4244: аргумент: преобразование "double" в "int", возможна потеря данных
+C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\figure_fabric.cpp(189,42): warning C4244: аргумент: преобразование "double" в "int", возможна потеря данных
+C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\figure_fabric.cpp(189,20): warning C4244: аргумент: преобразование "double" в "int", возможна потеря данных
+C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\figure_fabric.cpp(101,7): warning C4101: rc: неиспользованная локальная переменная
   grafic_editor.vcxproj -> C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\Debug\grafic_editor.exe
