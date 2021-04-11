@@ -301,6 +301,32 @@ void MainWindow:: init_color_buttoms()
         (HMENU)1302,
         (HINSTANCE)GetWindowLong(hMainWnd, GWL_HINSTANCE),
         NULL);
+
+
+
+    HWND choose_stile = CreateWindow(L"BUTTON", L"", WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
+
+        start_x - 50,         // starting x position 
+        start_y+60,         // starting y position 
+        40,        // button width 
+        10,        // button height 
+        hMainWnd,
+        (HMENU)1400,
+        (HINSTANCE)GetWindowLong(hMainWnd, GWL_HINSTANCE),
+        NULL);
+
+    HWND choose_pen_stile = CreateWindow(L"BUTTON", L"", WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
+
+        start_x - 100,         // starting x position 
+        start_y + 60,         // starting y position 
+        40,        // button width 
+        10,        // button height 
+        hMainWnd,
+        (HMENU)1500,
+        (HINSTANCE)GetWindowLong(hMainWnd, GWL_HINSTANCE),
+        NULL);
+
+
 }
 
 MainWindow::~MainWindow()

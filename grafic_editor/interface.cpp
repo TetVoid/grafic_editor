@@ -38,9 +38,9 @@ void Interface::draw(HWND hWnd)
     RECT rc;
     HBRUSH brush = CreateSolidBrush(RGB(101, 200, 255));
     if (pen_or_brush)
-        SetRect(&rc, start_x - 52, start_y-3, start_x - 4, start_y + 65);
+        SetRect(&rc, start_x - 52, start_y-3, start_x - 4, start_y + 75);
     else
-        SetRect(&rc, start_x - 102, start_y-3, start_x - 54, start_y + 65);
+        SetRect(&rc, start_x - 102, start_y-3, start_x - 54, start_y + 75);
     SelectObject(dc, brush);
 
     FillRect(dc, &rc, brush);

@@ -17,8 +17,10 @@ bool comparator_min_max(double* a, double* b)
 
 Figure::Figure(){}
 
-Figure::Figure(HDC hDC, int x, int y, int width,int height, COLOR color, COLOR border_color)
+Figure::Figure(HDC hDC, int x, int y, int width, int height, COLOR color, int brush_stile, COLOR border_color, int pen_style)
 {
+    this->pen_style = pen_style;
+    this->brush_stile = brush_stile;
     cords_x = new double[4];
     cords_y = new double[4];
 
@@ -83,9 +85,9 @@ Figure::~Figure()
 
 void Figure::draw(HDC hDC)
 {
-    HBRUSH brush = CreateSolidBrush(RGB(color.R, color.G, color.B));
+    HBRUSH brush = CreateHatchBrush(brush_stile,RGB(color.R, color.G, color.B));
 
-    HPEN pen = CreatePen(PS_SOLID,2,RGB(border_color.R, border_color.G, border_color.B));
+    HPEN pen = CreatePen(pen_style,2,RGB(border_color.R, border_color.G, border_color.B));
     SelectObject(hDC, brush);
     SelectObject(hDC, pen);
    
@@ -722,9 +724,21 @@ void Figure::set_border_color(COLOR color, HWND hWnd)
     init(hWnd);
 }
 
-
-Elipse::Elipse(HDC hDC, int x, int y, int width, int height, COLOR color, COLOR border_color)
+void Figure::set_brush_style(int style)
 {
+    brush_stile = style;
+}
+
+
+void Figure::set_pen_style(int style)
+{
+    pen_style = style;
+}
+
+Elipse::Elipse(HDC hDC, int x, int y, int width, int height, COLOR color,int style, COLOR border_color, int pen_style)
+{
+    this->pen_style = pen_style;
+    brush_stile = style;
     this->height = height;
     this->width = width;
 
@@ -958,8 +972,10 @@ void  Elipse::stop_resize()
     resize_index = -1;
 }
 
-Triangle::Triangle(HDC hDC, int* x, int* y, COLOR color, COLOR border_color)
+Triangle::Triangle(HDC hDC, int* x, int* y, COLOR color,int style, COLOR border_color, int pen_style)
 {
+    this->pen_style = pen_style;
+    brush_stile = style;
     this->color.R = color.R;
     this->color.G = color.G;
     this->color.B = color.B;

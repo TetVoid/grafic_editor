@@ -13,7 +13,7 @@ class Figure
 {
 public:
 	Figure();
-	Figure(HDC hDC, int x, int y, int width, int height,COLOR color, COLOR border_color);
+	Figure(HDC hDC, int x, int y, int width, int height,COLOR color,int brush_stile, COLOR border_color, int pen_style);
 	~Figure();
 	void draw(HDC hDC);
 	void update(HWND hwnd);
@@ -29,6 +29,8 @@ public:
 
 	void set_color(COLOR color, HWND hWnd);
 	void set_border_color(COLOR color, HWND hWnd);
+	void set_brush_style(int style);
+	void set_pen_style(int style);
 
 	BOOL check_position(HWND hwnd);
 	BOOL select(HWND hWnd);
@@ -42,6 +44,8 @@ protected:
 	POINT center;
 	COLOR color;
 	COLOR border_color;
+	int brush_stile = 7;
+	int pen_style = PS_INSIDEFRAME;
 	double *start_cords_x, *start_cords_y;
 	double *cords_x, *cords_y;
 	double update_cords_x[4], update_cords_y[4];
@@ -62,7 +66,7 @@ protected:
 class Elipse : public Figure
 {
 public:
-	Elipse(HDC hDC, int x, int y, int width, int height, COLOR color, COLOR border_color);
+	Elipse(HDC hDC, int x, int y, int width, int height, COLOR color,int style, COLOR border_color, int pen_style);
 	void resize(HWND hWnd);
 	void stop_resize();
 private:
@@ -72,6 +76,6 @@ private:
 class Triangle : public Figure
 {
 public:
-	Triangle(HDC hDC, int *x, int *y, COLOR color, COLOR border_color);
+	Triangle(HDC hDC, int *x, int *y, COLOR color, int style, COLOR border_color, int pen_style);
 	void resize(HWND hWnd);
 };

@@ -14,6 +14,8 @@ public:
 	void set_color(COLOR color);
 	void set_border_color(COLOR color);
 	void set_figure_class(std::string figure_class);
+	void set_brush_style(int stile);
+	void set_pen_style(int stile);
 
 private:
 	COLOR color;
@@ -25,6 +27,9 @@ private:
 	int triangle_index = 0;
 	int triangle_x[3];
 	int triangle_y[3];
+
+	int brush_stile = 7;
+	int pen_style = PS_INSIDEFRAME;
 
 	BOOL draw = false;
 	RECT prev_rc;

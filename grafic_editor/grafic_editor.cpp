@@ -71,6 +71,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     static BOOL pen_or_brus = true;
 
     COLOR color;
+    int brush_stile = 7;
+    int pen_style = PS_INSIDEFRAME;
 
     
     static Figure_fabric fabric;
@@ -247,6 +249,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     case WM_COMMAND:
     {
         BOOL set_color_flag = true;
+        BOOL set_brush_stile = false;
+        BOOL set_pen_stile = false;
         switch (LOWORD(wParam))
         {
         case 1010:
@@ -327,7 +331,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
         case 1017:
             color.R = 51;
             color.G = 204;
-            color.B = 155;
+            color.B = 255;
 
 
             if (pen_or_brus)
@@ -477,6 +481,121 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
             fabric.set_figure_class(figure_class);
             break;
         }
+        case 1400:
+        {
+            RECT temp_rc;
+            GetWindowRect(hWnd, &temp_rc);
+            POINT pt;
+             pt.x = (temp_rc.right - temp_rc.left) / 7 * 4;
+             pt.y = 5;
+             ClientToScreen(hWnd, &pt);
+
+            HMENU hPopMenuImage = CreatePopupMenu();
+
+            AppendMenu(hPopMenuImage, MF_STRING, 1401, L"HS_BDIAGONAL");
+            AppendMenu(hPopMenuImage, MF_STRING, 1402, L"HS_CROSS");
+            AppendMenu(hPopMenuImage, MF_STRING, 1403, L"HS_DIAGCROSS");
+            AppendMenu(hPopMenuImage, MF_STRING, 1404, L"HS_FDIAGONAL");
+            AppendMenu(hPopMenuImage, MF_STRING, 1405, L"HS_HORIZONTAL");
+            AppendMenu(hPopMenuImage, MF_STRING, 1406, L"HS_VERTICAL");
+            AppendMenu(hPopMenuImage, MF_STRING, 1407, L"HS_SOLID");
+
+            TrackPopupMenu(hPopMenuImage,
+                TPM_CENTERALIGN | TPM_LEFTBUTTON,
+                pt.x - 50, pt.y + 70, 0, hWnd, NULL);
+
+            DestroyMenu(hPopMenuImage);
+
+        }
+        case 1401:
+            set_brush_stile = true;
+            set_color_flag = false;
+            brush_stile = HS_BDIAGONAL;
+            break;
+        case 1402:
+            set_brush_stile = true;
+            set_color_flag = false;
+            brush_stile = HS_CROSS;
+            break;
+        case 1403:
+            set_brush_stile = true;
+            set_color_flag = false;
+            brush_stile = HS_DIAGCROSS;
+            break;
+        case 1404:
+            set_brush_stile = true;
+            set_color_flag = false;
+            brush_stile = HS_FDIAGONAL;
+            break;
+        case 1405:
+            set_brush_stile = true;
+            set_color_flag = false;
+            brush_stile = HS_HORIZONTAL;
+            break;
+        case 1406:
+            set_brush_stile = true;
+            set_color_flag = false;
+            brush_stile = HS_VERTICAL;
+            break;
+        case 1407:
+            set_brush_stile = true;
+            set_color_flag = false;
+            brush_stile = 7;
+            break;
+
+        case 1500:
+        {
+            RECT temp_rc;
+            GetWindowRect(hWnd, &temp_rc);
+            POINT pt;
+            pt.x = (temp_rc.right - temp_rc.left) / 7 * 4;
+            pt.y = 5;
+            ClientToScreen(hWnd, &pt);
+
+            HMENU hPopMenuImage = CreatePopupMenu();
+
+            AppendMenu(hPopMenuImage, MF_STRING, 1501, L"PS_DASH");
+            AppendMenu(hPopMenuImage, MF_STRING, 1502, L"PS_DOT");
+            AppendMenu(hPopMenuImage, MF_STRING, 1503, L"PS_DASHDOT");
+            AppendMenu(hPopMenuImage, MF_STRING, 1504, L"PS_DASHDOTDOT");
+            AppendMenu(hPopMenuImage, MF_STRING, 1505, L"PS_SOLID");
+
+            TrackPopupMenu(hPopMenuImage,
+                TPM_CENTERALIGN | TPM_LEFTBUTTON,
+                pt.x - 100, pt.y + 70, 0, hWnd, NULL);
+
+            DestroyMenu(hPopMenuImage);
+
+        }
+        case 1501:
+            set_pen_stile = true;
+            set_color_flag = false;
+            pen_style = PS_DASH;
+            break;
+        case 1502:
+            set_pen_stile = true;
+            set_color_flag = false;
+            pen_style = PS_DOT;
+            break;
+        case 1503:
+            set_pen_stile = true;
+            set_color_flag = false;
+            pen_style = PS_DASHDOT;
+            break;
+        case 1504:
+            set_pen_stile = true;
+            set_color_flag = false;
+            pen_style = PS_DASHDOTDOT;
+            break;
+        case 1505:
+            set_pen_stile = true;
+            set_color_flag = false;
+            pen_style = PS_INSIDEFRAME;
+            break;
+        default:
+        {
+            set_color_flag = false;
+        }
 
         }
 
@@ -493,6 +612,22 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
                     figure_list[figure_index]->set_color(color, hWnd);
                 else
                     figure_list[figure_index]->set_border_color(color, hWnd);
+        }
+
+        if (set_brush_stile)
+        {
+            fabric.set_brush_style(brush_stile);
+
+            if (figure_index != -1)
+                    figure_list[figure_index]->set_brush_style(brush_stile);
+        }
+
+        if (set_pen_stile)
+        {
+            fabric.set_pen_style(pen_style);
+
+            if (figure_index != -1)
+                figure_list[figure_index]->set_pen_style(pen_style);
         }
 
         InvalidateRect(hWnd, NULL, TRUE);

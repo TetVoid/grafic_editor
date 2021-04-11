@@ -75,19 +75,19 @@ Figure* Figure_fabric::create_figure(HWND hWnd)
 {
 	Figure* pict = NULL;
 	if (figure_class == "ellips")
-		pict = new Elipse(GetDC(hWnd), x, y, width, height, color, border_color);
+		pict = new Elipse(GetDC(hWnd), x, y, width, height, color, brush_stile, border_color,pen_style);
 	else if (figure_class == "rect")
-		pict = new Figure(GetDC(hWnd), x, y, width, height, color, border_color);
+		pict = new Figure(GetDC(hWnd), x, y, width, height, color,brush_stile, border_color, pen_style);
 	else if (figure_class == "triangle")
-		pict = new Triangle(GetDC(hWnd), triangle_x, triangle_y, color, border_color);
+		pict = new Triangle(GetDC(hWnd), triangle_x, triangle_y, color, brush_stile, border_color, pen_style);
 	return pict;
 }
 
 void Figure_fabric::draw_focus(HWND hWnd)
 {
-	HBRUSH brush = CreateSolidBrush(RGB(color.R, color.G, color.B));
+	HBRUSH brush = CreateHatchBrush(brush_stile,RGB(color.R, color.G, color.B));
 
-	HPEN pen = CreatePen(PS_SOLID, 2, RGB(border_color.R, border_color.G, border_color.B));
+	HPEN pen = CreatePen(pen_style, 2, RGB(border_color.R, border_color.G, border_color.B));
 	SelectObject(GetDC(hWnd), pen);
 	SelectObject(GetDC(hWnd), brush);
 
@@ -230,6 +230,15 @@ void  Figure_fabric::set_border_color(COLOR color)
 void Figure_fabric::set_figure_class(std::string figure_class)
 {
 	this->figure_class = figure_class;
+}
+void Figure_fabric::set_brush_style(int style)
+{
+	brush_stile = style;
+}
+
+void Figure_fabric::set_pen_style(int style)
+{
+	pen_style = style;
 }
 
 void Figure_fabric::calculate_ellips(double* cords_x, double* cords_y)
