@@ -75,11 +75,11 @@ Figure* Figure_fabric::create_figure(HWND hWnd)
 {
 	Figure* pict = NULL;
 	if (figure_class == "ellips")
-		pict = new Elipse(GetDC(hWnd), x, y, width, height, color, brush_stile, border_color,pen_style);
+		pict = new Elipse(GetDC(hWnd), x, y, width, height, color, brush_stile, border_color,pen_style,pen_size);
 	else if (figure_class == "rect")
-		pict = new Figure(GetDC(hWnd), x, y, width, height, color,brush_stile, border_color, pen_style);
+		pict = new Figure(GetDC(hWnd), x, y, width, height, color,brush_stile, border_color, pen_style, pen_size);
 	else if (figure_class == "triangle")
-		pict = new Triangle(GetDC(hWnd), triangle_x, triangle_y, color, brush_stile, border_color, pen_style);
+		pict = new Triangle(GetDC(hWnd), triangle_x, triangle_y, color, brush_stile, border_color, pen_style, pen_size);
 	return pict;
 }
 
@@ -87,7 +87,7 @@ void Figure_fabric::draw_focus(HWND hWnd)
 {
 	HBRUSH brush = CreateHatchBrush(brush_stile,RGB(color.R, color.G, color.B));
 
-	HPEN pen = CreatePen(pen_style, 2, RGB(border_color.R, border_color.G, border_color.B));
+	HPEN pen = CreatePen(pen_style, pen_size, RGB(border_color.R, border_color.G, border_color.B));
 	SelectObject(GetDC(hWnd), pen);
 	SelectObject(GetDC(hWnd), brush);
 
@@ -120,7 +120,7 @@ void Figure_fabric::draw_focus(HWND hWnd)
 	HBRUSH white_brush = CreateSolidBrush(RGB(255, 255, 255));
 
 	FillRect(GetDC(hWnd), &prev_rc, white_brush);
-	SetRect(&prev_rc, x - 2, y - 2, pt.x + 2, pt.y + 2);
+	SetRect(&prev_rc, x - pen_size, y - pen_size, pt.x + pen_size, pt.y + pen_size);
 	DeleteObject(white_brush);
 
 	HDC hDC = GetDC(hWnd);
@@ -239,6 +239,11 @@ void Figure_fabric::set_brush_style(int style)
 void Figure_fabric::set_pen_style(int style)
 {
 	pen_style = style;
+}
+
+void Figure_fabric::set_pen_size(int size)
+{
+	pen_size = size;
 }
 
 void Figure_fabric::calculate_ellips(double* cords_x, double* cords_y)

@@ -73,6 +73,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     COLOR color;
     int brush_stile = 7;
     int pen_style = PS_INSIDEFRAME;
+    int pen_size = 2;
 
     
     static Figure_fabric fabric;
@@ -251,6 +252,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
         BOOL set_color_flag = true;
         BOOL set_brush_stile = false;
         BOOL set_pen_stile = false;
+        BOOL set_size = false;
         switch (LOWORD(wParam))
         {
         case 1010:
@@ -552,19 +554,27 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
             pt.y = 5;
             ClientToScreen(hWnd, &pt);
 
-            HMENU hPopMenuImage = CreatePopupMenu();
+            HMENU border_menu = CreatePopupMenu();
 
-            AppendMenu(hPopMenuImage, MF_STRING, 1501, L"PS_DASH");
-            AppendMenu(hPopMenuImage, MF_STRING, 1502, L"PS_DOT");
-            AppendMenu(hPopMenuImage, MF_STRING, 1503, L"PS_DASHDOT");
-            AppendMenu(hPopMenuImage, MF_STRING, 1504, L"PS_DASHDOTDOT");
-            AppendMenu(hPopMenuImage, MF_STRING, 1505, L"PS_SOLID");
+            AppendMenu(border_menu, MF_STRING, 1501, L"PS_DASH");
+            AppendMenu(border_menu, MF_STRING, 1502, L"PS_DOT");
+            AppendMenu(border_menu, MF_STRING, 1503, L"PS_DASHDOT");
+            AppendMenu(border_menu, MF_STRING, 1504, L"PS_DASHDOTDOT");
+            AppendMenu(border_menu, MF_STRING, 1505, L"PS_SOLID");
 
-            TrackPopupMenu(hPopMenuImage,
+            HMENU size_menu = CreatePopupMenu();
+            AppendMenu(border_menu, MF_STRING | MF_POPUP, (UINT)size_menu, L"BORDER SIZE");
+            AppendMenu(size_menu, MF_STRING, 1506, L"1");
+            AppendMenu(size_menu, MF_STRING, 1507, L"2");
+            AppendMenu(size_menu, MF_STRING, 1508, L"3");
+            AppendMenu(size_menu, MF_STRING, 1509, L"4");
+            AppendMenu(size_menu, MF_STRING, 1510, L"5");
+
+            TrackPopupMenu(border_menu,
                 TPM_CENTERALIGN | TPM_LEFTBUTTON,
                 pt.x - 100, pt.y + 70, 0, hWnd, NULL);
 
-            DestroyMenu(hPopMenuImage);
+            DestroyMenu(border_menu);
 
         }
         case 1501:
@@ -592,6 +602,32 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
             set_color_flag = false;
             pen_style = PS_INSIDEFRAME;
             break;
+        case 1506:
+            set_size = true;
+            set_color_flag = false;
+            pen_size = 1;
+            break;
+        case 1507:
+            set_size = true;
+            set_color_flag = false;
+            pen_size = 2;
+            break;
+        case 1508:
+            set_size = true;
+            set_color_flag = false;
+            pen_size = 3;
+            break;
+        case 1509:
+            set_size = true;
+            set_color_flag = false;
+            pen_size = 4;
+            break;
+        case 1510:
+            set_size = true;
+            set_color_flag = false;
+            pen_size = 5;
+            break;
+        
         default:
         {
             set_color_flag = false;
@@ -613,21 +649,26 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
                 else
                     figure_list[figure_index]->set_border_color(color, hWnd);
         }
-
-        if (set_brush_stile)
+        else if (set_brush_stile)
         {
             fabric.set_brush_style(brush_stile);
 
             if (figure_index != -1)
                     figure_list[figure_index]->set_brush_style(brush_stile);
         }
-
-        if (set_pen_stile)
+        else if (set_pen_stile)
         {
             fabric.set_pen_style(pen_style);
 
             if (figure_index != -1)
                 figure_list[figure_index]->set_pen_style(pen_style);
+        }
+        else if (set_size)
+        {
+            fabric.set_pen_size(pen_size);
+
+            if (figure_index != -1)
+                figure_list[figure_index]->set_pen_size(pen_size);
         }
 
         InvalidateRect(hWnd, NULL, TRUE);

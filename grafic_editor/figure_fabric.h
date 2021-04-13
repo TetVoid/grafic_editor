@@ -16,6 +16,7 @@ public:
 	void set_figure_class(std::string figure_class);
 	void set_brush_style(int stile);
 	void set_pen_style(int stile);
+	void set_pen_size(int size);
 
 private:
 	COLOR color;
@@ -24,6 +25,7 @@ private:
 	int y;
 	int width;
 	int height;
+	int pen_size = 2;
 	int triangle_index = 0;
 	int triangle_x[3];
 	int triangle_y[3];
