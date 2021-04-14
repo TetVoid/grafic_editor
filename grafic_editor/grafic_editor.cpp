@@ -72,7 +72,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 
     COLOR color;
     int brush_stile = 7;
-    int pen_style = PS_INSIDEFRAME;
+    int pen_style = PS_SOLID;
     int pen_size = 2;
 
     
@@ -83,8 +83,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     {
         
         hDC = BeginPaint(hWnd, &ps); 
-        for(int i = 0; i<figure_list.size();i++)
+        if(figure_index!=-1)
+            figure_list[figure_index]->draw(hDC);
+        for (int i = 0; i < figure_list.size(); i++)
+        {
+            if (i == figure_index)
+                continue;
             figure_list[i]->draw(hDC);
+        }
         window_interface.draw(hWnd);
 
 
@@ -547,6 +553,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 
         case 1500:
         {
+            set_color_flag = false;
             RECT temp_rc;
             GetWindowRect(hWnd, &temp_rc);
             POINT pt;
@@ -555,7 +562,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
             ClientToScreen(hWnd, &pt);
 
             HMENU border_menu = CreatePopupMenu();
-
             AppendMenu(border_menu, MF_STRING, 1501, L"PS_DASH");
             AppendMenu(border_menu, MF_STRING, 1502, L"PS_DOT");
             AppendMenu(border_menu, MF_STRING, 1503, L"PS_DASHDOT");
@@ -575,12 +581,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
                 pt.x - 100, pt.y + 70, 0, hWnd, NULL);
 
             DestroyMenu(border_menu);
+            break;
 
         }
         case 1501:
             set_pen_stile = true;
             set_color_flag = false;
             pen_style = PS_DASH;
+            OutputDebugStringW(L"1");
             break;
         case 1502:
             set_pen_stile = true;
@@ -600,7 +608,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
         case 1505:
             set_pen_stile = true;
             set_color_flag = false;
-            pen_style = PS_INSIDEFRAME;
+            pen_style = PS_SOLID;
             break;
         case 1506:
             set_size = true;
@@ -654,7 +662,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
             fabric.set_brush_style(brush_stile);
 
             if (figure_index != -1)
-                    figure_list[figure_index]->set_brush_style(brush_stile);
+                figure_list[figure_index]->set_brush_style(brush_stile);
         }
         else if (set_pen_stile)
         {

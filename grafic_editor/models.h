@@ -1,6 +1,7 @@
 #pragma once
 #include <windows.h>
 #include <string>
+#include <vector>
 
 struct COLOR
 {
@@ -47,7 +48,7 @@ protected:
 	COLOR border_color;
 	int brush_stile = 7;
 	int pen_size = 2;
-	int pen_style = PS_INSIDEFRAME;
+	int pen_style = PS_SOLID;
 	double *start_cords_x, *start_cords_y;
 	double *cords_x, *cords_y;
 	double update_cords_x[4], update_cords_y[4];
@@ -61,8 +62,10 @@ protected:
 	int center_control_x = 1;
 	int center_control_y = 1;
 
-	void draw_borders(HDC hDC);
+	void draw_resize_rotate_zone(HDC hDC);
 	void calculate_rotation();
+	void draw_borders(HDC hDC);
+	void draw_segment(HDC hDC, int start, int finish, std::vector<int> desh_len, double* remainder, int* index, int* desh_index);
 };
 
 class Elipse : public Figure

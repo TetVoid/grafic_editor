@@ -31,7 +31,7 @@ private:
 	int triangle_y[3];
 
 	int brush_stile = 7;
-	int pen_style = PS_INSIDEFRAME;
+	int pen_style = PS_SOLID;
 
 	BOOL draw = false;
 	RECT prev_rc;

@@ -1,6 +1,5 @@
 #include "models.h"
 #include <fstream>
-#include <vector>
 #include <algorithm>
 
 
@@ -101,19 +100,122 @@ void Figure::draw(HDC hDC)
 
     EndPath(hDC);
     FillPath(hDC);
-
-    MoveToEx(hDC, round(cords_x[0]), round(cords_y[0]), nullptr);
-   for(int i =1; i< _msize(cords_x) / sizeof(cords_x[0]);i++)
-        LineTo(hDC, round(cords_x[i]), round(cords_y[i]));
-    LineTo(hDC, round(cords_x[0]), round(cords_y[0]));
-
-    if(select_flag)
+    //std::ofstream fout("log.txt", std::ios::app);
+    //fout << pen_style << "\n";
+    //fout.close();
+    if (pen_style == PS_SOLID)
+    {
+        MoveToEx(hDC, round(cords_x[0]), round(cords_y[0]), nullptr);
+        for (int i = 1; i < _msize(cords_x) / sizeof(cords_x[0]); i++)
+            LineTo(hDC, round(cords_x[i]), round(cords_y[i]));
+        LineTo(hDC, round(cords_x[0]), round(cords_y[0]));
+    }
+    else
         draw_borders(hDC);
+    if(select_flag)
+        draw_resize_rotate_zone(hDC);
     DeleteObject(brush);
     DeleteObject(pen);
 }
 
+void Figure::draw_segment(HDC hDC, int start, int finish, std::vector<int> desh_len,double *remainder, int *index, int* desh_index )
+{
+    double similarity_len = desh_len[*desh_index] - *remainder;
+    double point_x = cords_x[start];
+    double point_y = cords_y[start];
+    while ((cords_x[start] != cords_x[finish] && point_x < cords_x[finish] && cords_x[start] < cords_x[finish])
+        || (cords_x[start] != cords_x[finish] && point_x > cords_x[finish] && cords_x[start] > cords_x[finish])
+        || (cords_x[start] == cords_x[finish] && point_y > cords_y[finish] && cords_y[start] > cords_y[finish])
+        || (cords_x[start] == cords_x[finish] && point_y < cords_y[finish] && cords_y[start] < cords_y[finish]))
+    {
+        HPEN pen;
+        if (*index == 1)
+            pen = CreatePen(pen_style, pen_size, RGB(border_color.R, border_color.G, border_color.B));
+        else
+            pen = CreatePen(pen_style, pen_size, RGB(255, 255, 255));
+       
+        SelectObject(hDC, pen);
+
+        double similarity_coeff = similarity_len / sqrt(pow(cords_x[start] - cords_x[finish], 2) + pow(cords_y[start] - cords_y[finish], 2));
+        double new_point_x = cords_x[start] + (cords_x[finish] - cords_x[start]) * similarity_coeff;
+        double new_point_y = cords_y[start] + (cords_y[finish] - cords_y[start]) * similarity_coeff;
+
+        if ((cords_x[start] != cords_x[finish] && new_point_x < cords_x[finish] && cords_x[start] < cords_x[finish])
+            || (cords_x[start] != cords_x[finish] && new_point_x > cords_x[finish] && cords_x[start] > cords_x[finish])
+            || (cords_x[start] == cords_x[finish] && new_point_y > cords_y[finish] && cords_y[start] > cords_y[finish])
+            || (cords_x[start] == cords_x[finish] && new_point_y < cords_y[finish] && cords_y[start] < cords_y[finish]))
+
+        {
+            LineTo(hDC, round(new_point_x), round(new_point_y));
+            *index *= -1;
+            *remainder = 0;
+            *desh_index += 1;
+            if (*desh_index == desh_len.size())
+            {
+                *index *= 1;
+                *desh_index = 0;
+            }
+        }
+        else
+        {
+            LineTo(hDC, round(cords_x[finish]), round(cords_y[finish]));
+            
+            *remainder += abs(sqrt(pow(cords_x[start]-cords_x[finish], 2) + pow(cords_y[start] - cords_y[finish], 2)) - sqrt(pow(cords_x[start] - point_x, 2) + pow(cords_y[start] - point_y, 2)));
+            
+            if (*remainder > desh_len[*desh_index])
+            {
+                *index *= -1;
+                *remainder = 0;
+                *desh_index += 1;
+                if (*desh_index == desh_len.size() - 1)
+                {
+                    
+                    *index *= 1;
+                    *desh_index = 0;
+                }
+            }
+        }
+        point_x = new_point_x;
+        point_y = new_point_y;
+
+        similarity_len += desh_len[*desh_index];
+        DeleteObject(pen);
+    }
+}
 void Figure::draw_borders(HDC hDC)
+{
+    double perimeter = 0;
+    int size = _msize(cords_x) / sizeof(cords_x[0]);
+    std::vector<int> desh_len;
+        switch (pen_style)
+        {
+        case PS_DASH:
+            desh_len = { 10 + pen_size,10 + pen_size };
+            break;
+        case PS_DOT:
+            desh_len = { 2 + pen_size,10 + pen_size };
+            break;
+        case PS_DASHDOT:
+            desh_len={ 10 + pen_size, 10 + pen_size , 2 + pen_size, 10 + pen_size };
+            break;
+        case PS_DASHDOTDOT:
+            desh_len = { 10 + pen_size, 10 + pen_size , 2 + pen_size, 10 + pen_size , 2 + pen_size, 10 + pen_size };
+            break;
+        }
+    double remainder = 0;
+    int index = 1;
+    int desh_index = 0;
+    MoveToEx(hDC, round(cords_x[0]), round(cords_y[0]), nullptr);
+   
+    for (int i = 0; i < size-1; i++)
+    {
+        draw_segment(hDC, i, i + 1,desh_len, &remainder,&index,&desh_index); 
+     
+    }
+    draw_segment(hDC, size-1, 0, desh_len, &remainder, &index,&desh_index);
+}
+
+void Figure::draw_resize_rotate_zone(HDC hDC)
 {
     RECT rc;
     HBRUSH brush = CreateSolidBrush(RGB(0, 0, 0));
@@ -557,7 +659,6 @@ void Figure::resize(HWND hWnd)
 
 }
 
-
 BOOL Figure::check_position(HWND hWnd)
 {
     BOOL flag = false;
@@ -729,7 +830,6 @@ void Figure::set_brush_style(int style)
 {
     brush_stile = style;
 }
-
 
 void Figure::set_pen_style(int style)
 {
