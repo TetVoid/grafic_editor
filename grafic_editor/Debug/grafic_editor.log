@@ -1,7 +1,3 @@
 ﻿  grafic_editor.cpp
-C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\grafic_editor.cpp(88,27): warning C4018: <: несоответствие типов со знаком и без знака
-C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\grafic_editor.cpp(121,27): warning C4018: <: несоответствие типов со знаком и без знака
-C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\grafic_editor.cpp(140,26): warning C4018: <: несоответствие типов со знаком и без знака
-C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\grafic_editor.cpp(182,27): warning C4018: <: несоответствие типов со знаком и без знака
-C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\grafic_editor.cpp(65,10): warning C4101: rect: неиспользованная локальная переменная
+C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\grafic_editor.cpp(63,10): warning C4101: rect: неиспользованная локальная переменная
   grafic_editor.vcxproj -> C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\Debug\grafic_editor.exe

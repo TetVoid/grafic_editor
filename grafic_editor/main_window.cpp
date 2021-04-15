@@ -337,3 +337,8 @@ HWND MainWindow:: get_window()
 {
     return hMainWnd;
 }
+
+HINSTANCE MainWindow::get_hInst()
+{
+    return hInst;
+}

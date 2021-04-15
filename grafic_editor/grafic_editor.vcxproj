@@ -140,6 +140,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="figure_fabric.h" />
+    <ClInclude Include="figure_memory.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="grafic_editor.h" />
     <ClInclude Include="interface.h" />
@@ -150,6 +151,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="figure_fabric.cpp" />
+    <ClCompile Include="figure_memory.cpp" />
     <ClCompile Include="grafic_editor.cpp" />
     <ClCompile Include="interface.cpp" />
     <ClCompile Include="main_window.cpp" />

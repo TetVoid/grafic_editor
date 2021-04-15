@@ -39,6 +39,9 @@
     <ClInclude Include="interface.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
+    <ClInclude Include="figure_memory.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="grafic_editor.cpp">
@@ -54,6 +57,9 @@
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="interface.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="figure_memory.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>

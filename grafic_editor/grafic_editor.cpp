@@ -7,6 +7,7 @@
 #include "models.h"
 #include "figure_fabric.h"
 #include "interface.h"
+#include"figure_memory.h"
 
 HBRUSH brushes[] = {
    CreateSolidBrush(RGB(0, 0, 0)),
@@ -30,12 +31,9 @@ HBRUSH brushes[] = {
 } ;
 
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
+FigureMemory memory;
 
-std::vector<Figure*> figure_list;
-int figure_index=-1;
 Interface window_interface = Interface();
-
-//std::ofstream fout("log.txt", std::ios::app);
 
 int WINAPI WinMain(HINSTANCE hInstance,
     HINSTANCE hPrevInstance,
@@ -65,10 +63,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     RECT rect; 
     static HCURSOR hcur = LoadCursor(NULL, IDC_SIZEALL);
     static HCURSOR scur = LoadCursor(NULL, IDC_ARROW);
-    static BOOL create_flag = true;
+
     static int brush_index = 9;
     static int border_brush_index = 0;
     static BOOL pen_or_brus = true;
+    static BOOL create_flag = false;
 
     COLOR color;
     int brush_stile = 7;
@@ -81,18 +80,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     switch (uMsg) {
     case WM_PAINT: 
     {
-        
         hDC = BeginPaint(hWnd, &ps); 
-        if(figure_index!=-1)
-            figure_list[figure_index]->draw(hDC);
-        for (int i = 0; i < figure_list.size(); i++)
-        {
-            if (i == figure_index)
-                continue;
-            figure_list[i]->draw(hDC);
-        }
-        window_interface.draw(hWnd);
 
+        memory.draw(hDC);
+        window_interface.draw(hWnd);
 
         EndPaint(hWnd, &ps); 
         break;
@@ -101,90 +92,48 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
         PostQuitMessage(NULL);
         break;
     case WM_MOUSEMOVE:
-        if (figure_index!=-1 && figure_list[figure_index]->is_move())
-            figure_list[figure_index]->update(hWnd);
-
-        if (figure_index != -1 && figure_list[figure_index]->is_rotate())
-            figure_list[figure_index]->rotate(hWnd);
-
-        if (figure_index != -1 && figure_list[figure_index]->is_resize())
-            figure_list[figure_index]->resize(hWnd);
-
+        memory.move(hWnd);
+        memory.rotate(hWnd);
+        memory.resize(hWnd);
+        memory.set_prev_cords(hWnd);
+        
         if (fabric.is_draw())
             fabric.draw_focus(hWnd);
 
-        if (figure_index != -1)
-            figure_list[figure_index]->set_prev_cords(hWnd);
             
         break;
-    case WM_LBUTTONDBLCLK://WM_RBUTTONDOWN:
-        for (int i = 0; i < figure_list.size(); i++)
-        {
-            int prev_index = figure_index;
-            if (figure_list[i]->select(hWnd))
-            {
-                if (figure_index != -1 && figure_index != i)
-                    figure_list[figure_index]->stop_select();
-                figure_index = i;
-                figure_list[i]->init(hWnd);
-            }
-           
-            if(prev_index!=-1)
-                figure_list[prev_index]->init(hWnd);
-        }
-
-
+    case WM_LBUTTONDBLCLK:
+        memory.select(hWnd);
         break;
     case WM_LBUTTONDOWN:
-        create_flag = true;
-        for (int i =0; i < figure_list.size(); i++)
-            if (figure_list[i]->check_position(hWnd))
-            {
-                create_flag = false;
-                break;
-            }
-
+    {
+        create_flag = memory.check_position(hWnd);
+       
         if (create_flag)
             fabric.set_start_cords(hWnd);
 
         break;
+    }
     case WM_LBUTTONUP:
     {
+            memory.stop_move(hWnd);
+            memory.stop_resize(hWnd);
+            memory.stop_rotate(hWnd);
+            memory.stop_select(hWnd);
 
-        if (figure_index != -1 && figure_list[figure_index]->is_move())
-        {
-            figure_list[figure_index]->stop_move();
-            SetCursor(scur);
-        }
-        else if (figure_index != -1 && figure_list[figure_index]->is_rotate())
-        {
-            figure_list[figure_index]->stop_rotate();
-            SetCursor(scur);
-        }
-        else if (figure_index != -1 && figure_list[figure_index]->is_resize())
-        {
-            figure_list[figure_index]->stop_resize();
-            SetCursor(scur);
-        }
-        else if (create_flag)
+        if (create_flag)
         {
             fabric.set_width_height(hWnd);
             if (!fabric.is_draw())
             {
                 Figure* new_pict = fabric.create_figure(hWnd);
-                figure_list.push_back(new_pict);
+                memory.add(new_pict);
 
                 new_pict->init(hWnd);
             }
         }
-        
-        BOOL select_flag = true;
-        for (int i = 0; i < figure_list.size(); i++)
-            if (figure_list[i]->is_selected())
-                select_flag = false;
 
-        if (select_flag)
-            figure_index = -1;
+        SetCursor(scur);
             break;
     }
     case WM_CTLCOLORBTN:
@@ -649,44 +598,35 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
                 fabric.set_color(color);
             else
                 fabric.set_border_color(color);
-            
-
-            if (figure_index != -1)
-                if (pen_or_brus)
-                    figure_list[figure_index]->set_color(color, hWnd);
-                else
-                    figure_list[figure_index]->set_border_color(color, hWnd);
+            memory.set_color(color, hWnd, pen_or_brus);
         }
         else if (set_brush_stile)
-        {
             fabric.set_brush_style(brush_stile);
-
-            if (figure_index != -1)
-                figure_list[figure_index]->set_brush_style(brush_stile);
-        }
         else if (set_pen_stile)
-        {
             fabric.set_pen_style(pen_style);
-
-            if (figure_index != -1)
-                figure_list[figure_index]->set_pen_style(pen_style);
-        }
         else if (set_size)
-        {
             fabric.set_pen_size(pen_size);
 
-            if (figure_index != -1)
-                figure_list[figure_index]->set_pen_size(pen_size);
-        }
+        memory.set_brush_style(brush_stile, hWnd, set_brush_stile);
+        memory.set_pen_style(pen_style, hWnd, set_pen_stile);
+        memory.set_pen_size(pen_size, hWnd, set_size);
 
         InvalidateRect(hWnd, NULL, TRUE);
         UpdateWindow(hWnd);
         break;
     }
-    case WM_SETCURSOR:
-        if (figure_index != -1 && !figure_list[figure_index]->is_move())
-            return DefWindowProc(hWnd, uMsg, wParam, lParam);
+    case WM_KEYDOWN:
+        switch(wParam)
+        {
+        case VK_DELETE:
+            memory.del();
+            InvalidateRect(hWnd, NULL, TRUE);
+            break;
+        }
         break;
+    /*case WM_SETCURSOR:
+        return DefWindowProc(hWnd, uMsg, wParam, lParam);
+        break;*/
     default:
         return DefWindowProc(hWnd, uMsg, wParam, lParam); // если закрыли окошко
     }

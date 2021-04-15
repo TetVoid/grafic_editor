@@ -85,6 +85,7 @@ Figure::~Figure()
 
 void Figure::draw(HDC hDC)
 {
+    
     HBRUSH brush = CreateHatchBrush(brush_stile,RGB(color.R, color.G, color.B));
 
     HPEN pen = CreatePen(pen_style,pen_size,RGB(border_color.R, border_color.G, border_color.B));
@@ -100,9 +101,7 @@ void Figure::draw(HDC hDC)
 
     EndPath(hDC);
     FillPath(hDC);
-    //std::ofstream fout("log.txt", std::ios::app);
-    //fout << pen_style << "\n";
-    //fout.close();
+
     if (pen_style == PS_SOLID)
     {
         MoveToEx(hDC, round(cords_x[0]), round(cords_y[0]), nullptr);
@@ -182,6 +181,7 @@ void Figure::draw_segment(HDC hDC, int start, int finish, std::vector<int> desh_
         DeleteObject(pen);
     }
 }
+
 void Figure::draw_borders(HDC hDC)
 {
     double perimeter = 0;
