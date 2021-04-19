@@ -54,6 +54,7 @@ void  FigureMemory::select(HWND hWnd)
 {
     for (int i = 0; i < figure_list.size(); i++)
     {
+      
         int prev_index = figure_index;
         if (figure_list[i]->select(hWnd))
         {
@@ -62,6 +63,8 @@ void  FigureMemory::select(HWND hWnd)
             figure_index = i;
             figure_list[i]->init(hWnd);
         }
+        else if (figure_index == i)
+            figure_index = -1;
 
         if (prev_index != -1)
             figure_list[prev_index]->init(hWnd);
@@ -136,4 +139,16 @@ void FigureMemory::set_pen_size(int size, HWND hWnd, BOOL size_flag)
 {
     if (figure_index != -1 && size_flag)
         figure_list[figure_index]->set_pen_size(size);
+}
+
+Figure* FigureMemory:: get_selected()
+{
+    return figure_list[figure_index];
+}
+BOOL FigureMemory::is_selected()
+{
+    if (figure_index == -1)
+        return false;
+    else
+        return true;
 }

@@ -7,7 +7,8 @@
 #include "models.h"
 #include "figure_fabric.h"
 #include "interface.h"
-#include"figure_memory.h"
+#include "figure_memory.h"
+#include "info_sub_window.h"
 
 HBRUSH brushes[] = {
    CreateSolidBrush(RGB(0, 0, 0)),
@@ -34,6 +35,8 @@ LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 FigureMemory memory;
 
 Interface window_interface = Interface();
+MainWindow mainWindow;
+InfoSubWindow subWindow;
 
 int WINAPI WinMain(HINSTANCE hInstance,
     HINSTANCE hPrevInstance,
@@ -41,7 +44,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
     int nCmdShow)
 {
     MSG msg; 
-    MainWindow mainWindow = MainWindow(hInstance, WndProc);
+    mainWindow = MainWindow(hInstance, WndProc);
     HWND hMainWnd = mainWindow.get_window();
 
     ShowWindow(hMainWnd, nCmdShow); 
@@ -57,6 +60,8 @@ int WINAPI WinMain(HINSTANCE hInstance,
 }
 
 
+
+
 LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     HDC hDC; 
     PAINTSTRUCT ps; // структура, сод-щая информацию о клиентской области (размеры, цвет и тп)
@@ -68,6 +73,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     static int border_brush_index = 0;
     static BOOL pen_or_brus = true;
     static BOOL create_flag = false;
+    static BOOL info_flag = false;
 
     COLOR color;
     int brush_stile = 7;
@@ -84,7 +90,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 
         memory.draw(hDC);
         window_interface.draw(hWnd);
-
+       
         EndPaint(hWnd, &ps); 
         break;
     }
@@ -111,7 +117,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
        
         if (create_flag)
             fabric.set_start_cords(hWnd);
-
+        if (info_flag)
+        {
+            DestroyWindow(subWindow.get_window());
+            info_flag = false;
+        }
         break;
     }
     case WM_LBUTTONUP:
@@ -119,7 +129,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
             memory.stop_move(hWnd);
             memory.stop_resize(hWnd);
             memory.stop_rotate(hWnd);
-            memory.stop_select(hWnd);
 
         if (create_flag)
         {
@@ -135,6 +144,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 
         SetCursor(scur);
             break;
+    }
+    case WM_RBUTTONDOWN:
+    {
+        if (!info_flag && memory.is_selected())
+        {
+            info_flag = true;
+            subWindow = InfoSubWindow(mainWindow.get_hInst(), hWnd, memory.get_selected(),&info_flag);
+        }
+        break;
     }
     case WM_CTLCOLORBTN:
         switch (GetWindowLong((HWND)lParam, GWL_ID))

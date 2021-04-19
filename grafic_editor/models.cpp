@@ -375,19 +375,36 @@ void Figure::calculate_rotation()
     prev.y = pt.y;
 }
 
-void Figure::update(HWND hWnd)
+void Figure::update(HWND hWnd, int x_, int y_)
 {
     RECT rc;
-    GetCursorPos(&pt);
-    ScreenToClient(hWnd, &pt);
+    int x = 0;
+    int y = 0;
+    if (x_ == 0 && y_ == 0)
+    {
+        GetCursorPos(&pt);
+        ScreenToClient(hWnd, &pt);
+
+        x = prev.x - pt.x;
+        y = prev.y - pt.y;
+        prev.x = pt.x;
+        prev.y = pt.y;
+    }
+    else
+    {
+        OutputDebugStringW(L"1");
+        pt.x = x_;
+        pt.y = y_;
+
+        x = center.x - pt.x;
+        y = center.y - pt.y;
+        prev.x -= x;
+        prev.y -= y;
+    }
 
     SetRect(&rc, update_cords_x[0]-1, update_cords_y[0]-1, update_cords_x[2] +1, update_cords_y[2] +1);
     InvalidateRect(hWnd, &rc, TRUE);
 
-    int x = prev.x - pt.x;
-    int y = prev.y - pt.y;
-    prev.x = pt.x;
-    prev.y = pt.y;
     for (int i = 0; i < _msize(cords_x) / sizeof(cords_x[0]); i++)
     {
         cords_x[i] -= x;
@@ -839,6 +856,31 @@ void Figure::set_pen_style(int style)
 void Figure::set_pen_size(int size)
 {
     pen_size = size;
+}
+
+COLOR  Figure::get_color()
+{
+    return color;
+}
+COLOR Figure::get_border_color()
+{
+    return border_color;
+}
+int Figure::get_brush_style()
+{
+    return brush_stile;
+}
+int Figure::get_pen_style()
+{
+    return pen_style;
+}
+int  Figure::get_pen_size()
+{
+    return pen_size;
+}
+POINT Figure::get_center()
+{
+    return center;
 }
 
 Elipse::Elipse(HDC hDC, int x, int y, int width, int height, COLOR color,int style, COLOR border_color, int pen_style,int pen_size)

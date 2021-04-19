@@ -17,7 +17,7 @@ public:
 	Figure(HDC hDC, int x, int y, int width, int height,COLOR color,int brush_stile, COLOR border_color, int pen_style, int pen_size);
 	~Figure();
 	void draw(HDC hDC);
-	void update(HWND hwnd);
+	void update(HWND hwnd,int x=0,int y=0);
 	void init(HWND hwnd);
 	void rotate(HWND hWnd);
 	void virtual resize(HWND hWnd);
@@ -33,6 +33,13 @@ public:
 	void set_brush_style(int style);
 	void set_pen_style(int style);
 	void set_pen_size(int size);
+
+	COLOR get_color();
+	COLOR get_border_color();
+	int get_brush_style();
+	int get_pen_style();
+	int get_pen_size();
+	POINT get_center();
 
 	BOOL check_position(HWND hwnd);
 	BOOL select(HWND hWnd);

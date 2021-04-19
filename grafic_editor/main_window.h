@@ -5,6 +5,7 @@ class MainWindow
 {
 public:
 	MainWindow(HINSTANCE hInstance, WNDPROC WndProc);
+	MainWindow(){}
 	~MainWindow();
 	HWND get_window();
 	HINSTANCE get_hInst();
