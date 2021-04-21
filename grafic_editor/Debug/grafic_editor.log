@@ -1,4 +1,2 @@
-﻿  info_sub_window.cpp
-C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\info_sub_window.cpp(324,16): warning C4101: ps: неиспользованная локальная переменная
-C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\info_sub_window.cpp(171): warning C4715: childProc: значение возвращается не при всех путях выполнения
+﻿  main_window.cpp
   grafic_editor.vcxproj -> C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\Debug\grafic_editor.exe

@@ -32,11 +32,15 @@ HBRUSH brushes[] = {
 } ;
 
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
+LRESULT CALLBACK WndButtomsProc(HWND, UINT, WPARAM, LPARAM);
 FigureMemory memory;
+Figure_fabric fabric;
 
 Interface window_interface = Interface();
 MainWindow mainWindow;
 InfoSubWindow subWindow;
+HWND hMainWnd;
+HWND hCanvasWnd;
 
 int WINAPI WinMain(HINSTANCE hInstance,
     HINSTANCE hPrevInstance,
@@ -44,11 +48,15 @@ int WINAPI WinMain(HINSTANCE hInstance,
     int nCmdShow)
 {
     MSG msg; 
-    mainWindow = MainWindow(hInstance, WndProc);
-    HWND hMainWnd = mainWindow.get_window();
+    mainWindow = MainWindow(hInstance, WndProc, WndButtomsProc);
+    hMainWnd = mainWindow.get_buttom_window();
+    hCanvasWnd = mainWindow.get_canvas_window();
 
     ShowWindow(hMainWnd, nCmdShow); 
     UpdateWindow(hMainWnd); 
+
+    ShowWindow(hCanvasWnd, nCmdShow);
+    UpdateWindow(hCanvasWnd);
 
 
     while (GetMessage(&msg, NULL, NULL, NULL)) { 
@@ -60,98 +68,27 @@ int WINAPI WinMain(HINSTANCE hInstance,
 }
 
 
-
-
-LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
-    HDC hDC; 
-    PAINTSTRUCT ps; // структура, сод-щая информацию о клиентской области (размеры, цвет и тп)
-    RECT rect; 
-    static HCURSOR hcur = LoadCursor(NULL, IDC_SIZEALL);
-    static HCURSOR scur = LoadCursor(NULL, IDC_ARROW);
+LRESULT CALLBACK WndButtomsProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
+{
+    HDC hDC;
+    PAINTSTRUCT ps; 
 
     static int brush_index = 9;
     static int border_brush_index = 0;
     static BOOL pen_or_brus = true;
-    static BOOL create_flag = false;
-    static BOOL info_flag = false;
-
+    
     COLOR color;
     int brush_stile = 7;
     int pen_style = PS_SOLID;
     int pen_size = 2;
-
-    
-    static Figure_fabric fabric;
-    SetCursor(scur);
     switch (uMsg) {
-    case WM_PAINT: 
+    case WM_PAINT:
     {
-        hDC = BeginPaint(hWnd, &ps); 
+        hDC = BeginPaint(hWnd, &ps);
 
-        memory.draw(hDC);
         window_interface.draw(hWnd);
-       
-        EndPaint(hWnd, &ps); 
-        break;
-    }
-    case WM_DESTROY: 
-        PostQuitMessage(NULL);
-        break;
-    case WM_MOUSEMOVE:
-        memory.move(hWnd);
-        memory.rotate(hWnd);
-        memory.resize(hWnd);
-        memory.set_prev_cords(hWnd);
-        
-        if (fabric.is_draw())
-            fabric.draw_focus(hWnd);
 
-            
-        break;
-    case WM_LBUTTONDBLCLK:
-        memory.select(hWnd);
-        break;
-    case WM_LBUTTONDOWN:
-    {
-        create_flag = memory.check_position(hWnd);
-       
-        if (create_flag)
-            fabric.set_start_cords(hWnd);
-        if (info_flag)
-        {
-            DestroyWindow(subWindow.get_window());
-            info_flag = false;
-        }
-        break;
-    }
-    case WM_LBUTTONUP:
-    {
-            memory.stop_move(hWnd);
-            memory.stop_resize(hWnd);
-            memory.stop_rotate(hWnd);
-
-        if (create_flag)
-        {
-            fabric.set_width_height(hWnd);
-            if (!fabric.is_draw())
-            {
-                Figure* new_pict = fabric.create_figure(hWnd);
-                memory.add(new_pict);
-
-                new_pict->init(hWnd);
-            }
-        }
-
-        SetCursor(scur);
-            break;
-    }
-    case WM_RBUTTONDOWN:
-    {
-        if (!info_flag && memory.is_selected())
-        {
-            info_flag = true;
-            subWindow = InfoSubWindow(mainWindow.get_hInst(), hWnd, memory.get_selected(),&info_flag);
-        }
+        EndPaint(hWnd, &ps);
         break;
     }
     case WM_CTLCOLORBTN:
@@ -218,7 +155,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
             return (LRESULT)brushes[border_brush_index];
             break;
         }
-       
+
         break;
     case WM_COMMAND:
     {
@@ -461,9 +398,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
             RECT temp_rc;
             GetWindowRect(hWnd, &temp_rc);
             POINT pt;
-             pt.x = (temp_rc.right - temp_rc.left) / 7 * 4;
-             pt.y = 5;
-             ClientToScreen(hWnd, &pt);
+            pt.x = (temp_rc.right - temp_rc.left) / 7 * 4;
+            pt.y = 5;
+            ClientToScreen(hWnd, &pt);
 
             HMENU hPopMenuImage = CreatePopupMenu();
 
@@ -602,7 +539,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
             set_color_flag = false;
             pen_size = 5;
             break;
-        
+
         default:
         {
             set_color_flag = false;
@@ -616,7 +553,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
                 fabric.set_color(color);
             else
                 fabric.set_border_color(color);
-            memory.set_color(color, hWnd, pen_or_brus);
+            memory.set_color(color, hCanvasWnd, pen_or_brus);
         }
         else if (set_brush_stile)
             fabric.set_brush_style(brush_stile);
@@ -625,14 +562,107 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
         else if (set_size)
             fabric.set_pen_size(pen_size);
 
-        memory.set_brush_style(brush_stile, hWnd, set_brush_stile);
-        memory.set_pen_style(pen_style, hWnd, set_pen_stile);
-        memory.set_pen_size(pen_size, hWnd, set_size);
+        memory.set_brush_style(brush_stile, hCanvasWnd, set_brush_stile);
+        memory.set_pen_style(pen_style, hCanvasWnd, set_pen_stile);
+        memory.set_pen_size(pen_size, hCanvasWnd, set_size);
 
+        SetFocus(hWnd);
         InvalidateRect(hWnd, NULL, TRUE);
         UpdateWindow(hWnd);
+
+       
         break;
     }
+     default:
+         return DefWindowProc(hWnd, uMsg, wParam, lParam);
+    }
+
+
+}
+
+
+LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+    HDC hDC; 
+    PAINTSTRUCT ps;
+    RECT rect; 
+    static HCURSOR hcur = LoadCursor(NULL, IDC_SIZEALL);
+    static HCURSOR scur = LoadCursor(NULL, IDC_ARROW);
+
+    static BOOL create_flag = false;
+    static BOOL info_flag = false;
+
+    switch (uMsg) {
+    case WM_PAINT: 
+    {
+        hDC = BeginPaint(hWnd, &ps); 
+
+        memory.draw(hDC);
+       
+        EndPaint(hWnd, &ps); 
+        break;
+    }
+    case WM_DESTROY: 
+        PostQuitMessage(NULL);
+        break;
+    case WM_MOUSEMOVE:
+        memory.move(hWnd);
+        memory.rotate(hWnd);
+        memory.resize(hWnd);
+        memory.set_prev_cords(hWnd);
+        
+        if (fabric.is_draw())
+            fabric.draw_focus(hWnd);
+
+            
+        break;
+    case WM_LBUTTONDBLCLK:
+        memory.select(hWnd);
+        break;
+    case WM_LBUTTONDOWN:
+    {
+        create_flag = memory.check_position(hWnd);
+       
+        if (create_flag)
+            fabric.set_start_cords(hWnd);
+        if (info_flag)
+        {
+            DestroyWindow(subWindow.get_window());
+            info_flag = false;
+        }
+        break;
+    }
+    case WM_LBUTTONUP:
+    {
+            memory.stop_move(hWnd);
+            memory.stop_resize(hWnd);
+            memory.stop_rotate(hWnd);
+
+        if (create_flag)
+        {
+            fabric.set_width_height(hWnd);
+            if (!fabric.is_draw())
+            {
+                Figure* new_pict = fabric.create_figure(hWnd);
+                memory.add(new_pict);
+
+                new_pict->init(hWnd);
+            }
+        }
+
+        SetCursor(scur);
+            break;
+    }
+    case WM_RBUTTONDOWN:
+    {
+        if (!info_flag && memory.is_selected())
+        {
+            
+            info_flag = true;
+            subWindow = InfoSubWindow(mainWindow.get_hInst(), hWnd, memory.get_selected(),&info_flag);
+        }
+        break;
+    }
+
     case WM_KEYDOWN:
         switch(wParam)
         {

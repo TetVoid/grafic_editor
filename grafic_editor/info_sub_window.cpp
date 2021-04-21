@@ -15,8 +15,8 @@ HWND edit8;
 HWND edit9;
 HWND parent_hWnd;
 BOOL *info;
-LRESULT CALLBACK childProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 
+LRESULT CALLBACK childProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     switch (uMsg) {
     
     case WM_COMMAND:
@@ -25,7 +25,6 @@ LRESULT CALLBACK childProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
         {
         case 2010:
         {
-
             RECT temp_rc;
             GetWindowRect(hWnd, &temp_rc);
             POINT pt;
@@ -124,6 +123,7 @@ LRESULT CALLBACK childProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
             break;
         case 2040:
         {
+            
             TCHAR a[9];
 
             COLOR color;
@@ -180,19 +180,19 @@ InfoSubWindow::InfoSubWindow(HINSTANCE hInstance,HWND hWnd, Figure* figure,BOOL*
     GetCursorPos(&pt);
     ScreenToClient(hWnd, &pt);
 
-    WNDCLASS w;
-    memset(&w, 0, sizeof(WNDCLASS));
-    w.lpfnWndProc = childProc;
-    w.hInstance = hInstance;
-    w.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
-    w.lpszClassName = L"ChildWClass";
-    w.hCursor = LoadCursor(NULL, IDC_ARROW);
-    RegisterClass(&w);
+    WNDCLASS wi;
+    memset(&wi, 0, sizeof(WNDCLASS));
+    wi.lpfnWndProc = childProc;
+    wi.hInstance = hInstance;
+    wi.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
+    wi.lpszClassName = L"ChildInfoW";
+    wi.hCursor = LoadCursor(NULL, IDC_ARROW);
+    RegisterClass(&wi);
     HWND child;
     
     child = CreateWindowEx(
         0,
-        L"ChildWClass",
+        L"ChildInfoW",
         (LPCTSTR)NULL,
         WS_CHILD | WS_BORDER | WS_VISIBLE,
         pt.x-2, pt.y-2,

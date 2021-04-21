@@ -1,6 +1,8 @@
 #include "main_window.h"
 
-MainWindow::MainWindow(HINSTANCE hInstance, WNDPROC WndProc)
+
+
+MainWindow::MainWindow(HINSTANCE hInstance, WNDPROC WndProc, WNDPROC WndButtomsProc)
 {
     hInst = hInstance;
     TCHAR szClassName[] = L"Main window"; // строка с именем класса
@@ -8,7 +10,7 @@ MainWindow::MainWindow(HINSTANCE hInstance, WNDPROC WndProc)
     WNDCLASSEX wc; // создаём экземпляр, для обращения к членам класса WNDCLASSEX
     wc.cbSize = sizeof(wc); // размер структуры (в байтах)
     wc.style = CS_HREDRAW | CS_VREDRAW| CS_DBLCLKS| CS_CLASSDC; // стиль класса окошка
-    wc.lpfnWndProc = WndProc; // указатель на пользовательскую функцию
+    wc.lpfnWndProc = WndButtomsProc; // указатель на пользовательскую функцию
     wc.lpszMenuName = NULL; // указатель на имя меню (у нас его нет)
     wc.lpszClassName = szClassName; // указатель на имя класса
     wc.cbWndExtra = NULL; // число освобождаемых байтов в конце структуры
@@ -26,7 +28,7 @@ MainWindow::MainWindow(HINSTANCE hInstance, WNDPROC WndProc)
     hMainWnd = CreateWindow(
         szClassName, // имя класса
         L"Полноценная оконная процедура", // имя окошка (то что сверху)
-        WS_OVERLAPPEDWINDOW | WS_VSCROLL, // режимы отображения окошка
+        WS_OVERLAPPEDWINDOW, // режимы отображения окошка
         CW_USEDEFAULT, // позиция окошка по оси х
         NULL, // позиция окошка по оси у (раз дефолт в х, то писать не нужно)
         CW_USEDEFAULT, // ширина окошка
@@ -39,6 +41,32 @@ MainWindow::MainWindow(HINSTANCE hInstance, WNDPROC WndProc)
     if (!hMainWnd) {
         MessageBox(NULL, L"Не получилось создать окно!", L"Ошибка", MB_OK);
     }
+
+    WNDCLASS w;
+    memset(&w, 0, sizeof(WNDCLASS));
+    w.lpfnWndProc = WndProc;
+    w.hInstance = hInstance;
+    w.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
+    w.lpszClassName = L"ChildWClass";
+    w.hCursor = LoadCursor(NULL, IDC_ARROW);
+    w.style =  CS_DBLCLKS | CS_CLASSDC;
+    RegisterClass(&w);
+
+    HWND child;
+    RECT rect;
+    GetWindowRect(hMainWnd, &rect);
+    child = CreateWindowEx(
+        0,
+        L"ChildWClass",
+        (LPCTSTR)NULL,
+        WS_CHILD | WS_BORDER | WS_VISIBLE,
+        0,90,
+        rect.right, rect.bottom,
+        hMainWnd,
+        NULL,
+        hInstance,
+        NULL);
+    hCanvasWnd = child;
     init_color_buttoms();
 }
 
@@ -333,9 +361,14 @@ MainWindow::~MainWindow()
 {
 }
 
-HWND MainWindow:: get_window()
+HWND MainWindow:: get_buttom_window()
 {
     return hMainWnd;
+}
+
+HWND MainWindow::get_canvas_window()
+{
+    return hCanvasWnd;
 }
 
 HINSTANCE MainWindow::get_hInst()
