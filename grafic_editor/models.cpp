@@ -281,7 +281,7 @@ void Figure::rotate(HWND hWnd)
     index++;
     RECT rc;
     SetRect(&rc, update_cords_x[0]-1, update_cords_y[0]-1, update_cords_x[2]+1, update_cords_y[2]+1);
-    InvalidateRect(hWnd, &rc, TRUE);
+    InvalidateRect(hWnd, &rc, FALSE);
 
     GetCursorPos(&pt);
     ScreenToClient(hWnd, &pt);
@@ -308,11 +308,7 @@ void Figure::rotate(HWND hWnd)
     a = a * index;
     rotate_angle += a;
     calculate_rotation();
-   
 
-    
-
-    //InvalidateRect(hWnd, &rc, TRUE);
 }
 
 void Figure::calculate_rotation()
@@ -417,7 +413,7 @@ void Figure::update(HWND hWnd, int x_, int y_,BOOL delta_flag)
     }
 
     SetRect(&rc, update_cords_x[0]-1, update_cords_y[0]-1, update_cords_x[2] +1, update_cords_y[2] +1);
-    InvalidateRect(hWnd, &rc, TRUE);
+    InvalidateRect(hWnd, &rc, FALSE);
 
     for (int i = 0; i < _msize(cords_x) / sizeof(cords_x[0]); i++)
     {
@@ -443,7 +439,7 @@ void Figure::update(HWND hWnd, int x_, int y_,BOOL delta_flag)
     max_y -= y;
 
     SetRect(&rc, update_cords_x[0]-1, update_cords_y[0]-1, update_cords_x[2] +1, update_cords_y[2] +1);
-    InvalidateRect(hWnd, &rc, TRUE);
+    InvalidateRect(hWnd, &rc, FALSE);
 }
 
 void Figure::resize(HWND hWnd)
@@ -455,7 +451,7 @@ void Figure::resize(HWND hWnd)
     int delta_y = pt.y - prev.y;
 
     SetRect(&rc, update_cords_x[0] - 1, update_cords_y[0] - 1, update_cords_x[2] + 1, update_cords_y[2] + 1);
-    InvalidateRect(hWnd, &rc, TRUE);
+    InvalidateRect(hWnd, &rc, FALSE);
     
     std::vector<double*> up_x_cords;
     std::vector<double*> down_x_cords;
@@ -691,7 +687,7 @@ void Figure::resize(HWND hWnd)
 
 
     SetRect(&rc, update_cords_x[0] - 1, update_cords_y[0] - 1, update_cords_x[2] + 1, update_cords_y[2] + 1);
-    InvalidateRect(hWnd, &rc, TRUE);
+    InvalidateRect(hWnd, &rc, FALSE);
 
 }
 
@@ -1113,7 +1109,7 @@ void  Elipse::resize(HWND hWnd)
     int delta_y = pt.y - prev.y;
 
     SetRect(&rc, update_cords_x[0] - 1, update_cords_y[0] - 1, update_cords_x[2] + 1, update_cords_y[2] + 1);
-    InvalidateRect(hWnd, &rc, TRUE);
+    InvalidateRect(hWnd, &rc, FALSE);
 
 
     switch (resize_index)
@@ -1235,7 +1231,10 @@ Triangle::Triangle(HDC hDC, int* x, int* y, COLOR color,int style, COLOR border_
         start_cords_y[i] = y[i];
     }
 
-    int max_x = x[0], max_y = y[0], min_x = x[0], min_y = y[0];
+    max_x = x[0];
+    max_y = y[0];
+    min_x = x[0]; 
+    min_y = y[0];
     for (int i = 0; i < 3; i++)
     {
         if (max_x < x[i])
@@ -1265,21 +1264,7 @@ Triangle::Triangle(HDC hDC, int* x, int* y, COLOR color,int style, COLOR border_
     prev.x = min_x;
     prev.y = min_y;
 
-    max_x = cords_x[0];
-    min_x = cords_x[0];
-    max_y = cords_y[0];
-    min_y = cords_y[0];
-    for (int i = 0; i < _msize(cords_x) / sizeof(cords_x[0]); i++)
-    {
-        if (cords_x[i] > max_x)
-            max_x = cords_x[i];
-        if (cords_x[i] < min_x)
-            min_x = cords_x[i];
-        if (cords_y[i] > max_y)
-            max_y = cords_y[i];
-        if (cords_y[i] < min_y)
-            min_y = cords_y[i];
-    }
+   
 
 }
 
@@ -1292,7 +1277,7 @@ void Triangle::resize(HWND hWnd)
     int delta_y = pt.y - prev.y;
 
     SetRect(&rc, update_cords_x[0] - 1, update_cords_y[0] - 1, update_cords_x[2] + 1, update_cords_y[2] + 1);
-    InvalidateRect(hWnd, &rc, TRUE);
+    InvalidateRect(hWnd, &rc, FALSE);
     int index_min_x=0;
     int index_max_x=0;
     int index_min_y=0;

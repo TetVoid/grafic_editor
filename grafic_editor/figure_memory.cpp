@@ -104,12 +104,9 @@ void FigureMemory::stop_select(HWND hWnd)
 
 void FigureMemory::draw(HDC hDC)
 {
-    if (figure_index != -1)
-        figure_list[figure_index]->draw(hDC);
+    
     for (int i = 0; i < figure_list.size(); i++)
     {
-        if (i == figure_index)
-            continue;
         figure_list[i]->draw(hDC);
     }
 }
@@ -215,5 +212,5 @@ void FigureMemory::update(HWND hWnd, double x, double y)
 {
     for (int i = 0; i < figure_list.size(); i++)
         figure_list[i]->update(hWnd, x, y, true);
-    InvalidateRect(hWnd, NULL, TRUE);
+    InvalidateRect(hWnd, NULL, FALSE);
 }

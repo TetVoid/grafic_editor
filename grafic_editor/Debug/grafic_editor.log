@@ -1,2 +1,4 @@
-﻿  main_window.cpp
+﻿  grafic_editor.cpp
+C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\grafic_editor.cpp(596,10): warning C4101: rect: неиспользованная локальная переменная
+C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\grafic_editor.cpp(590): warning C4715: WndButtomsProc: значение возвращается не при всех путях выполнения
   grafic_editor.vcxproj -> C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\Debug\grafic_editor.exe

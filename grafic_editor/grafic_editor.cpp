@@ -82,6 +82,15 @@ LRESULT CALLBACK WndButtomsProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
     int pen_style = PS_SOLID;
     int pen_size = 2;
     switch (uMsg) {
+    case WM_KEYDOWN:
+        switch (wParam)
+        {
+        case VK_DELETE:
+            memory.del();
+            InvalidateRect(hWnd, NULL, FALSE);
+            break;
+        }
+        break;
     case WM_PAINT:
     {
         hDC = BeginPaint(hWnd, &ps);
@@ -596,7 +605,20 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     {
         hDC = BeginPaint(hWnd, &ps); 
 
-        memory.draw(hDC);
+        RECT rect;
+        GetClientRect(hCanvasWnd, &rect);
+        HDC bufDC = CreateCompatibleDC(hDC);
+        HBITMAP hBM = CreateCompatibleBitmap(hDC,rect.right, rect.bottom);
+        SelectObject(bufDC, hBM);
+        FillRect(bufDC, &rect, brushes[9]);
+
+        memory.draw(bufDC);
+
+        BitBlt(hDC, 0, 0, rect.right, rect.bottom, bufDC, 0, 0, SRCCOPY);
+
+        DeleteObject(hBM);
+        DeleteDC(bufDC);
+
        
         EndPaint(hWnd, &ps); 
         break;
@@ -647,6 +669,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
                 memory.add(new_pict);
 
                 new_pict->init(hWnd);
+                InvalidateRect(hWnd, NULL, FALSE);
             }
         }
 
@@ -664,15 +687,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
         break;
     }
 
-    case WM_KEYDOWN:
-        switch(wParam)
-        {
-        case VK_DELETE:
-            memory.del();
-            InvalidateRect(hWnd, NULL, TRUE);
-            break;
-        }
-        break;
     /*case WM_SETCURSOR:
         return DefWindowProc(hWnd, uMsg, wParam, lParam);
         break;*/
