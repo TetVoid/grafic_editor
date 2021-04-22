@@ -17,7 +17,7 @@ public:
 	Figure(HDC hDC, int x, int y, int width, int height,COLOR color,int brush_stile, COLOR border_color, int pen_style, int pen_size);
 	~Figure();
 	void draw(HDC hDC);
-	void update(HWND hwnd,int x=0,int y=0);
+	void update(HWND hwnd,int x=0,int y=0, BOOL delta_flag= false);
 	void init(HWND hwnd);
 	void rotate(HWND hWnd);
 	void virtual resize(HWND hWnd);
@@ -48,6 +48,8 @@ public:
 	BOOL is_move();
 	BOOL is_resize();
 
+	POINT get_max_point();
+	POINT get_min_point();
 
 protected:
 	POINT center;
@@ -68,6 +70,11 @@ protected:
 
 	int center_control_x = 1;
 	int center_control_y = 1;
+
+	double max_x;
+	double min_x;
+	double max_y;
+	double min_y;
 
 	void draw_resize_rotate_zone(HDC hDC);
 	void calculate_rotation();

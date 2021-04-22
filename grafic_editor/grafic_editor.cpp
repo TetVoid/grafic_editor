@@ -612,7 +612,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
         
         if (fabric.is_draw())
             fabric.draw_focus(hWnd);
-
+        
+        mainWindow.update_scrolls(memory.get_max_point(hWnd), memory.get_min_point());
             
         break;
     case WM_LBUTTONDBLCLK:
@@ -675,6 +676,18 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     /*case WM_SETCURSOR:
         return DefWindowProc(hWnd, uMsg, wParam, lParam);
         break;*/
+    case WM_HSCROLL:
+    {
+        double x = mainWindow.set_xPos(wParam);
+        memory.update(hWnd, x, 0);
+        break;
+    }
+    case WM_VSCROLL:
+    {
+        double y = mainWindow.set_yPos(wParam);
+        memory.update(hWnd, 0, y);
+        break;
+    }
     default:
         return DefWindowProc(hWnd, uMsg, wParam, lParam); // если закрыли окошко
     }

@@ -4,18 +4,22 @@ FigureMemory::FigureMemory()
 {
 
 }
+
 FigureMemory::~FigureMemory()
 {
 
 }
+
 Figure* FigureMemory::operator[](int index)
 {
 	return figure_list[index];
 }
+
 void FigureMemory::add(Figure* figure)
 {
 	figure_list.push_back(figure);
 }
+
 void FigureMemory::del()
 {
     if (figure_index != -1)
@@ -33,16 +37,19 @@ void FigureMemory::set_prev_cords(HWND hWnd)
         figure_list[figure_index]->set_prev_cords(hWnd);
     }
 }
+
 void FigureMemory:: move(HWND hWnd)
 {
     if (figure_index != -1 && figure_list[figure_index]->is_move())
         figure_list[figure_index]->update(hWnd);   
 }
+
 void FigureMemory::rotate(HWND hWnd)
 {
     if (figure_index != -1&& figure_list[figure_index]->is_rotate())
         figure_list[figure_index]->rotate(hWnd);
 }
+
 void FigureMemory::resize(HWND hWnd)
 {
     if (figure_index != -1 && figure_list[figure_index]->is_resize())
@@ -76,22 +83,24 @@ void FigureMemory::stop_move(HWND hWnd)
     if (figure_index != -1 && figure_list[figure_index]->is_move())
         figure_list[figure_index]->stop_move();
 }
+
 void FigureMemory::stop_rotate(HWND hWnd)
 {
     if (figure_index != -1 && figure_list[figure_index]->is_rotate())
         figure_list[figure_index]->stop_rotate();
 
 }
+
 void FigureMemory::stop_resize(HWND hWnd)
 {
     if (figure_index != -1 && figure_list[figure_index]->is_resize())
         figure_list[figure_index]->stop_resize();
 }
+
 void FigureMemory::stop_select(HWND hWnd)
 {
 
 }
-
 
 void FigureMemory::draw(HDC hDC)
 {
@@ -125,16 +134,19 @@ void FigureMemory::set_color(COLOR color, HWND hWnd, BOOL color_flag)
         else
             figure_list[figure_index]->set_border_color(color, hWnd);
 }
+
 void FigureMemory::set_brush_style(int style, HWND hWnd, BOOL style_flag)
 {
     if (figure_index != -1 && style_flag)
         figure_list[figure_index]->set_brush_style(style);
 }
+
 void FigureMemory::set_pen_style(int style, HWND hWnd, BOOL style_flag)
 {
     if (figure_index != -1 && style_flag)
         figure_list[figure_index]->set_pen_style(style);
 }
+
 void FigureMemory::set_pen_size(int size, HWND hWnd, BOOL size_flag)
 {
     if (figure_index != -1 && size_flag)
@@ -145,10 +157,63 @@ Figure* FigureMemory:: get_selected()
 {
     return figure_list[figure_index];
 }
+
 BOOL FigureMemory::is_selected()
 {
     if (figure_index == -1)
         return false;
     else
         return true;
+}
+
+POINT  FigureMemory::get_max_point(HWND hWnd)
+{
+
+    RECT rect;
+    GetClientRect(hWnd, &rect);
+    POINT a;
+    if (figure_list.size() == 0)
+    {
+        a.x = rect.right;
+        a.y = rect.bottom;
+    }
+    else
+        a = figure_list[0]->get_max_point();
+    for (int i = 0; i < figure_list.size(); i++)
+    {
+        if (figure_list[i]->get_max_point().x > a.x)
+            a.x = figure_list[i]->get_max_point().x;
+
+        if (figure_list[i]->get_max_point().y > a.y)
+            a.y = figure_list[i]->get_max_point().y;
+    }
+    return a;
+
+}
+POINT  FigureMemory::get_min_point()
+{
+    POINT a;
+    if (figure_list.size() == 0)
+    {
+        a.x = 0;
+        a.y = 0;
+    }
+    else
+        a = figure_list[0]->get_min_point();
+    for (int i = 0; i < figure_list.size(); i++)
+    {
+        if (figure_list[i]->get_min_point().x < a.x)
+            a.x = figure_list[i]->get_min_point().x;
+
+        if (figure_list[i]->get_min_point().y < a.y)
+            a.y = figure_list[i]->get_min_point().y;
+    }
+    return a;
+}
+
+void FigureMemory::update(HWND hWnd, double x, double y)
+{
+    for (int i = 0; i < figure_list.size(); i++)
+        figure_list[i]->update(hWnd, x, y, true);
+    InvalidateRect(hWnd, NULL, TRUE);
 }

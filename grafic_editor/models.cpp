@@ -77,6 +77,11 @@ Figure::Figure(HDC hDC, int x, int y, int width, int height, COLOR color, int br
     this->width = width;
     center.x = x + int(width / 2);
     center.y = y + int(height / 2);
+
+    min_x = cords_x[0];
+    max_x = cords_x[1];
+    min_y = cords_y[0];
+    max_y = cords_y[2];
 }
 
 Figure::~Figure()
@@ -375,31 +380,40 @@ void Figure::calculate_rotation()
     prev.y = pt.y;
 }
 
-void Figure::update(HWND hWnd, int x_, int y_)
+void Figure::update(HWND hWnd, int x_, int y_,BOOL delta_flag)
 {
     RECT rc;
     int x = 0;
     int y = 0;
-    if (x_ == 0 && y_ == 0)
+    if (delta_flag)
     {
-        GetCursorPos(&pt);
-        ScreenToClient(hWnd, &pt);
+       
+        x = x_;
+        y = y_;
 
-        x = prev.x - pt.x;
-        y = prev.y - pt.y;
-        prev.x = pt.x;
-        prev.y = pt.y;
+        prev.x -= x;
+        prev.y -= y;
+
     }
     else
     {
-        OutputDebugStringW(L"1");
-        pt.x = x_;
-        pt.y = y_;
+        if (x_ == 0 && y_ == 0)
+        {
+            GetCursorPos(&pt);
+            ScreenToClient(hWnd, &pt);
 
-        x = center.x - pt.x;
-        y = center.y - pt.y;
-        prev.x -= x;
-        prev.y -= y;
+            x = prev.x - pt.x;
+            y = prev.y - pt.y;
+            prev.x = pt.x;
+            prev.y = pt.y;
+        }
+        else
+        {
+            x = center.x - x_;
+            y = center.y - y_;
+            prev.x -= x;
+            prev.y -= y;
+        }
     }
 
     SetRect(&rc, update_cords_x[0]-1, update_cords_y[0]-1, update_cords_x[2] +1, update_cords_y[2] +1);
@@ -422,6 +436,11 @@ void Figure::update(HWND hWnd, int x_, int y_)
     
     center.x -= x;
     center.y -= y;
+
+    min_x -= x;
+    max_x -= x;
+    min_y -= y;
+    max_y -= y;
 
     SetRect(&rc, update_cords_x[0]-1, update_cords_y[0]-1, update_cords_x[2] +1, update_cords_y[2] +1);
     InvalidateRect(hWnd, &rc, TRUE);
@@ -807,6 +826,17 @@ void Figure::stop_move()
 void Figure::stop_rotate()
 {
     rotate_flag = false;
+    for (int i = 0; i < _msize(cords_x) / sizeof(cords_x[0]); i++)
+    {
+        if (cords_x[i] > max_x)
+            max_x = cords_x[i];
+        if(cords_x[i]<min_x)
+            min_x = cords_x[i];
+        if (cords_y[i] > max_y)
+            max_y = cords_y[i];
+        if (cords_y[i] < min_y)
+            min_y = cords_y[i];
+    }
 }
 
 void Figure::stop_select()
@@ -825,6 +855,18 @@ void Figure::stop_resize()
     }
     resize_flag = false;
     resize_index = -1;
+
+    for (int i = 0; i < _msize(cords_x) / sizeof(cords_x[0]); i++)
+    {
+        if (cords_x[i] > max_x)
+            max_x = cords_x[i];
+        if (cords_x[i] < min_x)
+            min_x = cords_x[i];
+        if (cords_y[i] > max_y)
+            max_y = cords_y[i];
+        if (cords_y[i] < min_y)
+            min_y = cords_y[i];
+    }
 }
 
 void Figure::set_color(COLOR color,HWND hWnd)
@@ -882,6 +924,22 @@ POINT Figure::get_center()
 {
     return center;
 }
+POINT Figure::get_max_point()
+{
+    POINT a;
+    a.x = round(max_x);
+    a.y = round(max_y);
+    return a;
+
+}
+POINT Figure::get_min_point()
+{
+    POINT a;
+    a.x = round(min_x);
+    a.y = round(min_y);
+    return a;
+}
+
 
 Elipse::Elipse(HDC hDC, int x, int y, int width, int height, COLOR color,int style, COLOR border_color, int pen_style,int pen_size)
 {
@@ -927,7 +985,21 @@ Elipse::Elipse(HDC hDC, int x, int y, int width, int height, COLOR color,int sty
     prev.y = y;
 
     
-
+    max_x = cords_x[0];
+    min_x = cords_x[0];
+    max_y = cords_y[0];
+    min_y = cords_y[0];
+    for (int i = 0; i < _msize(cords_x) / sizeof(cords_x[0]); i++)
+    {
+        if (cords_x[i] > max_x)
+            max_x = cords_x[i];
+        if (cords_x[i] < min_x)
+            min_x = cords_x[i];
+        if (cords_y[i] > max_y)
+            max_y = cords_y[i];
+        if (cords_y[i] < min_y)
+            min_y = cords_y[i];
+    }
 }
 
 void Elipse::calculate_cords()
@@ -1119,10 +1191,24 @@ void  Elipse::stop_resize()
 {
     resize_flag = false;
     resize_index = -1;
+
+    for (int i = 0; i < _msize(cords_x) / sizeof(cords_x[0]); i++)
+    {
+        if (cords_x[i] > max_x)
+            max_x = cords_x[i];
+        if (cords_x[i] < min_x)
+            min_x = cords_x[i];
+        if (cords_y[i] > max_y)
+            max_y = cords_y[i];
+        if (cords_y[i] < min_y)
+            min_y = cords_y[i];
+    }
 }
 
 Triangle::Triangle(HDC hDC, int* x, int* y, COLOR color,int style, COLOR border_color, int pen_style,int pen_size)
 {
+
+   
     this->pen_size = pen_size;
     this->pen_style = pen_style;
     brush_stile = style;
@@ -1178,6 +1264,23 @@ Triangle::Triangle(HDC hDC, int* x, int* y, COLOR color,int style, COLOR border_
 
     prev.x = min_x;
     prev.y = min_y;
+
+    max_x = cords_x[0];
+    min_x = cords_x[0];
+    max_y = cords_y[0];
+    min_y = cords_y[0];
+    for (int i = 0; i < _msize(cords_x) / sizeof(cords_x[0]); i++)
+    {
+        if (cords_x[i] > max_x)
+            max_x = cords_x[i];
+        if (cords_x[i] < min_x)
+            min_x = cords_x[i];
+        if (cords_y[i] > max_y)
+            max_y = cords_y[i];
+        if (cords_y[i] < min_y)
+            min_y = cords_y[i];
+    }
+
 }
 
 void Triangle::resize(HWND hWnd)

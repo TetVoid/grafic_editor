@@ -1,6 +1,6 @@
 #include "main_window.h"
 
-
+#include <fstream>
 
 MainWindow::MainWindow(HINSTANCE hInstance, WNDPROC WndProc, WNDPROC WndButtomsProc)
 {
@@ -31,8 +31,8 @@ MainWindow::MainWindow(HINSTANCE hInstance, WNDPROC WndProc, WNDPROC WndButtomsP
         WS_OVERLAPPEDWINDOW, // режимы отображени€ окошка
         CW_USEDEFAULT, // позици€ окошка по оси х
         NULL, // позици€ окошка по оси у (раз дефолт в х, то писать не нужно)
-        CW_USEDEFAULT, // ширина окошка
-        NULL, // высота окошка (раз дефолт в ширине, то писать не нужно)
+        900, // ширина окошка
+        500, // высота окошка (раз дефолт в ширине, то писать не нужно)
         (HWND)NULL, // дескриптор родительского окна
         NULL, // дескриптор меню
         HINSTANCE(hInstance), // дескриптор экземпл€ра приложени€
@@ -54,20 +54,23 @@ MainWindow::MainWindow(HINSTANCE hInstance, WNDPROC WndProc, WNDPROC WndButtomsP
 
     HWND child;
     RECT rect;
-    GetWindowRect(hMainWnd, &rect);
+    GetClientRect(hMainWnd, &rect);
+
+    
     child = CreateWindowEx(
         0,
         L"ChildWClass",
         (LPCTSTR)NULL,
         WS_CHILD | WS_BORDER | WS_VISIBLE,
         0,90,
-        rect.right, rect.bottom,
+        rect.right, rect.bottom-90,
         hMainWnd,
         NULL,
         hInstance,
         NULL);
     hCanvasWnd = child;
     init_color_buttoms();
+    init_scroll_bars();
 }
 
 void MainWindow:: init_color_buttoms()
@@ -357,6 +360,23 @@ void MainWindow:: init_color_buttoms()
 
 }
 
+void  MainWindow::init_scroll_bars()
+{
+    RECT rect;
+    GetClientRect(hCanvasWnd, &rect);
+    hHorizontBar = CreateWindow(L"scrollbar", NULL,
+        WS_CHILD | WS_VISIBLE | SBS_HORZ, 0, rect.bottom-20, rect.right-20, 20,
+       hCanvasWnd, (HMENU)-1, hInst, NULL);
+   SetScrollRange(hHorizontBar, SB_CTL, 0, 100, TRUE);
+   SetScrollPos(hHorizontBar, SB_CTL, 0, TRUE);
+
+    hVerticalBar = CreateWindow(L"scrollbar", NULL,
+       WS_CHILD | WS_VISIBLE | SBS_VERT, rect.right-20, 0, 20,rect.bottom- 20,
+       hCanvasWnd, (HMENU)-1, hInst, NULL);
+   SetScrollRange(hVerticalBar, SB_CTL, 0, 100, TRUE);
+   SetScrollPos(hVerticalBar, SB_CTL, 0, TRUE);
+}
+
 MainWindow::~MainWindow()
 {
 }
@@ -374,4 +394,94 @@ HWND MainWindow::get_canvas_window()
 HINSTANCE MainWindow::get_hInst()
 {
     return hInst;
+}
+
+double  MainWindow::set_xPos(WPARAM wParam)
+{
+    double delta_x=0;
+
+    switch (LOWORD(wParam))
+    {
+
+    case SB_PAGERIGHT:
+        delta_x = 10;
+        xScrollPos += 10;
+        break;
+
+    case SB_PAGELEFT:
+        delta_x = -10;
+        xScrollPos -= 10;
+        break;
+
+    case SB_THUMBTRACK:
+    {
+        delta_x = HIWORD(wParam) - xScrollPos;
+        xScrollPos = HIWORD(wParam);
+        break;
+    }
+    }
+
+   
+    SetScrollPos(hHorizontBar, SB_CTL, xScrollPos, TRUE);
+
+    return delta_x * one_segment_x;
+}
+double  MainWindow::set_yPos(WPARAM wParam)
+{
+    double delta_y=0;
+    switch (LOWORD(wParam))
+    {
+
+    case SB_PAGEDOWN:
+        delta_y = 10;
+        yScrollPos += 10;
+        break;
+
+    case SB_PAGEUP:
+        delta_y = -10;
+        yScrollPos -= 10;
+        break;
+    case SB_THUMBTRACK:
+        delta_y = HIWORD(wParam) - yScrollPos;
+        yScrollPos = HIWORD(wParam);   
+        break;
+    }
+    SetScrollPos(hVerticalBar, SB_CTL, yScrollPos, TRUE);
+    return delta_y * one_segment_y;
+}
+
+void MainWindow::update_scrolls(POINT max, POINT min)
+{
+    int len_x = max.x - min.x;
+    int len_y = max.y - min.y;
+
+    if (len_x % 2 != 0)
+        len_x ++;
+    if (len_y % 2 != 0)
+        len_y++;
+
+    RECT rect;
+    GetClientRect(hCanvasWnd, &rect);
+
+     one_segment_x = len_x / 100.0 +1;
+     one_segment_y = len_y / 100.0 +1;
+
+     int new_x_pos = 0;
+     int new_y_pos = 0;
+    if(min.x<0)
+        new_x_pos = rect.left - min.x;
+    if (min.y<0)
+        new_y_pos = rect.top - min.y;
+
+    std::ofstream fout("log.txt", std::ios::app);
+    fout << new_x_pos << "\n";
+    fout.close();
+    xScrollPos = (100 * new_x_pos) / len_x;
+    yScrollPos = (100 * new_y_pos) / len_y;
+
+   
+    SetScrollPos(hHorizontBar, SB_CTL, xScrollPos, TRUE);
+    SetScrollPos(hVerticalBar, SB_CTL, yScrollPos, TRUE);
+
+   
 }

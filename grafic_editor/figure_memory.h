@@ -14,6 +14,7 @@ public:
 	void rotate(HWND hWnd);
 	void resize(HWND hWnd);
 	void select(HWND hWnd);
+	void update(HWND hWnd, double x, double y);
 
 	void stop_move(HWND hWnd);
 	void stop_rotate(HWND hWnd);
@@ -31,7 +32,8 @@ public:
 
 	BOOL check_position(HWND hWnd);
 	
-
+	POINT get_max_point(HWND hWnd);
+	POINT get_min_point();
 
 private:
 	std::vector<Figure*> figure_list = {};
