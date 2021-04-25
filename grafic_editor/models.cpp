@@ -16,8 +16,10 @@ bool comparator_min_max(double* a, double* b)
 
 Figure::Figure(){}
 
-Figure::Figure(HDC hDC, int x, int y, int width, int height, COLOR color, int brush_stile, COLOR border_color, int pen_style, int pen_size)
+Figure::Figure(HDC hDC,std::wstring name,int id, int x, int y, int width, int height, COLOR color, int brush_stile, COLOR border_color, int pen_style, int pen_size)
 {
+    this->id = id;
+    this->name = name;
     this->pen_size = pen_size;
     this->pen_style = pen_style;
     this->brush_stile = brush_stile;
@@ -872,7 +874,6 @@ void Figure::set_color(COLOR color,HWND hWnd)
     this->color.B = color.B;
     init(hWnd);
 }
-
 void Figure::set_border_color(COLOR color, HWND hWnd)
 {
     this->border_color.R = color.R;
@@ -880,20 +881,25 @@ void Figure::set_border_color(COLOR color, HWND hWnd)
     this->border_color.B = color.B;
     init(hWnd);
 }
-
 void Figure::set_brush_style(int style)
 {
     brush_stile = style;
 }
-
 void Figure::set_pen_style(int style)
 {
     pen_style = style;
 }
-
 void Figure::set_pen_size(int size)
 {
     pen_size = size;
+}
+void Figure::set_name(std::wstring name)
+{
+    this->name = name;
+}
+void Figure::set_id(int id)
+{
+    this->id = id;
 }
 
 COLOR  Figure::get_color()
@@ -935,10 +941,21 @@ POINT Figure::get_min_point()
     a.y = round(min_y);
     return a;
 }
-
-
-Elipse::Elipse(HDC hDC, int x, int y, int width, int height, COLOR color,int style, COLOR border_color, int pen_style,int pen_size)
+std::wstring  Figure::get_name()
 {
+    return name;
+}
+int  Figure::get_id()
+{
+    return id;
+}
+
+
+
+Elipse::Elipse(HDC hDC, std::wstring name, int id, int x, int y, int width, int height, COLOR color,int style, COLOR border_color, int pen_style,int pen_size)
+{
+    this->id = id;
+    this->name = name;
     this->pen_size = pen_size;
     this->pen_style = pen_style;
     brush_stile = style;
@@ -1201,9 +1218,10 @@ void  Elipse::stop_resize()
     }
 }
 
-Triangle::Triangle(HDC hDC, int* x, int* y, COLOR color,int style, COLOR border_color, int pen_style,int pen_size)
+Triangle::Triangle(HDC hDC, std::wstring name, int id, int* x, int* y, COLOR color,int style, COLOR border_color, int pen_style,int pen_size)
 {
-
+    this->id = id;
+    this->name = name;
    
     this->pen_size = pen_size;
     this->pen_style = pen_style;
@@ -1389,6 +1407,7 @@ void Triangle::resize(HWND hWnd)
 
     }
 }
+
 
 /*std::ofstream fout("log.txt", std::ios::app);
     fout << pos.x<<" "<< prev.x<<" "<< pt.x<<" "<< delta.x<<"\n";

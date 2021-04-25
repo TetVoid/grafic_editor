@@ -29,7 +29,7 @@ private:
 	int triangle_index = 0;
 	int triangle_x[3];
 	int triangle_y[3];
-
+	int figure_number = 0;
 	int brush_stile = 7;
 	int pen_style = PS_SOLID;
 

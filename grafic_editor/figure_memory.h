@@ -1,6 +1,6 @@
 #pragma once
 #include "models.h"
-#include <vector>
+#include <map>
 
 class FigureMemory
 {
@@ -8,8 +8,9 @@ public:
 	FigureMemory();
 	~FigureMemory();
 	Figure* operator[](int index);
-	void add(Figure* figure);
+	void add(Figure* figure, int index);
 	void del();
+	void del(int index);
 	void move(HWND hWnd);
 	void rotate(HWND hWnd);
 	void resize(HWND hWnd);
@@ -19,7 +20,6 @@ public:
 	void stop_move(HWND hWnd);
 	void stop_rotate(HWND hWnd);
 	void stop_resize(HWND hWnd);
-	void stop_select(HWND hWnd);
 
 	void draw(HDC hDC);
 	void set_color(COLOR color,HWND hWnd, BOOL color_flag);
@@ -31,12 +31,14 @@ public:
 	BOOL is_selected();
 
 	BOOL check_position(HWND hWnd);
+	BOOL check_name(std::wstring name);
+	BOOL check_id(int id);
 	
 	POINT get_max_point(HWND hWnd);
 	POINT get_min_point();
 
 private:
-	std::vector<Figure*> figure_list = {};
+	std::map<int, Figure*>figure_list;
 	int figure_index = -1;
 };
 

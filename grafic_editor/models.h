@@ -14,7 +14,7 @@ class Figure
 {
 public:
 	Figure();
-	Figure(HDC hDC, int x, int y, int width, int height,COLOR color,int brush_stile, COLOR border_color, int pen_style, int pen_size);
+	Figure(HDC hDC,std::wstring name, int id, int x, int y, int width, int height,COLOR color,int brush_stile, COLOR border_color, int pen_style, int pen_size);
 	~Figure();
 	void draw(HDC hDC);
 	void update(HWND hwnd,int x=0,int y=0, BOOL delta_flag= false);
@@ -33,6 +33,8 @@ public:
 	void set_brush_style(int style);
 	void set_pen_style(int style);
 	void set_pen_size(int size);
+	void set_name(std::wstring);
+	void set_id(int);
 
 	COLOR get_color();
 	COLOR get_border_color();
@@ -40,6 +42,8 @@ public:
 	int get_pen_style();
 	int get_pen_size();
 	POINT get_center();
+	std::wstring get_name();
+	int get_id();
 
 	BOOL check_position(HWND hwnd);
 	BOOL select(HWND hWnd);
@@ -52,6 +56,8 @@ public:
 	POINT get_min_point();
 
 protected:
+	std::wstring name;
+	int id;
 	POINT center;
 	COLOR color;
 	COLOR border_color;
@@ -85,7 +91,7 @@ protected:
 class Elipse : public Figure
 {
 public:
-	Elipse(HDC hDC, int x, int y, int width, int height, COLOR color,int style, COLOR border_color, int pen_style, int pen_size);
+	Elipse(HDC hDC, std::wstring name, int id, int x, int y, int width, int height, COLOR color,int style, COLOR border_color, int pen_style, int pen_size);
 	void resize(HWND hWnd);
 	void stop_resize();
 private:
@@ -95,6 +101,6 @@ private:
 class Triangle : public Figure
 {
 public:
-	Triangle(HDC hDC, int *x, int *y, COLOR color, int style, COLOR border_color, int pen_style, int pen_size);
+	Triangle(HDC hDC, std::wstring name, int id, int *x, int *y, COLOR color, int style, COLOR border_color, int pen_style, int pen_size);
 	void resize(HWND hWnd);
 };

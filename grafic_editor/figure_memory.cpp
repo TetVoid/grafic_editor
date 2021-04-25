@@ -15,18 +15,28 @@ Figure* FigureMemory::operator[](int index)
 	return figure_list[index];
 }
 
-void FigureMemory::add(Figure* figure)
+void FigureMemory::add(Figure* figure,int index)
 {
-	figure_list.push_back(figure);
+	figure_list[index] = figure;
 }
 
 void FigureMemory::del()
 {
     if (figure_index != -1)
     {
-        figure_list.erase(figure_list.begin() + figure_index);
+        std::map <int, Figure*> ::iterator delete_el;
+        delete_el = figure_list.find(figure_index);
+        figure_list.erase(delete_el);
         figure_index = -1;
     }
+}
+
+void FigureMemory::del(int index)
+{
+    std::map <int, Figure*> ::iterator delete_el;
+    delete_el = figure_list.find(index);
+    figure_list.erase(delete_el);
+    figure_index = -1;
 }
 
 void FigureMemory::set_prev_cords(HWND hWnd)
@@ -59,18 +69,19 @@ void FigureMemory::resize(HWND hWnd)
 
 void  FigureMemory::select(HWND hWnd)
 {
-    for (int i = 0; i < figure_list.size(); i++)
+    std::map <int, Figure*> ::iterator it = figure_list.begin();
+    for (; it != figure_list.end(); it++)
     {
       
         int prev_index = figure_index;
-        if (figure_list[i]->select(hWnd))
+        if (it->second->select(hWnd))
         {
-            if (figure_index != -1 && figure_index != i)
+            if (figure_index != -1 && figure_index != it->first)
                 figure_list[figure_index]->stop_select();
-            figure_index = i;
-            figure_list[i]->init(hWnd);
+            figure_index = it->first;
+            it->second->init(hWnd);
         }
-        else if (figure_index == i)
+        else if (figure_index == it->first)
             figure_index = -1;
 
         if (prev_index != -1)
@@ -97,25 +108,22 @@ void FigureMemory::stop_resize(HWND hWnd)
         figure_list[figure_index]->stop_resize();
 }
 
-void FigureMemory::stop_select(HWND hWnd)
-{
-
-}
-
 void FigureMemory::draw(HDC hDC)
 {
     
-    for (int i = 0; i < figure_list.size(); i++)
+    std::map <int, Figure*> ::iterator it = figure_list.begin();
+    for (; it != figure_list.end(); it++)
     {
-        figure_list[i]->draw(hDC);
+        it->second->draw(hDC);
     }
 }
 
 BOOL FigureMemory::check_position(HWND hWnd)
 {
     BOOL position_flag = true;
-    for (int i = 0; i < figure_list.size(); i++)
-        if (figure_list[i]->check_position(hWnd))
+    std::map <int, Figure*> ::iterator it = figure_list.begin();
+    for (; it != figure_list.end(); it++)
+        if (it->second->check_position(hWnd))
         {
             position_flag = false;
             break;
@@ -175,18 +183,21 @@ POINT  FigureMemory::get_max_point(HWND hWnd)
         a.y = rect.bottom;
     }
     else
-        a = figure_list[0]->get_max_point();
-    for (int i = 0; i < figure_list.size(); i++)
-    {
-        if (figure_list[i]->get_max_point().x > a.x)
-            a.x = figure_list[i]->get_max_point().x;
+        a = figure_list.begin()->second->get_max_point();
 
-        if (figure_list[i]->get_max_point().y > a.y)
-            a.y = figure_list[i]->get_max_point().y;
+    std::map <int, Figure*> ::iterator it = figure_list.begin();
+    for (; it != figure_list.end(); it++)
+    {
+        if (it->second->get_max_point().x > a.x)
+            a.x =it->second->get_max_point().x;
+
+        if (it->second->get_max_point().y > a.y)
+            a.y = it->second->get_max_point().y;
     }
     return a;
 
 }
+
 POINT  FigureMemory::get_min_point()
 {
     POINT a;
@@ -196,14 +207,16 @@ POINT  FigureMemory::get_min_point()
         a.y = 0;
     }
     else
-        a = figure_list[0]->get_min_point();
-    for (int i = 0; i < figure_list.size(); i++)
-    {
-        if (figure_list[i]->get_min_point().x < a.x)
-            a.x = figure_list[i]->get_min_point().x;
+        a = figure_list.begin()->second->get_min_point();
 
-        if (figure_list[i]->get_min_point().y < a.y)
-            a.y = figure_list[i]->get_min_point().y;
+    std::map <int, Figure*> ::iterator it = figure_list.begin();
+    for (; it != figure_list.end(); it++)
+    {
+        if (it->second->get_min_point().x < a.x)
+            a.x = it->second->get_min_point().x;
+
+        if (it->second->get_min_point().y < a.y)
+            a.y = it->second->get_min_point().y;
     }
     return a;
 }
@@ -213,4 +226,34 @@ void FigureMemory::update(HWND hWnd, double x, double y)
     for (int i = 0; i < figure_list.size(); i++)
         figure_list[i]->update(hWnd, x, y, true);
     InvalidateRect(hWnd, NULL, FALSE);
+}
+
+BOOL FigureMemory::check_name(std::wstring name)
+{
+    int repit_index = 0;
+
+    std::map <int, Figure*> ::iterator it = figure_list.begin();
+    for (; it != figure_list.end(); it++)
+        if (it->second->get_name()._Equal(name))
+            repit_index++;
+    
+    if (repit_index > 1)
+        return false;
+    else
+        return true;
+}
+
+BOOL FigureMemory::check_id(int id)
+{
+    int repit_index = 0;
+
+    std::map <int, Figure*> ::iterator it = figure_list.begin();
+    for (; it != figure_list.end(); it++)
+        if (it->second->get_id() == id)
+            repit_index++;
+
+    if (repit_index > 1)
+        return false;
+    else
+        return true;
 }

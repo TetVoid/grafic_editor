@@ -41,6 +41,7 @@ MainWindow mainWindow;
 InfoSubWindow subWindow;
 HWND hMainWnd;
 HWND hCanvasWnd;
+int create_index = 0;
 
 int WINAPI WinMain(HINSTANCE hInstance,
     HINSTANCE hPrevInstance,
@@ -619,6 +620,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
         DeleteObject(hBM);
         DeleteDC(bufDC);
 
+
        
         EndPaint(hWnd, &ps); 
         break;
@@ -666,7 +668,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
             if (!fabric.is_draw())
             {
                 Figure* new_pict = fabric.create_figure(hWnd);
-                memory.add(new_pict);
+                memory.add(new_pict,create_index);
+                create_index++;
 
                 new_pict->init(hWnd);
                 InvalidateRect(hWnd, NULL, FALSE);
@@ -682,7 +685,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
         {
             
             info_flag = true;
-            subWindow = InfoSubWindow(mainWindow.get_hInst(), hWnd, memory.get_selected(),&info_flag);
+            subWindow = InfoSubWindow(mainWindow.get_hInst(), hWnd, memory.get_selected(),&info_flag,&memory);
         }
         break;
     }

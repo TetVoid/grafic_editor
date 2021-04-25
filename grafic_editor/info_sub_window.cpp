@@ -13,8 +13,12 @@ HWND edit6;
 HWND edit7;
 HWND edit8;
 HWND edit9;
+HWND edit10;
+HWND edit11;
+
 HWND parent_hWnd;
 BOOL *info;
+FigureMemory *copy_memory;
 
 LRESULT CALLBACK childProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     switch (uMsg) {
@@ -124,7 +128,7 @@ LRESULT CALLBACK childProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
         case 2040:
         {
             
-            TCHAR a[9];
+            TCHAR a[20];
 
             COLOR color;
             GetWindowText(edit1, a, 9);
@@ -151,14 +155,45 @@ LRESULT CALLBACK childProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 
             GetWindowText(edit9, a, 9);
             changed_figure->set_pen_size(_wtoi(a));
-            DestroyWindow(hWnd);
-            *info = false;
+
+            GetWindowText(edit10, a, 20);
+            std::wstring name = a;
+            std::wstring copy_name = changed_figure->get_name();
+            changed_figure->set_name(name);
+
+            if (copy_memory->check_name(name))
+            {
+                GetWindowText(edit11, a, 9);
+                int new_id = _wtoi(a);
+                int copy_id = changed_figure->get_id();
+                changed_figure->set_id(new_id);
+
+                if (copy_memory->check_id(new_id))
+                {
+                    copy_memory->del(copy_id);
+                    copy_memory->add(changed_figure, new_id);
+                    //changed_figure->draw(GetDC(hWnd));
+
+                    DestroyWindow(hWnd);
+                    *info = false;
+                }
+                else
+                {
+                    changed_figure->set_id(copy_id);
+                    SetWindowText(edit11, (LPCWSTR)L"wrong id");
+                }
+               
+            }
+            else
+            {
+                changed_figure->set_name(copy_name);
+                SetWindowText(edit10, (LPCWSTR)L"wrong name");
+                
+            }  
             break;
         }
         }
-        
         break;
-    
     }
     
     case WM_DESTROY:
@@ -170,15 +205,16 @@ LRESULT CALLBACK childProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     
 }
 
-InfoSubWindow::InfoSubWindow(HINSTANCE hInstance,HWND hWnd, Figure* figure,BOOL* info_flag)
+InfoSubWindow::InfoSubWindow(HINSTANCE hInstance,HWND hWnd, Figure* figure,BOOL* info_flag, FigureMemory *mem)
 {
+    copy_memory = mem;
     info = info_flag;
     parent_hWnd = hWnd;
     changed_figure = figure;
     hInst = hInstance;
     POINT pt;
     GetCursorPos(&pt);
-    ScreenToClient(hWnd, &pt);
+    //ClientToScreen(hWnd, &pt);
 
     WNDCLASS wi;
     memset(&wi, 0, sizeof(WNDCLASS));
@@ -187,6 +223,7 @@ InfoSubWindow::InfoSubWindow(HINSTANCE hInstance,HWND hWnd, Figure* figure,BOOL*
     wi.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
     wi.lpszClassName = L"ChildInfoW";
     wi.hCursor = LoadCursor(NULL, IDC_ARROW);
+  
     RegisterClass(&wi);
     HWND child;
     
@@ -194,40 +231,47 @@ InfoSubWindow::InfoSubWindow(HINSTANCE hInstance,HWND hWnd, Figure* figure,BOOL*
         0,
         L"ChildInfoW",
         (LPCTSTR)NULL,
-        WS_CHILD | WS_BORDER | WS_VISIBLE,
-        pt.x-2, pt.y-2,
-        200, 170,
+        WS_BORDER | WS_VISIBLE | WS_POPUP | WS_OVERLAPPED,
+        pt.x, pt.y,
+        200, 220,
         hWnd,
         NULL,
         hInstance,
         NULL);
     hInfoSubWnd = child;
 
-   edit1 = CreateWindow(L"EDIT", 0, WS_BORDER | WS_CHILD | WS_VISIBLE, 60, 2, 30, 20, child, 0, hInst, 0);
+    edit10 = CreateWindow(L"EDIT", 0, WS_BORDER | WS_CHILD | WS_VISIBLE, 60, 2, 125, 20, child, 0, hInst, 0);
+    SetWindowText(edit10, (LPCWSTR)figure->get_name().c_str());
+
+    edit11 = CreateWindow(L"EDIT", 0, WS_BORDER | WS_CHILD | WS_VISIBLE, 60, 25, 125, 20, child, 0, hInst, 0);
+    SetWindowText(edit11, (LPCWSTR)std::to_wstring(figure->get_id()).c_str());
+
+
+   edit1 = CreateWindow(L"EDIT", 0, WS_BORDER | WS_CHILD | WS_VISIBLE, 60, 48, 30, 20, child, 0, hInst, 0);
    SetWindowText(edit1, (LPCWSTR)std::to_wstring(figure->get_color().R).c_str());
 
-   edit2 = CreateWindow(L"EDIT", 0, WS_BORDER | WS_CHILD | WS_VISIBLE, 110, 2, 30, 20, child, 0, hInst, 0);
+   edit2 = CreateWindow(L"EDIT", 0, WS_BORDER | WS_CHILD | WS_VISIBLE, 110, 48, 30, 20, child, 0, hInst, 0);
    SetWindowText(edit2, (LPCWSTR)std::to_wstring(figure->get_color().G).c_str());
 
-   edit3 = CreateWindow(L"EDIT", 0, WS_BORDER | WS_CHILD | WS_VISIBLE, 160, 2, 30, 20, child, 0, hInst, 0);
+   edit3 = CreateWindow(L"EDIT", 0, WS_BORDER | WS_CHILD | WS_VISIBLE, 160, 48, 30, 20, child, 0, hInst, 0);
    SetWindowText(edit3, (LPCWSTR)std::to_wstring(figure->get_color().B).c_str());
 
-   edit4 = CreateWindow(L"EDIT", 0, WS_BORDER | WS_CHILD | WS_VISIBLE, 60, 25, 30, 20, child, 0, hInst, 0);
+   edit4 = CreateWindow(L"EDIT", 0, WS_BORDER | WS_CHILD | WS_VISIBLE, 60, 71, 30, 20, child, 0, hInst, 0);
    SetWindowText(edit4, (LPCWSTR)std::to_wstring(figure->get_border_color().R).c_str());
 
-   edit5 = CreateWindow(L"EDIT", 0, WS_BORDER | WS_CHILD | WS_VISIBLE, 110, 25, 30, 20, child, 0, hInst, 0);
+   edit5 = CreateWindow(L"EDIT", 0, WS_BORDER | WS_CHILD | WS_VISIBLE, 110, 71, 30, 20, child, 0, hInst, 0);
    SetWindowText(edit5, (LPCWSTR)std::to_wstring(figure->get_border_color().G).c_str());
 
-   edit6 = CreateWindow(L"EDIT", 0, WS_BORDER | WS_CHILD | WS_VISIBLE, 160, 25, 30, 20, child, 0, hInst, 0);
+   edit6 = CreateWindow(L"EDIT", 0, WS_BORDER | WS_CHILD | WS_VISIBLE, 160, 71, 30, 20, child, 0, hInst, 0);
    SetWindowText(edit6, (LPCWSTR)std::to_wstring(figure->get_border_color().B).c_str());
 
-   edit7 = CreateWindow(L"EDIT", 0, WS_BORDER | WS_CHILD | WS_VISIBLE, 80, 48, 30, 20, child, 0, hInst, 0);
+   edit7 = CreateWindow(L"EDIT", 0, WS_BORDER | WS_CHILD | WS_VISIBLE, 80, 96, 30, 20, child, 0, hInst, 0);
    SetWindowText(edit7, (LPCWSTR)std::to_wstring(figure->get_center().x).c_str());
 
-   edit8 = CreateWindow(L"EDIT", 0, WS_BORDER | WS_CHILD | WS_VISIBLE, 140, 48, 30, 20, child, 0, hInst, 0);
+   edit8 = CreateWindow(L"EDIT", 0, WS_BORDER | WS_CHILD | WS_VISIBLE, 140, 96, 30, 20, child, 0, hInst, 0);
    SetWindowText(edit8, (LPCWSTR)std::to_wstring(figure->get_center().y).c_str());
 
-   edit9 = CreateWindow(L"EDIT", 0, WS_BORDER | WS_CHILD | WS_VISIBLE, 110, 71, 30, 20, child, 0, hInst, 0);
+   edit9 = CreateWindow(L"EDIT", 0, WS_BORDER | WS_CHILD | WS_VISIBLE, 110, 117, 30, 20, child, 0, hInst, 0);
    SetWindowText(edit9, (LPCWSTR)std::to_wstring(figure->get_pen_size()).c_str());
 
    LPCWSTR buttom_brush_name;
@@ -262,7 +306,7 @@ InfoSubWindow::InfoSubWindow(HINSTANCE hInstance,HWND hWnd, Figure* figure,BOOL*
    brush_style_buttom = CreateWindow(L"BUTTON", buttom_brush_name, WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
 
        60,         // starting x position 
-       94,         // starting y position 
+       140,         // starting y position 
        125,        // button width 
        20,        // button height 
        child,
@@ -297,7 +341,7 @@ InfoSubWindow::InfoSubWindow(HINSTANCE hInstance,HWND hWnd, Figure* figure,BOOL*
    pen_style_buttom = CreateWindow(L"BUTTON", buttom_pen_name, WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
 
        60,         // starting x position 
-       117,         // starting y position 
+       163,         // starting y position 
        125,        // button width 
        20,        // button height 
        child,
@@ -309,7 +353,7 @@ InfoSubWindow::InfoSubWindow(HINSTANCE hInstance,HWND hWnd, Figure* figure,BOOL*
    HWND ok_buttom = CreateWindow(L"BUTTON", L"Apply", WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
 
        150,         // starting x position 
-       143,         // starting y position 
+       190,         // starting y position 
        45,        // button width 
        20,        // button height 
        child,
@@ -330,24 +374,26 @@ InfoSubWindow::InfoSubWindow(HINSTANCE hInstance,HWND hWnd, Figure* figure,BOOL*
    HPEN pen = CreatePen(PS_SOLID, 1, RGB(0, 0, 0));
    SelectObject(dc, pen);
    
-   //SetBkMode(dc, TRANSPARENT);
-   TextOutW(dc, 2, 2, L"Brush", lstrlen(L"Brush"));
-   TextOutW(dc, 45, 2, L"R:", lstrlen(L"R:"));
-   TextOutW(dc, 95, 2, L"G:", lstrlen(L"G:"));
-   TextOutW(dc, 145, 2, L"B:", lstrlen(L"B:"));
 
-   TextOutW(dc, 2, 25, L"Pen", lstrlen(L"Pen"));
-   TextOutW(dc, 45, 25, L"R:", lstrlen(L"R:"));
-   TextOutW(dc, 95, 25, L"G:", lstrlen(L"G:"));
-   TextOutW(dc, 145, 25, L"B:", lstrlen(L"B:"));
+   TextOutW(dc, 2, 2, L"Name", lstrlen(L"Name"));
+   TextOutW(dc, 2, 25, L"Id", lstrlen(L"Id"));
+   TextOutW(dc, 2, 48, L"Brush", lstrlen(L"Brush"));
+   TextOutW(dc, 45, 48, L"R:", lstrlen(L"R:"));
+   TextOutW(dc, 95, 48, L"G:", lstrlen(L"G:"));
+   TextOutW(dc, 145, 48, L"B:", lstrlen(L"B:"));
 
-   TextOutW(dc, 2, 48, L"Center", lstrlen(L"Center"));
-   TextOutW(dc, 65, 48, L"X:", lstrlen(L"X:"));
-   TextOutW(dc, 125, 48, L"Y:", lstrlen(L"Y:"));
+   TextOutW(dc, 2, 71, L"Pen", lstrlen(L"Pen"));
+   TextOutW(dc, 45, 71, L"R:", lstrlen(L"R:"));
+   TextOutW(dc, 95, 71, L"G:", lstrlen(L"G:"));
+   TextOutW(dc, 145, 71, L"B:", lstrlen(L"B:"));
 
-   TextOutW(dc, 2, 71, L"Pen size", lstrlen(L"Pen size"));
-   TextOutW(dc, 2, 94, L"Brush style", lstrlen(L"Brush style"));
-   TextOutW(dc, 2, 117, L"Pen style", lstrlen(L"Pen style"));
+   TextOutW(dc, 2, 94, L"Center", lstrlen(L"Center"));
+   TextOutW(dc, 65, 94, L"X:", lstrlen(L"X:"));
+   TextOutW(dc, 125, 94, L"Y:", lstrlen(L"Y:"));
+
+   TextOutW(dc, 2, 117, L"Pen size", lstrlen(L"Pen size"));
+   TextOutW(dc, 2, 140, L"Brush style", lstrlen(L"Brush style"));
+   TextOutW(dc, 2, 163, L"Pen style", lstrlen(L"Pen style"));
 
 }
 InfoSubWindow::~InfoSubWindow()

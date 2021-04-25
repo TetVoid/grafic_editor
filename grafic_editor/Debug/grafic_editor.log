@@ -1,4 +1,5 @@
-﻿  grafic_editor.cpp
-C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\grafic_editor.cpp(596,10): warning C4101: rect: неиспользованная локальная переменная
-C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\grafic_editor.cpp(590): warning C4715: WndButtomsProc: значение возвращается не при всех путях выполнения
+﻿  figure_memory.cpp
+C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\figure_memory.cpp(226,23): warning C4018: <: несоответствие типов со знаком и без знака
+C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\figure_memory.cpp(227,41): warning C4244: аргумент: преобразование "double" в "int", возможна потеря данных
+C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\grafic_editor\figure_memory.cpp(227,38): warning C4244: аргумент: преобразование "double" в "int", возможна потеря данных
   grafic_editor.vcxproj -> C:\Users\nikbo\Desktop\grafic_editor\grafic_editor\Debug\grafic_editor.exe
