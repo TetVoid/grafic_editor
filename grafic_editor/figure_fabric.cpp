@@ -71,16 +71,27 @@ void  Figure_fabric::set_width_height(HWND hWnd)
 			
 		}
 }
-Figure* Figure_fabric::create_figure(HWND hWnd)
+Figure* Figure_fabric::create_figure(HWND hWnd, FigureMemory mem)
 {
+	while(!mem.check_id(figure_number))
+		figure_number++;
 	std::wstring name = L"Figure" + std::to_wstring(figure_number);
 	Figure* pict = NULL;
 	if (figure_class == "ellips")
-		pict = new Elipse(GetDC(hWnd), name, figure_number, x, y, width, height, color, brush_stile, border_color,pen_style,pen_size);
+	{
+		pict = new Elipse(GetDC(hWnd), name, figure_number, x, y, width, height, color, brush_stile, border_color, pen_style, pen_size);
+		pict->set_type(L"ellips");
+	}
 	else if (figure_class == "rect")
-		pict = new Figure(GetDC(hWnd), name, figure_number, x, y, width, height, color,brush_stile, border_color, pen_style, pen_size);
+	{
+		pict = new Figure(GetDC(hWnd), name, figure_number, x, y, width, height, color, brush_stile, border_color, pen_style, pen_size);
+		pict->set_type(L"rect");
+	}
 	else if (figure_class == "triangle")
+	{
 		pict = new Triangle(GetDC(hWnd), name, figure_number, triangle_x, triangle_y, color, brush_stile, border_color, pen_style, pen_size);
+		pict->set_type(L"triangle");
+	}
 
 	figure_number++;
 	return pict;

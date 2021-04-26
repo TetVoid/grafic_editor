@@ -1,18 +1,19 @@
 #pragma once
 
 #include "models.h"
-
+#include "figure_memory.h"
 class Figure_fabric
 {
 public:
 	Figure_fabric();
 	void set_start_cords(HWND hWnd);
 	void set_width_height(HWND hWnd);
-	Figure* create_figure(HWND hWnd);
+	Figure* create_figure(HWND hWnd, FigureMemory mem);
 	BOOL is_draw();
 	void draw_focus(HWND hWnd);
 	void set_color(COLOR color);
 	void set_border_color(COLOR color);
+
 	void set_figure_class(std::string figure_class);
 	void set_brush_style(int stile);
 	void set_pen_style(int stile);

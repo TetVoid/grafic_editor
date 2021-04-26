@@ -1,4 +1,5 @@
 #include "figure_memory.h"
+#include <fstream>
 
 FigureMemory::FigureMemory()
 {
@@ -252,8 +253,54 @@ BOOL FigureMemory::check_id(int id)
         if (it->second->get_id() == id)
             repit_index++;
 
-    if (repit_index > 1)
+    if (repit_index >= 1)
         return false;
     else
         return true;
+}
+
+void FigureMemory::save(std::wstring path)
+{
+    std::wstring save_string=L"";
+    std::map <int, Figure*> ::iterator it = figure_list.begin();
+    for (; it != figure_list.end(); it++)
+        save_string += it->second->save()+L"\n";
+
+    path += L".gfe";
+    std::wofstream fout(path, std::ios::app);
+    fout << save_string;
+    fout.close();
+}
+
+void  FigureMemory::load(std::wstring path)
+{
+    std::wstring string;
+    std::vector< std::wstring> load_vector;
+    std::wifstream file(path);
+    int index = 0;
+    while (getline(file, string))
+    {
+        load_vector.push_back(string);
+        index++;
+        if (index == 28)
+        {
+            Figure* pict = NULL;
+            if (load_vector[0]._Equal(L"ellips"))
+                pict = new Elipse(load_vector);
+            else if (load_vector[0]._Equal(L"rect"))
+                pict = new Figure(load_vector);
+            else if (load_vector[0]._Equal(L"triangle"))
+                pict = new Triangle(load_vector);
+
+            figure_list[std::stoi(load_vector[2])] = pict;
+
+            index = 0;
+            load_vector.clear();      
+        }
+    }
+}
+
+void FigureMemory::clear()
+{
+    figure_list.clear();
 }

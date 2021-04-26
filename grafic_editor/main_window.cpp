@@ -69,6 +69,14 @@ MainWindow::MainWindow(HINSTANCE hInstance, WNDPROC WndProc, WNDPROC WndButtomsP
         hInstance,
         NULL);
     hCanvasWnd = child;
+
+    HMENU hmenu1 = CreateMenu();
+    HMENU hPopMenuFile = CreatePopupMenu();
+    AppendMenu(hmenu1, MF_STRING | MF_POPUP, (UINT)hPopMenuFile, L"File");
+    AppendMenu(hPopMenuFile, MF_STRING, 1004, L"Save");
+    AppendMenu(hPopMenuFile, MF_STRING, 1005, L"Open");
+    SetMenu(hMainWnd, hmenu1);
+
     init_color_buttoms();
     init_scroll_bars();
 }
@@ -365,13 +373,13 @@ void  MainWindow::init_scroll_bars()
     RECT rect;
     GetClientRect(hCanvasWnd, &rect);
     hHorizontBar = CreateWindow(L"scrollbar", NULL,
-        WS_CHILD | WS_VISIBLE | SBS_HORZ, 0, rect.bottom-20, rect.right-20, 20,
+        WS_CHILD | WS_VISIBLE | SBS_HORZ, 0, rect.bottom-40, rect.right-20, 20,
        hCanvasWnd, (HMENU)-1, hInst, NULL);
    SetScrollRange(hHorizontBar, SB_CTL, 0, 100, TRUE);
    SetScrollPos(hHorizontBar, SB_CTL, 0, TRUE);
 
     hVerticalBar = CreateWindow(L"scrollbar", NULL,
-       WS_CHILD | WS_VISIBLE | SBS_VERT, rect.right-20, 0, 20,rect.bottom- 20,
+       WS_CHILD | WS_VISIBLE | SBS_VERT, rect.right-20, 0, 20,rect.bottom- 40,
        hCanvasWnd, (HMENU)-1, hInst, NULL);
    SetScrollRange(hVerticalBar, SB_CTL, 0, 100, TRUE);
    SetScrollPos(hVerticalBar, SB_CTL, 0, TRUE);

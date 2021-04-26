@@ -166,20 +166,25 @@ LRESULT CALLBACK childProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
                 GetWindowText(edit11, a, 9);
                 int new_id = _wtoi(a);
                 int copy_id = changed_figure->get_id();
-                changed_figure->set_id(new_id);
+                
 
-                if (copy_memory->check_id(new_id))
+                if (new_id == copy_id)
+                {
+                    DestroyWindow(hWnd);
+                    *info = false;
+                }
+                else if (copy_memory->check_id(new_id))
                 {
                     copy_memory->del(copy_id);
+                    changed_figure->stop_select();
+                    changed_figure->set_id(new_id);
                     copy_memory->add(changed_figure, new_id);
-                    //changed_figure->draw(GetDC(hWnd));
 
                     DestroyWindow(hWnd);
                     *info = false;
                 }
                 else
                 {
-                    changed_figure->set_id(copy_id);
                     SetWindowText(edit11, (LPCWSTR)L"wrong id");
                 }
                

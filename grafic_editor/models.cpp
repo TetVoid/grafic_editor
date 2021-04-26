@@ -1,7 +1,7 @@
 #include "models.h"
 #include <fstream>
 #include <algorithm>
-
+#include<sstream>
 
 bool comparator_max_min(double* a, double* b)
 {
@@ -15,6 +15,85 @@ bool comparator_min_max(double* a, double* b)
 }
 
 Figure::Figure(){}
+
+Figure::Figure(std::vector<std::wstring> load_string)
+{
+    type = load_string[0];
+    name = load_string[1];
+    id = std::stoi(load_string[2]);
+
+    std::vector<std::wstring> temp = split(load_string[3]);
+    color.R = std::stoi(temp[0]);
+    color.G = std::stoi(temp[1]);
+    color.B = std::stoi(temp[2]);
+
+    temp = split(load_string[4]);
+    border_color.R = std::stoi(temp[0]);
+    border_color.G = std::stoi(temp[1]);
+    border_color.B = std::stoi(temp[2]);
+   
+    brush_stile = std::stoi(load_string[5]);
+    pen_style = std::stoi(load_string[6]);
+    pen_size = std::stoi(load_string[7]);
+
+    temp = split(load_string[8]);
+    center.x = std::stoi(temp[0]);
+    center.y = std::stoi(temp[1]);
+
+    temp = split(load_string[9]);
+    pt.x = std::stoi(temp[0]);
+    pt.y = std::stoi(temp[1]);
+
+    temp = split(load_string[10]);
+    prev.x = std::stoi(temp[0]);
+    prev.y = std::stoi(temp[1]);
+
+    move_flag = std::stoi(load_string[11]);
+    resize_flag = std::stoi(load_string[12]);
+    select_flag = std::stoi(load_string[13]);
+    rotate_flag = std::stoi(load_string[14]);
+
+    width = std::stoi(load_string[15]);
+    height = std::stoi(load_string[16]);
+
+    rotate_angle = std::stod(load_string[17]);
+    resize_index = std::stoi(load_string[18]);
+
+    center_control_x += std::stoi(load_string[19]);
+    center_control_y += std::stoi(load_string[20]);
+
+    max_x = std::stod(load_string[21]);
+    min_x = std::stod(load_string[22]);
+    max_y = std::stod(load_string[23]);
+    min_y = std::stod(load_string[24]);
+
+
+    temp = split(load_string[25]);
+    for (int i = 0; i < 4; i++)
+    {
+        update_cords_x[i] = std::stod(temp[i * 2]);
+        update_cords_y[i] = std::stod(temp[i * 2 + 1]);
+    }
+
+    temp = split(load_string[26]);
+    start_cords_x = new double[4];
+    start_cords_y = new double[4];
+    for (int i = 0; i < 4; i++)
+    {
+        start_cords_x[i] = std::stod(temp[i * 2]);
+        start_cords_y[i] = std::stod(temp[i * 2 + 1]);
+    }
+
+
+    temp = split(load_string[27]);
+    cords_x = new double[4];
+    cords_y = new double[4];
+    for (int i = 0; i < 4; i++)
+    {
+        cords_x[i] = std::stod(temp[i * 2]);
+        cords_y[i] = std::stod(temp[i * 2 + 1]);
+    }
+}
 
 Figure::Figure(HDC hDC,std::wstring name,int id, int x, int y, int width, int height, COLOR color, int brush_stile, COLOR border_color, int pen_style, int pen_size)
 {
@@ -88,6 +167,17 @@ Figure::Figure(HDC hDC,std::wstring name,int id, int x, int y, int width, int he
 
 Figure::~Figure()
 {
+}
+
+std::vector<std::wstring> Figure::split(std::wstring str)
+{
+    std::wstring temp;
+    std::vector<std::wstring> parts;
+    std::wstringstream wss(str);
+    while (std::getline(wss, temp, L' '))
+        parts.push_back(temp);
+
+    return parts;
 }
 
 void Figure::draw(HDC hDC)
@@ -901,6 +991,10 @@ void Figure::set_id(int id)
 {
     this->id = id;
 }
+void  Figure::set_type(std::wstring type)
+{
+    this->type = type;
+}
 
 COLOR  Figure::get_color()
 {
@@ -950,7 +1044,142 @@ int  Figure::get_id()
     return id;
 }
 
+std::wstring Figure::save()
+{
+    std::wstring figure_info = L"";
+    figure_info += type + L"\n";
+    figure_info += name + L"\n";
+    figure_info += std::to_wstring(id) + L"\n";
+    figure_info += std::to_wstring(color.R)+L" "+std::to_wstring(color.G) + L" "+std::to_wstring(color.B) + L" " + L"\n";
+    figure_info += std::to_wstring(border_color.R) + L" " + std::to_wstring(border_color.G) + L" " + std::to_wstring(border_color.B) + L" " + L"\n";
+    figure_info += std::to_wstring(brush_stile) + L"\n";
+    figure_info += std::to_wstring(pen_style) + L"\n";
+    figure_info += std::to_wstring(pen_size) + L"\n";
 
+    figure_info += std::to_wstring(center.x) + L" " + std::to_wstring(center.y) + L"\n";
+    figure_info += std::to_wstring(pt.x) + L" " + std::to_wstring(pt.y) + L"\n";
+    figure_info += std::to_wstring(prev.x) + L" " + std::to_wstring(prev.y) + L"\n";
+
+    figure_info += std::to_wstring(move_flag) + L"\n";
+    figure_info += std::to_wstring(resize_flag) + L"\n";
+    figure_info += std::to_wstring(select_flag) + L"\n";
+    figure_info += std::to_wstring(rotate_flag) + L"\n";
+
+    figure_info += std::to_wstring(width) + L"\n";
+    figure_info += std::to_wstring(height) + L"\n";
+
+    figure_info += std::to_wstring(rotate_angle) + L"\n";
+    figure_info += std::to_wstring(resize_index) + L"\n";
+
+    figure_info += std::to_wstring(center_control_x) + L"\n";
+    figure_info += std::to_wstring(center_control_y) + L"\n";
+
+    figure_info += std::to_wstring(max_x) + L"\n";
+    figure_info += std::to_wstring(min_x) + L"\n";
+    figure_info += std::to_wstring(max_y) + L"\n";
+    figure_info += std::to_wstring(min_y) + L"\n";
+
+    for (int i = 0; i < 4; i++)
+    {
+        figure_info += std::to_wstring(update_cords_x[i]) + L" ";
+        figure_info += std::to_wstring(update_cords_y[i]) + L" ";
+    }
+    figure_info += L"\n";
+
+    for (int i = 0; i < _msize(start_cords_x)/sizeof(start_cords_x[0]); i++)
+    {
+        figure_info += std::to_wstring(start_cords_x[i]) + L" ";
+        figure_info += std::to_wstring(start_cords_y[i]) + L" ";
+    }
+    figure_info += L"\n";
+
+    for (int i = 0; i < _msize(cords_x) / sizeof(cords_x[0]); i++)
+    {
+        figure_info += std::to_wstring(cords_x[i]) + L" ";
+        figure_info += std::to_wstring(cords_y[i]) + L" ";
+    }
+
+    return figure_info;
+}
+
+Elipse::Elipse(std::vector<std::wstring> load_string)
+{
+    type = load_string[0];
+    name = load_string[1];
+    id = std::stoi(load_string[2]);
+
+    std::vector<std::wstring> temp = split(load_string[3]);
+    color.R = std::stoi(temp[0]);
+    color.G = std::stoi(temp[1]);
+    color.B = std::stoi(temp[2]);
+
+    temp = split(load_string[4]);
+    border_color.R = std::stoi(temp[0]);
+    border_color.G = std::stoi(temp[1]);
+    border_color.B = std::stoi(temp[2]);
+
+    brush_stile = std::stoi(load_string[5]);
+    pen_style = std::stoi(load_string[6]);
+    pen_size = std::stoi(load_string[7]);
+
+    temp = split(load_string[8]);
+    center.x = std::stoi(temp[0]);
+    center.y = std::stoi(temp[1]);
+
+    temp = split(load_string[9]);
+    pt.x = std::stoi(temp[0]);
+    pt.y = std::stoi(temp[1]);
+
+    temp = split(load_string[10]);
+    prev.x = std::stoi(temp[0]);
+    prev.y = std::stoi(temp[1]);
+
+    move_flag = std::stoi(load_string[11]);
+    resize_flag = std::stoi(load_string[12]);
+    select_flag = std::stoi(load_string[13]);
+    rotate_flag = std::stoi(load_string[14]);
+
+    width = std::stoi(load_string[15]);
+    height = std::stoi(load_string[16]);
+
+    rotate_angle = std::stod(load_string[17]);
+    resize_index = std::stoi(load_string[18]);
+
+    center_control_x += std::stoi(load_string[19]);
+    center_control_y += std::stoi(load_string[20]);
+
+    max_x = std::stod(load_string[21]);
+    min_x = std::stod(load_string[22]);
+    max_y = std::stod(load_string[23]);
+    min_y = std::stod(load_string[24]);
+
+
+    temp = split(load_string[25]);
+    for (int i = 0; i < 4; i++)
+    {
+        update_cords_x[i] = std::stod(temp[i * 2]);
+        update_cords_y[i] = std::stod(temp[i * 2 + 1]);
+    }
+
+    temp = split(load_string[26]);
+    start_cords_x = new double[96];
+    start_cords_y = new double[96];
+    for (int i = 0; i < 96; i++)
+    {
+        start_cords_x[i] = std::stod(temp[i * 2]);
+        start_cords_y[i] = std::stod(temp[i * 2 + 1]);
+    }
+
+
+    temp = split(load_string[27]);
+    cords_x = new double[96];
+    cords_y = new double[96];
+    for (int i = 0; i < 96; i++)
+    {
+        cords_x[i] = std::stod(temp[i * 2]);
+        cords_y[i] = std::stod(temp[i * 2 + 1]);
+    }
+}
 
 Elipse::Elipse(HDC hDC, std::wstring name, int id, int x, int y, int width, int height, COLOR color,int style, COLOR border_color, int pen_style,int pen_size)
 {
@@ -1215,6 +1444,85 @@ void  Elipse::stop_resize()
             max_y = cords_y[i];
         if (cords_y[i] < min_y)
             min_y = cords_y[i];
+    }
+}
+
+Triangle::Triangle(std::vector<std::wstring> load_string)
+{
+    type = load_string[0];
+    name = load_string[1];
+    id = std::stoi(load_string[2]);
+
+    std::vector<std::wstring> temp = split(load_string[3]);
+    color.R = std::stoi(temp[0]);
+    color.G = std::stoi(temp[1]);
+    color.B = std::stoi(temp[2]);
+
+    temp = split(load_string[4]);
+    border_color.R = std::stoi(temp[0]);
+    border_color.G = std::stoi(temp[1]);
+    border_color.B = std::stoi(temp[2]);
+
+    brush_stile = std::stoi(load_string[5]);
+    pen_style = std::stoi(load_string[6]);
+    pen_size = std::stoi(load_string[7]);
+
+    temp = split(load_string[8]);
+    center.x = std::stoi(temp[0]);
+    center.y = std::stoi(temp[1]);
+
+    temp = split(load_string[9]);
+    pt.x = std::stoi(temp[0]);
+    pt.y = std::stoi(temp[1]);
+
+    temp = split(load_string[10]);
+    prev.x = std::stoi(temp[0]);
+    prev.y = std::stoi(temp[1]);
+
+    move_flag = std::stoi(load_string[11]);
+    resize_flag = std::stoi(load_string[12]);
+    select_flag = std::stoi(load_string[13]);
+    rotate_flag = std::stoi(load_string[14]);
+
+    width = std::stoi(load_string[15]);
+    height = std::stoi(load_string[16]);
+
+    rotate_angle = std::stod(load_string[17]);
+    resize_index = std::stoi(load_string[18]);
+
+    center_control_x += std::stoi(load_string[19]);
+    center_control_y += std::stoi(load_string[20]);
+
+    max_x = std::stod(load_string[21]);
+    min_x = std::stod(load_string[22]);
+    max_y = std::stod(load_string[23]);
+    min_y = std::stod(load_string[24]);
+
+
+    temp = split(load_string[25]);
+    for (int i = 0; i < 4; i++)
+    {
+        update_cords_x[i] = std::stod(temp[i * 2]);
+        update_cords_y[i] = std::stod(temp[i * 2 + 1]);
+    }
+
+    temp = split(load_string[26]);
+    start_cords_x = new double[3];
+    start_cords_y = new double[3];
+    for (int i = 0; i < 3; i++)
+    {
+        start_cords_x[i] = std::stod(temp[i * 2]);
+        start_cords_y[i] = std::stod(temp[i * 2 + 1]);
+    }
+
+
+    temp = split(load_string[27]);
+    cords_x = new double[3];
+    cords_y = new double[3];
+    for (int i = 0; i < 3; i++)
+    {
+        cords_x[i] = std::stod(temp[i * 2]);
+        cords_y[i] = std::stod(temp[i * 2 + 1]);
     }
 }
 

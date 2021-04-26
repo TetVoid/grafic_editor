@@ -37,6 +37,10 @@ public:
 	POINT get_max_point(HWND hWnd);
 	POINT get_min_point();
 
+	void save(std::wstring);
+	void load(std::wstring);
+	void clear();
+
 private:
 	std::map<int, Figure*>figure_list;
 	int figure_index = -1;

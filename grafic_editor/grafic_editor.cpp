@@ -175,6 +175,57 @@ LRESULT CALLBACK WndButtomsProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
         BOOL set_size = false;
         switch (LOWORD(wParam))
         {
+        case 1004:
+        {
+            set_color_flag = false;
+
+            OPENFILENAME ofn;
+            TCHAR fileName[MAX_PATH];
+            *fileName = 0;
+
+            memset(&ofn, 0, sizeof(OPENFILENAME));
+            ofn.lStructSize = sizeof(OPENFILENAME);
+            ofn.hwndOwner = NULL;
+            ofn.lpstrFile = fileName;
+            ofn.nMaxFile = sizeof(fileName);
+            ofn.lpstrFilter = TEXT("All Files (*.*)\0*.*\0gfe files (*.gfe)\0*.gfe\0\0");
+            ofn.nFilterIndex = 1;
+            ofn.lpstrTitle = (LPCWSTR)TEXT("Save in file");   //заголовок
+            ofn.lpstrInitialDir = (LPCWSTR)"c:\\Documents";   //начальный каталог для сохранения
+            ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
+
+            GetSaveFileName(&ofn);
+            std::wstring a = fileName;
+            memory.save(a);
+          
+        }
+            break;
+        case 1005:
+        {
+            set_color_flag = false;
+
+            OPENFILENAME ofn;
+            TCHAR fileName[MAX_PATH];
+            *fileName = 0;
+
+            memset(&ofn, 0, sizeof(OPENFILENAME));
+            ofn.lStructSize = sizeof(OPENFILENAME);
+            ofn.hwndOwner = NULL;
+            ofn.lpstrFile = fileName;
+            ofn.nMaxFile = sizeof(fileName);
+            ofn.lpstrFilter = TEXT("All Files (*.*)\0*.*\0gfe files (*.gfe)\0*.gfe\0\0");
+            ofn.nFilterIndex = 1;
+            ofn.lpstrTitle = (LPCWSTR)TEXT("Save in file");   //заголовок
+            ofn.lpstrInitialDir = (LPCWSTR)"c:\\Documents";   //начальный каталог для сохранения
+            ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
+
+            GetOpenFileName(&ofn);
+            std::wstring a = fileName;
+            memory.clear();
+            memory.load(a);
+
+        }
+            break;
         case 1010:
             color.R = 0;
             color.G = 0;
@@ -667,7 +718,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
             fabric.set_width_height(hWnd);
             if (!fabric.is_draw())
             {
-                Figure* new_pict = fabric.create_figure(hWnd);
+                Figure* new_pict = fabric.create_figure(hWnd,memory);
+                while (!memory.check_id(create_index))
+                    create_index++;
                 memory.add(new_pict,create_index);
                 create_index++;
 

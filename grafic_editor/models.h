@@ -14,6 +14,7 @@ class Figure
 {
 public:
 	Figure();
+	Figure(std::vector<std::wstring>);
 	Figure(HDC hDC,std::wstring name, int id, int x, int y, int width, int height,COLOR color,int brush_stile, COLOR border_color, int pen_style, int pen_size);
 	~Figure();
 	void draw(HDC hDC);
@@ -35,6 +36,7 @@ public:
 	void set_pen_size(int size);
 	void set_name(std::wstring);
 	void set_id(int);
+	void set_type(std::wstring);
 
 	COLOR get_color();
 	COLOR get_border_color();
@@ -55,19 +57,24 @@ public:
 	POINT get_max_point();
 	POINT get_min_point();
 
+	std::wstring save();
+
 protected:
 	std::wstring name;
 	int id;
 	POINT center;
 	COLOR color;
 	COLOR border_color;
+	POINT pt, prev;
+
 	int brush_stile = 7;
 	int pen_size = 2;
 	int pen_style = PS_SOLID;
+
 	double *start_cords_x, *start_cords_y;
 	double *cords_x, *cords_y;
 	double update_cords_x[4], update_cords_y[4];
-	POINT pt,prev;
+
 	BOOL move_flag = false, resize_flag=false,select_flag=false,rotate_flag=false;
 	int height, width;
 	double rotate_angle = 0;
@@ -82,15 +89,20 @@ protected:
 	double max_y;
 	double min_y;
 
+	std::wstring type = L"";
+
 	void draw_resize_rotate_zone(HDC hDC);
 	void calculate_rotation();
 	void draw_borders(HDC hDC);
 	void draw_segment(HDC hDC, int start, int finish, std::vector<int> desh_len, double* remainder, int* index, int* desh_index);
+
+	std::vector<std::wstring> split(std::wstring);
 };
 
 class Elipse : public Figure
 {
 public:
+	Elipse(std::vector<std::wstring>);
 	Elipse(HDC hDC, std::wstring name, int id, int x, int y, int width, int height, COLOR color,int style, COLOR border_color, int pen_style, int pen_size);
 	void resize(HWND hWnd);
 	void stop_resize();
@@ -101,6 +113,7 @@ private:
 class Triangle : public Figure
 {
 public:
+	Triangle(std::vector<std::wstring>);
 	Triangle(HDC hDC, std::wstring name, int id, int *x, int *y, COLOR color, int style, COLOR border_color, int pen_style, int pen_size);
 	void resize(HWND hWnd);
 };
