@@ -197,8 +197,13 @@ LRESULT CALLBACK childProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
             }  
             break;
         }
+        case 2041:
+            changed_figure->normalize(parent_hWnd);
+            break;
         }
         break;
+
+        
     }
     
     case WM_DESTROY:
@@ -363,6 +368,18 @@ InfoSubWindow::InfoSubWindow(HINSTANCE hInstance,HWND hWnd, Figure* figure,BOOL*
        20,        // button height 
        child,
        (HMENU)2040,
+       hInst,
+       NULL);
+
+
+   HWND normalize_buttom = CreateWindow(L"BUTTON", L"Normalize", WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
+
+       2,         // starting x position 
+       190,         // starting y position 
+       75,        // button width 
+       20,        // button height 
+       child,
+       (HMENU)2041,
        hInst,
        NULL);
 

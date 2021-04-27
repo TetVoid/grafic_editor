@@ -783,6 +783,59 @@ void Figure::resize(HWND hWnd)
 
 }
 
+void  Figure::normalize(HWND hWnd)
+{
+
+    RECT rc;
+    SetRect(&rc, update_cords_x[0] - 1, update_cords_y[0] - 1, update_cords_x[2] + 1, update_cords_y[2] + 1);
+    InvalidateRect(hWnd, &rc, FALSE);
+
+    int perimentr = 0;
+    for (int i = 0; i < 3; i++)
+    {
+        perimentr += sqrt(pow(cords_x[i] - cords_x[i + 1], 2) + pow(cords_y[i] - cords_y[i + 1], 2));
+    }
+    perimentr += sqrt(pow(cords_x[0] - cords_x[3], 2) + pow(cords_y[0] - cords_y[3], 2));
+
+    int new_width = (perimentr) / 4;
+    update_cords_x[0] = center.x - new_width / 2 - half_side;
+    update_cords_x[1] = center.x + new_width / 2 + half_side;
+    update_cords_x[2] = center.x + new_width / 2 + half_side;
+    update_cords_x[3] = center.x - new_width / 2 - half_side;
+
+    update_cords_y[0] = center.y - new_width / 2 - half_side;
+    update_cords_y[1] = center.y - new_width / 2 - half_side;
+    update_cords_y[2] = center.y + new_width / 2 + half_side;
+    update_cords_y[3] = center.y + new_width / 2 + half_side;
+
+    cords_x[0] = center.x - new_width / 2;
+    cords_x[1] = center.x + new_width / 2;
+    cords_x[2] = center.x + new_width / 2;
+    cords_x[3] = center.x - new_width / 2;
+
+    cords_y[0] = center.y - new_width / 2;
+    cords_y[1] = center.y - new_width / 2;
+    cords_y[2] = center.y + new_width / 2;
+    cords_y[3] = center.y + new_width / 2;
+
+    start_cords_x[0] = center.x - new_width / 2;
+    start_cords_x[1] = center.x + new_width / 2;
+    start_cords_x[2] = center.x + new_width / 2;
+    start_cords_x[3] = center.x - new_width / 2;
+
+    start_cords_y[0] = center.y - new_width / 2;
+    start_cords_y[1] = center.y - new_width / 2;
+    start_cords_y[2] = center.y + new_width / 2;
+    start_cords_y[3] = center.y + new_width / 2;
+
+    rotate_angle = 0;
+    width = new_width;
+    height = new_width;
+
+    SetRect(&rc, update_cords_x[0] - 1, update_cords_y[0] - 1, update_cords_x[2] + 1, update_cords_y[2] + 1);
+    InvalidateRect(hWnd, &rc, FALSE);
+}
+
 BOOL Figure::check_position(HWND hWnd)
 {
     BOOL flag = false;
@@ -1447,6 +1500,32 @@ void  Elipse::stop_resize()
     }
 }
 
+void Elipse::normalize(HWND hWnd)
+{
+    RECT rc;
+    SetRect(&rc, update_cords_x[0] - 1, update_cords_y[0] - 1, update_cords_x[2] + 1, update_cords_y[2] + 1);
+    InvalidateRect(hWnd, &rc, FALSE);
+    int new_width = (width + height) / 2;
+    update_cords_x[0] = center.x - new_width / 2 - half_side;
+    update_cords_x[1] = center.x + new_width / 2 + half_side;
+    update_cords_x[2] = center.x + new_width / 2 + half_side;
+    update_cords_x[3] = center.x - new_width / 2 - half_side;
+
+    update_cords_y[0] = center.y - new_width / 2 - half_side;
+    update_cords_y[1] = center.y - new_width / 2 - half_side;
+    update_cords_y[2] = center.y + new_width / 2 + half_side;
+    update_cords_y[3] = center.y + new_width / 2 + half_side;
+    width = new_width;
+    height = new_width;
+
+    calculate_cords();
+    if (rotate_angle != 0)
+        calculate_rotation();
+
+    SetRect(&rc, update_cords_x[0] - 1, update_cords_y[0] - 1, update_cords_x[2] + 1, update_cords_y[2] + 1);
+    InvalidateRect(hWnd, &rc, FALSE);
+}
+
 Triangle::Triangle(std::vector<std::wstring> load_string)
 {
     type = load_string[0];
@@ -1714,6 +1793,77 @@ void Triangle::resize(HWND hWnd)
     }
 
     }
+}
+
+void Triangle::normalize(HWND hWnd)
+{
+    RECT rc;
+    SetRect(&rc, update_cords_x[0] - 1, update_cords_y[0] - 1, update_cords_x[2] + 1, update_cords_y[2] + 1);
+    InvalidateRect(hWnd, &rc, FALSE);
+
+    int perimentr = 0;
+    for (int i = 0; i < 2; i++)
+    {
+        perimentr += sqrt(pow(cords_x[i] - cords_x[i + 1], 2) + pow(cords_y[i] - cords_y[i + 1], 2));
+    }
+    perimentr += sqrt(pow(cords_x[0] - cords_x[2], 2) + pow(cords_y[0] - cords_y[2], 2));
+    int new_widt = perimentr / 3;
+    int median = sqrt(pow(new_widt, 2) - pow(new_widt/2, 2));
+
+    cords_x[0] = center.x;
+    cords_y[0] = center.y - median * 2 / 3;
+
+    cords_x[1] = center.x + new_widt / 2;
+    cords_y[1] = center.y + median / 3;
+
+    cords_x[2] = center.x - new_widt / 2;
+    cords_y[2] = center.y + median / 3;
+
+
+    start_cords_x[0] = center.x;
+    start_cords_y[0] = center.y - median * 2 / 3;
+
+    start_cords_x[1] = center.x + new_widt / 2;
+    start_cords_y[1] = center.y + median / 3;
+
+    start_cords_x[2] = center.x - new_widt / 2;
+    start_cords_y[2] = center.y + median / 3;
+
+    max_x = cords_x[0];
+    max_y = cords_y[0];
+    min_x = cords_x[0];
+    min_y = cords_y[0];
+    for (int i = 0; i < 3; i++)
+    {
+        if (max_x < cords_x[i])
+            max_x = cords_x[i];
+        if (min_x > cords_x[i])
+            min_x = cords_x[i];
+        if (max_y < cords_y[i])
+            max_y = cords_y[i];
+        if (min_y > cords_y[i])
+            min_y = cords_y[i];
+    }
+    center.x = min_x + int((max_x - min_x) / 2);
+    center.y = min_y + int((max_x - min_x) / 2);
+
+    update_cords_x[0] = min_x - half_side;
+    update_cords_y[0] = min_y - half_side;
+
+    update_cords_x[1] = max_x + width + half_side;
+    update_cords_y[1] = min_y - half_side;
+
+    update_cords_x[2] = max_x + width + half_side;
+    update_cords_y[2] = max_y + height + half_side;
+
+    update_cords_x[3] = min_x - half_side;
+    update_cords_y[3] = max_y + height + half_side;
+
+    rotate_angle = 0;
+
+    SetRect(&rc, update_cords_x[0] - 1, update_cords_y[0] - 1, update_cords_x[2] + 1, update_cords_y[2] + 1);
+    InvalidateRect(hWnd, &rc, FALSE);
+
 }
 
 

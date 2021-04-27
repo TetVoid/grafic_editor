@@ -22,6 +22,7 @@ public:
 	void init(HWND hwnd);
 	void rotate(HWND hWnd);
 	void virtual resize(HWND hWnd);
+	void virtual normalize(HWND hWnd);
 
 	void set_prev_cords(HWND hWnd);
 	void stop_move();
@@ -106,6 +107,7 @@ public:
 	Elipse(HDC hDC, std::wstring name, int id, int x, int y, int width, int height, COLOR color,int style, COLOR border_color, int pen_style, int pen_size);
 	void resize(HWND hWnd);
 	void stop_resize();
+	void normalize(HWND hWnd);
 private:
 	void calculate_cords();
 };
@@ -115,5 +117,6 @@ class Triangle : public Figure
 public:
 	Triangle(std::vector<std::wstring>);
 	Triangle(HDC hDC, std::wstring name, int id, int *x, int *y, COLOR color, int style, COLOR border_color, int pen_style, int pen_size);
+	void normalize(HWND hWnd);
 	void resize(HWND hWnd);
 };
