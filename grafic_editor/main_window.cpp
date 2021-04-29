@@ -2,6 +2,8 @@
 
 #include <fstream>
 
+#include <commctrl.h>
+
 MainWindow::MainWindow(HINSTANCE hInstance, WNDPROC WndProc, WNDPROC WndButtomsProc)
 {
     hInst = hInstance;
@@ -31,7 +33,7 @@ MainWindow::MainWindow(HINSTANCE hInstance, WNDPROC WndProc, WNDPROC WndButtomsP
         WS_OVERLAPPEDWINDOW, // режимы отображения окошка
         CW_USEDEFAULT, // позиция окошка по оси х
         NULL, // позиция окошка по оси у (раз дефолт в х, то писать не нужно)
-        900, // ширина окошка
+        1150, // ширина окошка
         500, // высота окошка (раз дефолт в ширине, то писать не нужно)
         (HWND)NULL, // дескриптор родительского окна
         NULL, // дескриптор меню
@@ -47,7 +49,7 @@ MainWindow::MainWindow(HINSTANCE hInstance, WNDPROC WndProc, WNDPROC WndButtomsP
     w.lpfnWndProc = WndProc;
     w.hInstance = hInstance;
     w.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
-    w.lpszClassName = L"ChildWClass";
+    w.lpszClassName =  L"ChildWClass";
     w.hCursor = LoadCursor(NULL, IDC_ARROW);
     w.style =  CS_DBLCLKS | CS_CLASSDC;
     RegisterClass(&w);
@@ -62,23 +64,39 @@ MainWindow::MainWindow(HINSTANCE hInstance, WNDPROC WndProc, WNDPROC WndButtomsP
         L"ChildWClass",
         (LPCTSTR)NULL,
         WS_CHILD | WS_BORDER | WS_VISIBLE,
-        0,90,
-        rect.right, rect.bottom-90,
+        5,85,
+        rect.right-10, rect.bottom-110,
         hMainWnd,
         NULL,
         hInstance,
         NULL);
     hCanvasWnd = child;
 
+   
+
+   
+  
+
+
     HMENU hmenu1 = CreateMenu();
     HMENU hPopMenuFile = CreatePopupMenu();
+    HMENU hPopMenuWindow = CreatePopupMenu();
     AppendMenu(hmenu1, MF_STRING | MF_POPUP, (UINT)hPopMenuFile, L"File");
+    AppendMenu(hmenu1, MF_STRING | MF_POPUP, (UINT)hPopMenuWindow, L"Window");
     AppendMenu(hPopMenuFile, MF_STRING, 1004, L"Save");
     AppendMenu(hPopMenuFile, MF_STRING, 1005, L"Open");
+
+    AppendMenu(hPopMenuWindow, MF_STRING, 1006, L"Draw");
+    AppendMenu(hPopMenuWindow, MF_STRING, 1007, L"Table");
+
+   
+
     SetMenu(hMainWnd, hmenu1);
 
     init_color_buttoms();
     init_scroll_bars();
+
+   
 }
 
 void MainWindow:: init_color_buttoms()
@@ -373,13 +391,13 @@ void  MainWindow::init_scroll_bars()
     RECT rect;
     GetClientRect(hCanvasWnd, &rect);
     hHorizontBar = CreateWindow(L"scrollbar", NULL,
-        WS_CHILD | WS_VISIBLE | SBS_HORZ, 0, rect.bottom-40, rect.right-20, 20,
+        WS_CHILD | WS_VISIBLE | SBS_HORZ, 0, rect.bottom-20, rect.right-20, 20,
        hCanvasWnd, (HMENU)-1, hInst, NULL);
    SetScrollRange(hHorizontBar, SB_CTL, 0, 100, TRUE);
    SetScrollPos(hHorizontBar, SB_CTL, 0, TRUE);
 
     hVerticalBar = CreateWindow(L"scrollbar", NULL,
-       WS_CHILD | WS_VISIBLE | SBS_VERT, rect.right-20, 0, 20,rect.bottom- 40,
+       WS_CHILD | WS_VISIBLE | SBS_VERT, rect.right-20, 0, 20,rect.bottom- 20,
        hCanvasWnd, (HMENU)-1, hInst, NULL);
    SetScrollRange(hVerticalBar, SB_CTL, 0, 100, TRUE);
    SetScrollPos(hVerticalBar, SB_CTL, 0, TRUE);

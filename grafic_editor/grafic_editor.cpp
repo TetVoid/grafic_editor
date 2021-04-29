@@ -9,6 +9,7 @@
 #include "interface.h"
 #include "figure_memory.h"
 #include "info_sub_window.h"
+#include "tableInfo.h"
 
 HBRUSH brushes[] = {
    CreateSolidBrush(RGB(0, 0, 0)),
@@ -35,6 +36,7 @@ LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 LRESULT CALLBACK WndButtomsProc(HWND, UINT, WPARAM, LPARAM);
 FigureMemory memory;
 Figure_fabric fabric;
+TableInfoWindow info;
 
 Interface window_interface = Interface();
 MainWindow mainWindow;
@@ -42,6 +44,7 @@ InfoSubWindow subWindow;
 HWND hMainWnd;
 HWND hCanvasWnd;
 int create_index = 0;
+BOOL table_info_flag = true;
 
 int WINAPI WinMain(HINSTANCE hInstance,
     HINSTANCE hPrevInstance,
@@ -55,9 +58,6 @@ int WINAPI WinMain(HINSTANCE hInstance,
 
     ShowWindow(hMainWnd, nCmdShow); 
     UpdateWindow(hMainWnd); 
-
-    ShowWindow(hCanvasWnd, nCmdShow);
-    UpdateWindow(hCanvasWnd);
 
 
     while (GetMessage(&msg, NULL, NULL, NULL)) { 
@@ -197,9 +197,9 @@ LRESULT CALLBACK WndButtomsProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
             GetSaveFileName(&ofn);
             std::wstring a = fileName;
             memory.save(a);
-          
-        }
             break;
+        }
+           
         case 1005:
         {
             set_color_flag = false;
@@ -223,9 +223,28 @@ LRESULT CALLBACK WndButtomsProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
             std::wstring a = fileName;
             memory.clear();
             memory.load(a);
-
-        }
             break;
+        }
+
+        case 1006:
+            set_color_flag = false;
+            if (!table_info_flag)
+            {
+                DestroyWindow(info.get_window());
+                table_info_flag = true;
+            }
+            break;
+        case 1007:
+        {
+            set_color_flag = false;
+            if (table_info_flag)
+            {
+                info = TableInfoWindow(mainWindow.get_hInst(), hWnd, &memory);
+                table_info_flag = false;
+            }
+            break;
+        }
+           
         case 1010:
             color.R = 0;
             color.G = 0;
@@ -687,8 +706,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
         
         if (fabric.is_draw())
             fabric.draw_focus(hWnd);
-        
-        mainWindow.update_scrolls(memory.get_max_point(hWnd), memory.get_min_point());
+        if(table_info_flag)
+            mainWindow.update_scrolls(memory.get_max_point(hWnd), memory.get_min_point());
             
         break;
     case WM_LBUTTONDBLCLK:

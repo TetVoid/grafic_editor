@@ -13,7 +13,17 @@ FigureMemory::~FigureMemory()
 
 Figure* FigureMemory::operator[](int index)
 {
-	return figure_list[index];
+
+    std::map <int, Figure*> ::iterator it = figure_list.begin();
+    for (int i = 0; i != index; i++)
+        it++;
+
+	return it->second;
+}
+
+int  FigureMemory::size()
+{
+    return figure_list.size();
 }
 
 void FigureMemory::add(Figure* figure,int index)

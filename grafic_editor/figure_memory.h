@@ -41,6 +41,8 @@ public:
 	void load(std::wstring);
 	void clear();
 
+	int size();
+
 private:
 	std::map<int, Figure*>figure_list;
 	int figure_index = -1;
