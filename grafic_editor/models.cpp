@@ -373,7 +373,7 @@ void Figure::rotate(HWND hWnd)
     index++;
     RECT rc;
     SetRect(&rc, update_cords_x[0]-1, update_cords_y[0]-1, update_cords_x[2]+1, update_cords_y[2]+1);
-    InvalidateRect(hWnd, &rc, FALSE);
+    InvalidateRect(hWnd, NULL, FALSE);
 
     GetCursorPos(&pt);
     ScreenToClient(hWnd, &pt);
@@ -505,7 +505,7 @@ void Figure::update(HWND hWnd, int x_, int y_,BOOL delta_flag)
     }
 
     SetRect(&rc, update_cords_x[0]-1, update_cords_y[0]-1, update_cords_x[2] +1, update_cords_y[2] +1);
-    InvalidateRect(hWnd, &rc, FALSE);
+    InvalidateRect(hWnd, NULL, FALSE);
 
     for (int i = 0; i < _msize(cords_x) / sizeof(cords_x[0]); i++)
     {
@@ -531,7 +531,7 @@ void Figure::update(HWND hWnd, int x_, int y_,BOOL delta_flag)
     max_y -= y;
 
     SetRect(&rc, update_cords_x[0]-1, update_cords_y[0]-1, update_cords_x[2] +1, update_cords_y[2] +1);
-    InvalidateRect(hWnd, &rc, FALSE);
+    InvalidateRect(hWnd, NULL, FALSE);
 }
 
 void Figure::resize(HWND hWnd)
@@ -543,7 +543,7 @@ void Figure::resize(HWND hWnd)
     int delta_y = pt.y - prev.y;
 
     SetRect(&rc, update_cords_x[0] - 1, update_cords_y[0] - 1, update_cords_x[2] + 1, update_cords_y[2] + 1);
-    InvalidateRect(hWnd, &rc, FALSE);
+    InvalidateRect(hWnd, NULL, FALSE);
     
     std::vector<double*> up_x_cords;
     std::vector<double*> down_x_cords;
@@ -779,7 +779,7 @@ void Figure::resize(HWND hWnd)
 
 
     SetRect(&rc, update_cords_x[0] - 1, update_cords_y[0] - 1, update_cords_x[2] + 1, update_cords_y[2] + 1);
-    InvalidateRect(hWnd, &rc, FALSE);
+    InvalidateRect(hWnd, NULL, FALSE);
 
 }
 
@@ -1096,6 +1096,60 @@ int  Figure::get_id()
 {
     return id;
 }
+std::wstring Figure::get_type()
+{
+    return type;
+}
+
+POINT Figure::get_border_point(double x, double y)
+{
+    double k2;
+    double b2;
+    double k1 = abs(center.y - y) / abs(center.x - x);
+
+    if ((center.x<x && center.y>y) || (center.x>x && center.y<y))
+        k1 *= -1;
+    
+    double b1 = y - k1 * x;
+    POINT answer;
+    for (int i = 0; i < _msize(cords_x) / sizeof(cords_x[0]); i++)
+    {
+        int next = i+1;
+        if (i == _msize(cords_x) / sizeof(cords_x[0]) - 1)
+            next = 0;
+
+        double x1 = cords_x[i],
+            x2 = cords_x[next],
+            y1 = cords_y[i],
+            y2 = cords_y[next];
+        if (x1 != x2)
+        {
+             k2 = abs(y1 - y2) / abs(x1 - x2);
+
+            if ((x1 < x2 && y1 > y2) || (x1 > x2 && y1 < y2))
+                k2 *= -1;
+            b2 = y1 - k2 * x1;
+
+            answer.x = round((b2 - b1) / (k1 - k2));
+            answer.y = round(k2 * answer.x + b2);
+        }
+        else
+        {
+            answer.x = round(x1);
+            answer.y = round(k1 * answer.x + b1);
+        }
+            
+       
+        
+        
+        if ((x > center.x) && (answer.x >= center.x) && (answer.x <= x) || (x < center.x) && (answer.x <= center.x) && (answer.x >= x))
+            if ((x1 >= x2) && (answer.x+2 >= x2) && (answer.x-2 <= x1) || (x1 <= x2) && (answer.x-2 <= x2) && (answer.x+2 >= x1))
+                if ((y > center.y) && (answer.y >= center.y) && (answer.y <= y) || (y < center.y) && (answer.y <= center.y) && (answer.y >= y))
+                    if ((y1 >= y2) && (answer.y + 2 >= y2) && (answer.y-2 <= y1) || (y1 <= y2) && (answer.y-2 <= y2) && (answer.y+2 >= y1))
+                        break;
+    }
+    return answer;
+}
 
 std::wstring Figure::save()
 {
@@ -1408,7 +1462,7 @@ void  Elipse::resize(HWND hWnd)
     int delta_y = pt.y - prev.y;
 
     SetRect(&rc, update_cords_x[0] - 1, update_cords_y[0] - 1, update_cords_x[2] + 1, update_cords_y[2] + 1);
-    InvalidateRect(hWnd, &rc, FALSE);
+    InvalidateRect(hWnd, NULL, FALSE);
 
 
     switch (resize_index)
@@ -1682,7 +1736,7 @@ void Triangle::resize(HWND hWnd)
     int delta_y = pt.y - prev.y;
 
     SetRect(&rc, update_cords_x[0] - 1, update_cords_y[0] - 1, update_cords_x[2] + 1, update_cords_y[2] + 1);
-    InvalidateRect(hWnd, &rc, FALSE);
+    InvalidateRect(hWnd, NULL, FALSE);
     int index_min_x=0;
     int index_max_x=0;
     int index_min_y=0;
@@ -1866,6 +1920,373 @@ void Triangle::normalize(HWND hWnd)
 
 }
 
+
+Arrow::Arrow(std::vector<std::wstring> load_string, Figure* figur1, Figure* figur2)
+{
+    this->figur1 = figur1;
+    this->figur2 = figur2;
+    type = load_string[0];
+    name = load_string[1];
+    id = std::stoi(load_string[2]);
+
+    std::vector<std::wstring> temp =  split(load_string[5]);
+    
+    border_color.R = std::stoi(temp[0]);
+    border_color.G = std::stoi(temp[1]);
+    border_color.B = std::stoi(temp[2]);
+
+    pen_style = std::stoi(load_string[6]);
+    pen_size = std::stoi(load_string[7]);    
+
+    arrow_style =  std::stoi(load_string[8]);
+
+    temp = split(load_string[9]);
+    start_cords_x = new double[2];
+    start_cords_y = new double[2];
+    for (int i = 0; i < 2; i++)
+    {
+        start_cords_x[i] = std::stod(temp[i * 2]);
+        start_cords_y[i] = std::stod(temp[i * 2 + 1]);
+    }
+
+
+    temp = split(load_string[10]);
+    cords_x = new double[2];
+    cords_y = new double[2];
+    for (int i = 0; i < 2; i++)
+    {
+        cords_x[i] = std::stod(temp[i * 2]);
+        cords_y[i] = std::stod(temp[i * 2 + 1]);
+    }
+}
+Arrow::Arrow(Figure* figur1, Figure* figur2, COLOR border_color, int pen_size, int pen_style,int id, std::wstring name, int arrow_style)
+{
+    this->arrow_style = arrow_style;
+    this->name = name;
+    this->id = id;
+    this->pen_size = pen_size;
+    this->pen_style = pen_style;
+   
+
+    this->border_color.R = border_color.R;
+    this->border_color.G = border_color.G;
+    this->border_color.B = border_color.B;
+
+    this->figur1 = figur1;
+    this->figur2 = figur2;
+    cords_x = new double[2];
+    cords_y = new double[2];
+
+    start_cords_x = new double[2];
+    start_cords_y = new double[2];
+
+    POINT temp_point;
+    temp_point = figur1->get_border_point(figur2->get_center().x, figur2->get_center().y);
+    cords_x[0] = temp_point.x;
+    cords_y[0] = temp_point.y;
+
+    temp_point = figur2->get_border_point(figur1->get_center().x, figur1->get_center().y);
+    cords_x[1] = temp_point.x;
+    cords_y[1] = temp_point.y;
+
+    start_cords_x[0] = 0;
+    start_cords_x[1] = 0;
+
+    start_cords_y[0] = 0;
+    start_cords_y[1] = 0;
+
+    pen_size = 3;
+    brush_stile = 7;
+    pen_style = PS_SOLID;
+}
+
+void Arrow::draw(HDC hDC)
+{
+
+    HPEN pen = CreatePen(pen_style, pen_size, RGB(border_color.R, border_color.G, border_color.B));
+    SelectObject(hDC, pen);
+
+    POINT temp_point;
+    temp_point = figur1->get_border_point(figur2->get_center().x, figur2->get_center().y);
+    cords_x[0] = temp_point.x;
+    cords_y[0] = temp_point.y;
+
+    temp_point = figur2->get_border_point(figur1->get_center().x, figur1->get_center().y);
+    cords_x[1] = temp_point.x;
+    cords_y[1] = temp_point.y;
+
+    if (pen_style == PS_SOLID)
+    {
+        MoveToEx(hDC, round(cords_x[0]), round(cords_y[0]), nullptr);
+        LineTo(hDC, round(cords_x[1]), round(cords_y[1]));
+    }
+    else
+        draw_borders(hDC);
+    draw_arrow(hDC);
+    DeleteObject(pen);
+}
+void  Arrow::set_brush_style(int style)
+{
+    this->arrow_style = style;
+}
+
+void  Arrow::draw_arrow(HDC hDC)
+{
+    if (arrow_style >= 1)
+    {
+        POINT point1 = figur1->get_border_point(figur2->get_center().x, figur2->get_center().y);
+
+        POINT point2 = figur2->get_border_point(figur1->get_center().x, figur1->get_center().y);
+
+        double len = sqrt(pow(point1.x - point2.x, 2) + pow(point1.y - point2.y, 2));
+
+        double similarity = 15.0 / len;
+
+        int width = abs(point1.x - point2.x);
+        int height = abs(point1.y - point2.y);
+        double delta_x = similarity * width;
+        double delta_y = similarity * height;
+
+        double x;
+        double y;
+
+        if (figur2->get_center().x > figur1->get_center().x)
+            x = (point2.x - delta_x);
+        else
+            x = (point2.x + delta_x);
+
+
+        if (figur2->get_center().y > figur1->get_center().y)
+            y = (point2.y - delta_y);
+        else
+            y = (point2.y + delta_y);
+
+
+        double x1 = x;
+        double y1 = y;
+
+
+
+        double  relative_x = point2.x - x;
+        double  relative_y = point2.y - y;
+
+        double p = sqrt(relative_x * relative_x + relative_y * relative_y);
+        double b = 0.0;
+
+        if (point1.x - point2.x <= 0 && point1.y - point2.y > 0)
+        {
+            b = 0.52 + atan(abs(double(point1.x - point2.x) / double(point1.y - point2.y)));
+            b += 3.14 / 2.0;
+        }
+        else if (point1.x - point2.x < 0 && point1.y - point2.y <= 0)
+        {
+            b = -1 * (1.04 + atan(abs(double(point1.x - point2.x) / double(point1.y - point2.y))));
+
+        }
+        else if (point1.x - point2.x >= 0 && point1.y - point2.y < 0)
+        {
+            b = 0.52 + atan(abs(double(point1.x - point2.x) / double(point1.y - point2.y)));
+            b += 3.14 * 3 / 2;
+        }
+        else if (point1.x - point2.x > 0 && point1.y - point2.y >= 0)
+        {
+            b = -1 * (1.04 + atan(abs(double(point1.x - point2.x) / double(point1.y - point2.y))));
+            b += 3.14;
+        }
+
+        relative_x = p * cos(b);
+        relative_y = p * sin(b);
+
+        x = point2.x + relative_x;
+        y = point2.y + relative_y;
+
+
+        MoveToEx(hDC, point2.x,
+            point2.y,
+            nullptr);
+        LineTo(hDC, round(x), round(y));
+
+
+        relative_x = point2.x - x1;
+        relative_y = point2.y - y1;
+
+        p = sqrt(relative_x * relative_x + relative_y * relative_y);
+        b = 0.0;
+
+        if (point1.x - point2.x <= 0 && point1.y - point2.y > 0)
+        {
+            b = -0.52 + atan(abs(double(point1.x - point2.x) / double(point1.y - point2.y)));
+            b += 3.14 / 2.0;
+        }
+        else if (point1.x - point2.x < 0 && point1.y - point2.y <= 0)
+        {
+            b = -1 * (-1.04 + atan(abs(double(point1.x - point2.x) / double(point1.y - point2.y))));
+            b -= 3.14;
+
+        }
+        else if (point1.x - point2.x >= 0 && point1.y - point2.y < 0)
+        {
+            b = -0.52 + atan(abs(double(point1.x - point2.x) / double(point1.y - point2.y)));
+            b += 3.14 * 3 / 2;
+        }
+        else if (point1.x - point2.x > 0 && point1.y - point2.y >= 0)
+        {
+            b = -1 * (-1.04 + atan(abs(double(point1.x - point2.x) / double(point1.y - point2.y))));
+        }
+
+
+
+
+        relative_x = p * cos(b);
+        relative_y = p * sin(b);
+
+        x1 = point2.x + relative_x;
+        y1 = point2.y + relative_y;
+
+
+        MoveToEx(hDC, point2.x,
+            point2.y,
+            nullptr);
+        LineTo(hDC, round(x1), round(y1));
+
+        if (arrow_style >= 2)
+        {
+
+            if (figur2->get_center().x > figur1->get_center().x)
+                x = (point1.x - delta_x);
+            else
+                x = (point1.x + delta_x);
+
+
+            if (figur2->get_center().y > figur1->get_center().y)
+                y = (point1.y - delta_y);
+            else
+                y = (point1.y + delta_y);
+
+            x1 = x;
+            y1 = y;
+
+            relative_x = point1.x - x;
+            relative_y = point1.y - y;
+
+            p = sqrt(relative_x * relative_x + relative_y * relative_y);
+            b = 0.0;
+
+            if (point1.x - point2.x <= 0 && point1.y - point2.y > 0)
+            {
+                b = 0.52 + atan(abs(double(point1.x - point2.x) / double(point1.y - point2.y)));
+                b += 3.14 * 3 / 2;
+            }
+            else if (point1.x - point2.x < 0 && point1.y - point2.y <= 0)
+            {
+                b = -1 * (1.04 + atan(abs(double(point1.x - point2.x) / double(point1.y - point2.y))));
+                b += 3.14;
+
+            }
+            else if (point1.x - point2.x >= 0 && point1.y - point2.y < 0)
+            {
+
+                b = 0.52 + atan(abs(double(point1.x - point2.x) / double(point1.y - point2.y)));
+                b += 3.14 / 2.0;
+               
+            }
+            else if (point1.x - point2.x > 0 && point1.y - point2.y >= 0)
+            {
+                b = -1 * (1.04 + atan(abs(double(point1.x - point2.x) / double(point1.y - point2.y))));
+                
+            }
+
+            relative_x = p * cos(b);
+            relative_y = p * sin(b);
+
+            x = point1.x + relative_x;
+            y = point1.y + relative_y;
+
+
+            MoveToEx(hDC, point1.x,
+                point1.y,
+                nullptr);
+            LineTo(hDC, round(x), round(y));
+
+
+            relative_x = point1.x - x1;
+            relative_y = point1.y - y1;
+
+            p = sqrt(relative_x * relative_x + relative_y * relative_y);
+            b = 0.0;
+
+            if (point1.x - point2.x <= 0 && point1.y - point2.y > 0)
+            {
+                b = -0.52 + atan(abs(double(point1.x - point2.x) / double(point1.y - point2.y)));
+                b += 3.14 * 3 / 2;
+            }
+            else if (point1.x - point2.x < 0 && point1.y - point2.y <= 0)
+            {
+                b = -1 * (-1.04 + atan(abs(double(point1.x - point2.x) / double(point1.y - point2.y))));
+            }
+            else if (point1.x - point2.x >= 0 && point1.y - point2.y < 0)
+            {
+                b = -0.52 + atan(abs(double(point1.x - point2.x) / double(point1.y - point2.y)));
+                b += 3.14 / 2.0;
+              
+            }
+            else if (point1.x - point2.x > 0 && point1.y - point2.y >= 0)
+            {
+                b = -1 * (-1.04 + atan(abs(double(point1.x - point2.x) / double(point1.y - point2.y))));
+                b -= 3.14;
+              
+            }
+
+
+
+
+            relative_x = p * cos(b);
+            relative_y = p * sin(b);
+
+            x1 = point1.x + relative_x;
+            y1 = point1.y + relative_y;
+
+
+            MoveToEx(hDC, point1.x,
+                point1.y,
+                nullptr);
+            LineTo(hDC, round(x1), round(y1));
+        }
+    }
+}
+
+std::wstring  Arrow::save()
+{
+    std::wstring figure_info = L"";
+    figure_info += type + L"\n";
+    figure_info += name + L"\n";
+    figure_info += std::to_wstring(id) + L"\n";
+    figure_info += std::to_wstring(figur1->get_id()) + L"\n";
+    figure_info += std::to_wstring(figur2->get_id()) + L"\n";
+
+    figure_info += std::to_wstring(border_color.R) + L" " + std::to_wstring(border_color.G) + L" " + std::to_wstring(border_color.B) + L" " + L"\n";
+    figure_info += std::to_wstring(pen_style) + L"\n";
+    figure_info += std::to_wstring(pen_size) + L"\n";
+
+
+    figure_info += std::to_wstring(arrow_style) + L"\n";
+
+    for (int i = 0; i < _msize(start_cords_x) / sizeof(start_cords_x[0]); i++)
+    {
+        figure_info += std::to_wstring(start_cords_x[i]) + L" ";
+        figure_info += std::to_wstring(start_cords_y[i]) + L" ";
+    }
+    figure_info += L"\n";
+
+    for (int i = 0; i < _msize(cords_x) / sizeof(cords_x[0]); i++)
+    {
+        figure_info += std::to_wstring(cords_x[i]) + L" ";
+        figure_info += std::to_wstring(cords_y[i]) + L" ";
+    }
+    figure_info += L"-1\n-1\n-1\n-1\n-1\n-1\n-1\n-1\n-1\n-1\n-1\n-1\n-1\n-1\n-1\n-1\n-1\n";
+
+    return figure_info;
+}
 
 /*std::ofstream fout("log.txt", std::ios::app);
     fout << pos.x<<" "<< prev.x<<" "<< pt.x<<" "<< delta.x<<"\n";

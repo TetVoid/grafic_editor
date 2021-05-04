@@ -28,6 +28,7 @@ public:
 	void set_pen_size(int size, HWND hWnd, BOOL size_flag);
 	void set_prev_cords(HWND hWnd);
 	Figure* get_selected();
+	Figure* get_by_cords(HWND hWnd);
 	BOOL is_selected();
 
 	BOOL check_position(HWND hWnd);

@@ -35,7 +35,7 @@ HBRUSH brushes[] = {
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 LRESULT CALLBACK WndButtomsProc(HWND, UINT, WPARAM, LPARAM);
 FigureMemory memory;
-Figure_fabric fabric;
+Figure_fabric fabric(&memory);
 TableInfoWindow info;
 
 Interface window_interface = Interface();
@@ -82,6 +82,7 @@ LRESULT CALLBACK WndButtomsProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
     int brush_stile = 7;
     int pen_style = PS_SOLID;
     int pen_size = 2;
+    int arrow_style = 0;
     switch (uMsg) {
     case WM_KEYDOWN:
         switch (wParam)
@@ -173,6 +174,7 @@ LRESULT CALLBACK WndButtomsProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
         BOOL set_brush_stile = false;
         BOOL set_pen_stile = false;
         BOOL set_size = false;
+        BOOL set_arrow_style = false;
         switch (LOWORD(wParam))
         {
         case 1004:
@@ -473,6 +475,13 @@ LRESULT CALLBACK WndButtomsProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
             fabric.set_figure_class(figure_class);
             break;
         }
+        case 1303:
+        {
+            set_color_flag = false;
+            std::string figure_class = "arrow";
+            fabric.set_figure_class(figure_class);
+            break;
+        }
         case 1400:
         {
             RECT temp_rc;
@@ -560,6 +569,12 @@ LRESULT CALLBACK WndButtomsProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
             AppendMenu(size_menu, MF_STRING, 1509, L"4");
             AppendMenu(size_menu, MF_STRING, 1510, L"5");
 
+            HMENU arrow_menu = CreatePopupMenu();
+            AppendMenu(border_menu, MF_STRING | MF_POPUP, (UINT)arrow_menu, L"ARROW TYPE");
+            AppendMenu(arrow_menu, MF_STRING, 1511, L"--->");
+            AppendMenu(arrow_menu, MF_STRING, 1512, L"---");
+            AppendMenu(arrow_menu, MF_STRING, 1513, L"<--->");
+
             TrackPopupMenu(border_menu,
                 TPM_CENTERALIGN | TPM_LEFTBUTTON,
                 pt.x - 100, pt.y + 70, 0, hWnd, NULL);
@@ -620,6 +635,24 @@ LRESULT CALLBACK WndButtomsProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
             pen_size = 5;
             break;
 
+        case 1511:
+            set_arrow_style = true;
+            set_color_flag = false;
+            arrow_style = 1;
+            break;
+
+        case 1512:
+            set_arrow_style = true;
+            set_color_flag = false;
+            arrow_style = 0;
+            break;
+
+        case 1513:
+            set_arrow_style = true;
+            set_color_flag = false;
+            arrow_style = 2;
+            break;
+
         default:
         {
             set_color_flag = false;
@@ -641,6 +674,8 @@ LRESULT CALLBACK WndButtomsProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
             fabric.set_pen_style(pen_style);
         else if (set_size)
             fabric.set_pen_size(pen_size);
+        else if (set_arrow_style)
+            fabric.set_arrow_style(arrow_style);
 
         memory.set_brush_style(brush_stile, hCanvasWnd, set_brush_stile);
         memory.set_pen_style(pen_style, hCanvasWnd, set_pen_stile);
@@ -660,7 +695,6 @@ LRESULT CALLBACK WndButtomsProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 
 }
 
-
 LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     HDC hDC; 
     PAINTSTRUCT ps;
@@ -670,7 +704,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 
     static BOOL create_flag = false;
     static BOOL info_flag = false;
-
+    static BOOL move_flag = false;
     switch (uMsg) {
     case WM_PAINT: 
     {
@@ -683,6 +717,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
         SelectObject(bufDC, hBM);
         FillRect(bufDC, &rect, brushes[9]);
 
+
+        if (fabric.is_draw())
+            fabric.draw_focus(hWnd, bufDC);
         memory.draw(bufDC);
 
         BitBlt(hDC, 0, 0, rect.right, rect.bottom, bufDC, 0, 0, SRCCOPY);
@@ -699,13 +736,18 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
         PostQuitMessage(NULL);
         break;
     case WM_MOUSEMOVE:
+        if (create_flag)
+        {
+            move_flag = true;
+            OutputDebugStringW(L"1");
+        }
         memory.move(hWnd);
         memory.rotate(hWnd);
         memory.resize(hWnd);
         memory.set_prev_cords(hWnd);
         
         if (fabric.is_draw())
-            fabric.draw_focus(hWnd);
+            InvalidateRect(hWnd, NULL, false);
         if(table_info_flag)
             mainWindow.update_scrolls(memory.get_max_point(hWnd), memory.get_min_point());
             
@@ -719,6 +761,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
        
         if (create_flag)
             fabric.set_start_cords(hWnd);
+        else if (fabric.get_figure_class() == "arrow")
+        {
+            fabric.set_start_cords(hWnd);
+            create_flag = true;
+        }
+
         if (info_flag)
         {
             DestroyWindow(subWindow.get_window());
@@ -732,12 +780,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
             memory.stop_resize(hWnd);
             memory.stop_rotate(hWnd);
 
-        if (create_flag)
+        if (create_flag && move_flag)
         {
             fabric.set_width_height(hWnd);
             if (!fabric.is_draw())
             {
-                Figure* new_pict = fabric.create_figure(hWnd,memory);
+                Figure* new_pict = fabric.create_figure(hWnd);
                 while (!memory.check_id(create_index))
                     create_index++;
                 memory.add(new_pict,create_index);
@@ -746,9 +794,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
                 new_pict->init(hWnd);
                 InvalidateRect(hWnd, NULL, FALSE);
             }
+            create_flag = false;
+            move_flag = false;
         }
-
-        SetCursor(scur);
+        else
+            if (create_flag && fabric.get_figure_class() != "triangle")
+            {
+                fabric.stop_draw();
+                create_flag = false;
+            }
+      
             break;
     }
     case WM_RBUTTONDOWN:
@@ -784,7 +839,5 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     return NULL;
     
 }
-
-
 
 //OutputDebugStringW(L"1");

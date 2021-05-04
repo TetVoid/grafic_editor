@@ -40,5 +40,6 @@ public:
 	HWND edit11;
 	void draw(HDC dc);
 private:
+	Figure* figure;
 	int y;
 };

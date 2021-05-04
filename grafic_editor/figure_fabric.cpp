@@ -1,7 +1,8 @@
 #include "figure_fabric.h"
 
-Figure_fabric::Figure_fabric()
+Figure_fabric::Figure_fabric(FigureMemory* mem)
 {
+	this->mem = mem;
 	prev_rc.left = 0;
 	prev_rc.right = 0;
 	prev_rc.top = 0;
@@ -15,16 +16,23 @@ Figure_fabric::Figure_fabric()
 	border_color.B = 0;
 
 }
+
 void Figure_fabric:: set_start_cords(HWND hWnd)
 {
 	draw = true;
 	POINT pt;
 	GetCursorPos(&pt);
 	ScreenToClient(hWnd, &pt);
-	if (figure_class != "triangle")
+	if (figure_class != "triangle" && figure_class != "arrow")
 	{
 		x = pt.x;
 		y = pt.y;
+	}
+	else if (figure_class == "arrow")
+	{
+		first_figur = mem->get_by_cords(hWnd);
+		x = first_figur->get_center().x;
+		y = first_figur->get_center().y;
 	}
 	else
 	{
@@ -34,9 +42,10 @@ void Figure_fabric:: set_start_cords(HWND hWnd)
 	}
 	
 }
+
 void  Figure_fabric::set_width_height(HWND hWnd)
 {
-	if (figure_class != "triangle")
+	if (figure_class != "triangle" && figure_class!="arrow")
 	{
 		draw = false;
 		POINT pt;
@@ -57,8 +66,7 @@ void  Figure_fabric::set_width_height(HWND hWnd)
 		prev_rc.top = 0;
 		prev_rc.bottom = 0;
 	}
-	else
-		if (triangle_index == 3)
+	else if (triangle_index == 3)
 		{
 			draw = false;
 
@@ -70,10 +78,20 @@ void  Figure_fabric::set_width_height(HWND hWnd)
 			triangle_index = 0;
 			
 		}
+	else if (figure_class == "arrow")
+	{
+		OutputDebugStringW(L"1");
+		if (!mem->check_position(hWnd))
+		{
+			draw = false;
+			second_figur = mem->get_by_cords(hWnd);
+		}
+	}
 }
-Figure* Figure_fabric::create_figure(HWND hWnd, FigureMemory mem)
+
+Figure* Figure_fabric::create_figure(HWND hWnd)
 {
-	while(!mem.check_id(figure_number))
+	while(!mem->check_id(figure_number))
 		figure_number++;
 	std::wstring name = L"Figure" + std::to_wstring(figure_number);
 	Figure* pict = NULL;
@@ -92,18 +110,24 @@ Figure* Figure_fabric::create_figure(HWND hWnd, FigureMemory mem)
 		pict = new Triangle(GetDC(hWnd), name, figure_number, triangle_x, triangle_y, color, brush_stile, border_color, pen_style, pen_size);
 		pict->set_type(L"triangle");
 	}
+	else if (figure_class == "arrow")
+	{
+		std::wstring arrow_name = L"Arrow" + std::to_wstring(figure_number);
+		pict = new Arrow(first_figur, second_figur, border_color, pen_size, pen_style, figure_number, arrow_name,arrow_style);
+		pict->set_type(L"arrow");
+	}
 
 	figure_number++;
 	return pict;
 }
 
-void Figure_fabric::draw_focus(HWND hWnd)
+void Figure_fabric::draw_focus(HWND hWnd,HDC hDC)
 {
 	HBRUSH brush = CreateHatchBrush(brush_stile,RGB(color.R, color.G, color.B));
 
 	HPEN pen = CreatePen(pen_style, pen_size, RGB(border_color.R, border_color.G, border_color.B));
-	SelectObject(GetDC(hWnd), pen);
-	SelectObject(GetDC(hWnd), brush);
+	SelectObject(hDC, pen);
+	SelectObject(hDC, brush);
 
 	POINT pt,real_pt;
 	GetCursorPos(&real_pt);
@@ -133,14 +157,13 @@ void Figure_fabric::draw_focus(HWND hWnd)
 
 	HBRUSH white_brush = CreateSolidBrush(RGB(255, 255, 255));
 
-	FillRect(GetDC(hWnd), &prev_rc, white_brush);
+	FillRect(hDC, &prev_rc, white_brush);
 	SetRect(&prev_rc, x - pen_size, y - pen_size, pt.x + pen_size, pt.y + pen_size);
 	DeleteObject(white_brush);
 
-	HDC hDC = GetDC(hWnd);
-	BeginPath(hDC);
 	if (figure_class == "rect")
 	{
+		BeginPath(hDC);
 		MoveToEx(hDC, x, y, nullptr);
 		LineTo(hDC, pt.x, y);
 		LineTo(hDC, pt.x, pt.y);
@@ -158,7 +181,7 @@ void Figure_fabric::draw_focus(HWND hWnd)
 	else if (figure_class == "ellips")
 	{
 	
-
+		BeginPath(hDC);
 		double *cords_x = new double[96];
 		double *cords_y = new double[96];
 
@@ -183,6 +206,7 @@ void Figure_fabric::draw_focus(HWND hWnd)
 	}
 	else if (figure_class == "triangle")
 	{
+		BeginPath(hDC);
 		for (int i = triangle_index; i < 3; i++)
 		{
 			triangle_x[i] = real_pt.x;
@@ -217,6 +241,11 @@ void Figure_fabric::draw_focus(HWND hWnd)
 		}
 		SetRect(&prev_rc, min_x - 2, min_y - 2, max_x + 2, max_y + 2);
 	}
+	else if (figure_class == "arrow")
+	{
+		MoveToEx(hDC, this->x, this->y, nullptr);
+		LineTo(hDC, real_pt.x, real_pt.y);
+	}
 
 	DeleteObject(brush);
 	DeleteObject(pen);
@@ -245,6 +274,12 @@ void Figure_fabric::set_figure_class(std::string figure_class)
 {
 	this->figure_class = figure_class;
 }
+
+std::string Figure_fabric::get_figure_class()
+{
+	return figure_class;
+}
+
 void Figure_fabric::set_brush_style(int style)
 {
 	brush_stile = style;
@@ -258,6 +293,11 @@ void Figure_fabric::set_pen_style(int style)
 void Figure_fabric::set_pen_size(int size)
 {
 	pen_size = size;
+}
+
+void Figure_fabric::set_arrow_style(int style)
+{
+	this->arrow_style = style;
 }
 
 void Figure_fabric::calculate_ellips(double* cords_x, double* cords_y)
@@ -336,5 +376,10 @@ void Figure_fabric::calculate_ellips(double* cords_x, double* cords_y)
 
 
 	cords_x[size / 2] += delta_x;
+}
+
+void Figure_fabric::stop_draw()
+{
+	draw = false;
 }
 

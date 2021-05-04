@@ -5,12 +5,12 @@
 class Figure_fabric
 {
 public:
-	Figure_fabric();
+	Figure_fabric(FigureMemory* mem);
 	void set_start_cords(HWND hWnd);
 	void set_width_height(HWND hWnd);
-	Figure* create_figure(HWND hWnd, FigureMemory mem);
+	Figure* create_figure(HWND hWnd);
 	BOOL is_draw();
-	void draw_focus(HWND hWnd);
+	void draw_focus(HWND hWnd,HDC hDC);
 	void set_color(COLOR color);
 	void set_border_color(COLOR color);
 
@@ -18,6 +18,9 @@ public:
 	void set_brush_style(int stile);
 	void set_pen_style(int stile);
 	void set_pen_size(int size);
+	void set_arrow_style(int style);
+	void stop_draw();
+	std::string get_figure_class();
 
 private:
 	COLOR color;
@@ -33,7 +36,11 @@ private:
 	int figure_number = 0;
 	int brush_stile = 7;
 	int pen_style = PS_SOLID;
+	int arrow_style = 0;
 
+	FigureMemory* mem;
+	Figure* first_figur;
+	Figure* second_figur;
 	BOOL draw = false;
 	RECT prev_rc;
 	std::string figure_class = "rect";

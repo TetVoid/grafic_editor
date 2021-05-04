@@ -301,6 +301,8 @@ void  FigureMemory::load(std::wstring path)
                 pict = new Figure(load_vector);
             else if (load_vector[0]._Equal(L"triangle"))
                 pict = new Triangle(load_vector);
+            else if (load_vector[0]._Equal(L"arrow"))
+                pict = new Arrow(load_vector, figure_list[std::stoi(load_vector[3])], figure_list[std::stoi(load_vector[4])]);
 
             figure_list[std::stoi(load_vector[2])] = pict;
 
@@ -313,4 +315,17 @@ void  FigureMemory::load(std::wstring path)
 void FigureMemory::clear()
 {
     figure_list.clear();
+}
+
+Figure* FigureMemory::get_by_cords(HWND hWnd)
+{
+    Figure* answer = NULL;
+    std::map <int, Figure*> ::iterator it = figure_list.begin();
+    for (; it != figure_list.end(); it++)
+        if (it->second->check_position(hWnd))
+        {
+            answer = it->second;
+            break;
+        }
+    return answer;
 }

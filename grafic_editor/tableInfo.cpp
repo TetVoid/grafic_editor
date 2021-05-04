@@ -67,6 +67,12 @@ LRESULT CALLBACK TableProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
             AppendMenu(border_menu, MF_STRING, 4400 + index, L"PS_DASHDOTDOT");
             AppendMenu(border_menu, MF_STRING, 4500 + index, L"PS_SOLID");
 
+            HMENU arrow_menu = CreatePopupMenu();
+            AppendMenu(border_menu, MF_STRING | MF_POPUP, (UINT)arrow_menu, L"ARROW TYPE");
+            AppendMenu(arrow_menu, MF_STRING, 4600 + index, L"--->");
+            AppendMenu(arrow_menu, MF_STRING, 4700 + index, L"---");
+            AppendMenu(arrow_menu, MF_STRING, 4800 + index, L"<--->");
+
             TrackPopupMenu(border_menu,
                 TPM_CENTERALIGN | TPM_LEFTBUTTON,
                 pt.x , pt.y , 0, hWnd, NULL);
@@ -158,6 +164,27 @@ LRESULT CALLBACK TableProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
             changed_figure1 = (*copy_memory1)[index];
             changed_figure1->set_pen_style(PS_SOLID);
             SetWindowText(table_vector[index]->pen_style_buttom, L"PS_SOLID");
+        }
+
+        if ((LOWORD(wParam) - 4600 < 100) && (LOWORD(wParam) - 4600 >= 0))
+        {
+            int index = LOWORD(wParam) - 4600;
+            changed_figure1 = (*copy_memory1)[index];
+            changed_figure1->set_brush_style(1);
+        }
+
+        if ((LOWORD(wParam) - 4700 < 100) && (LOWORD(wParam) - 4700 >= 0))
+        {
+            int index = LOWORD(wParam) - 4700;
+            changed_figure1 = (*copy_memory1)[index];
+            changed_figure1->set_brush_style(0);
+        }
+
+        if ((LOWORD(wParam) - 4800 < 100) && (LOWORD(wParam) - 4800 >= 0))
+        {
+            int index = LOWORD(wParam) - 4800;
+            changed_figure1 = (*copy_memory1)[index];
+            changed_figure1->set_brush_style(2);
         }
         if ((LOWORD(wParam) - 3200 < 100) && (LOWORD(wParam) - 3200 >= 0))
         {
@@ -312,6 +339,7 @@ HWND TableInfoWindow::get_window()
 
 TableRow::TableRow(HINSTANCE hInstance, HWND hWnd, Figure* figure, int index)
 {
+    this->figure = figure;
     y = 2 + index * 23;
     edit10 = CreateWindow(L"EDIT", 0, WS_BORDER | WS_CHILD | WS_VISIBLE, 40, y, 125, 20, hWnd, 0, hInstance, 0);
     SetWindowText(edit10, (LPCWSTR)figure->get_name().c_str());
@@ -319,16 +347,17 @@ TableRow::TableRow(HINSTANCE hInstance, HWND hWnd, Figure* figure, int index)
     edit11 = CreateWindow(L"EDIT", 0, WS_BORDER | WS_CHILD | WS_VISIBLE, 185, y, 55, 20, hWnd, 0, hInstance, 0);
     SetWindowText(edit11, (LPCWSTR)std::to_wstring(figure->get_id()).c_str());
 
+    if (figure->get_type() != L"arrow")
+    {
+        edit1 = CreateWindow(L"EDIT", 0, WS_BORDER | WS_CHILD | WS_VISIBLE, 295, y, 30, 20, hWnd, 0, hInstance, 0);
+        SetWindowText(edit1, (LPCWSTR)std::to_wstring(figure->get_color().R).c_str());
 
-    edit1 = CreateWindow(L"EDIT", 0, WS_BORDER | WS_CHILD | WS_VISIBLE, 295, y, 30, 20, hWnd, 0, hInstance, 0);
-    SetWindowText(edit1, (LPCWSTR)std::to_wstring(figure->get_color().R).c_str());
+        edit2 = CreateWindow(L"EDIT", 0, WS_BORDER | WS_CHILD | WS_VISIBLE, 345, y, 30, 20, hWnd, 0, hInstance, 0);
+        SetWindowText(edit2, (LPCWSTR)std::to_wstring(figure->get_color().G).c_str());
 
-    edit2 = CreateWindow(L"EDIT", 0, WS_BORDER | WS_CHILD | WS_VISIBLE, 345, y, 30, 20, hWnd, 0, hInstance, 0);
-    SetWindowText(edit2, (LPCWSTR)std::to_wstring(figure->get_color().G).c_str());
-
-    edit3 = CreateWindow(L"EDIT", 0, WS_BORDER | WS_CHILD | WS_VISIBLE, 395, y, 30, 20, hWnd, 0, hInstance, 0);
-    SetWindowText(edit3, (LPCWSTR)std::to_wstring(figure->get_color().B).c_str());
-
+        edit3 = CreateWindow(L"EDIT", 0, WS_BORDER | WS_CHILD | WS_VISIBLE, 395, y, 30, 20, hWnd, 0, hInstance, 0);
+        SetWindowText(edit3, (LPCWSTR)std::to_wstring(figure->get_color().B).c_str());
+    }
     edit4 = CreateWindow(L"EDIT", 0, WS_BORDER | WS_CHILD | WS_VISIBLE, 467, y, 30, 20, hWnd, 0, hInstance, 0);
     SetWindowText(edit4, (LPCWSTR)std::to_wstring(figure->get_border_color().R).c_str());
 
@@ -338,15 +367,19 @@ TableRow::TableRow(HINSTANCE hInstance, HWND hWnd, Figure* figure, int index)
     edit6 = CreateWindow(L"EDIT", 0, WS_BORDER | WS_CHILD | WS_VISIBLE, 567, y, 30, 20, hWnd, 0, hInstance, 0);
     SetWindowText(edit6, (LPCWSTR)std::to_wstring(figure->get_border_color().B).c_str());
 
-    edit7 = CreateWindow(L"EDIT", 0, WS_BORDER | WS_CHILD | WS_VISIBLE, 617, y, 30, 20, hWnd, 0, hInstance, 0);
-    SetWindowText(edit7, (LPCWSTR)std::to_wstring(figure->get_center().x).c_str());
+    if (figure->get_type() != L"arrow")
+    {
+        edit7 = CreateWindow(L"EDIT", 0, WS_BORDER | WS_CHILD | WS_VISIBLE, 617, y, 30, 20, hWnd, 0, hInstance, 0);
+        SetWindowText(edit7, (LPCWSTR)std::to_wstring(figure->get_center().x).c_str());
 
-    edit8 = CreateWindow(L"EDIT", 0, WS_BORDER | WS_CHILD | WS_VISIBLE, 665, y, 30, 20, hWnd, 0, hInstance, 0);
-    SetWindowText(edit8, (LPCWSTR)std::to_wstring(figure->get_center().y).c_str());
+
+        edit8 = CreateWindow(L"EDIT", 0, WS_BORDER | WS_CHILD | WS_VISIBLE, 665, y, 30, 20, hWnd, 0, hInstance, 0);
+        SetWindowText(edit8, (LPCWSTR)std::to_wstring(figure->get_center().y).c_str());
+    }
 
     edit9 = CreateWindow(L"EDIT", 0, WS_BORDER | WS_CHILD | WS_VISIBLE, 745, y, 30, 20, hWnd, 0, hInstance, 0);
     SetWindowText(edit9, (LPCWSTR)std::to_wstring(figure->get_pen_size()).c_str());
-
+    
     LPCWSTR buttom_brush_name;
     switch (figure->get_brush_style())
     {
@@ -376,6 +409,7 @@ TableRow::TableRow(HINSTANCE hInstance, HWND hWnd, Figure* figure, int index)
         buttom_brush_name = L"HS_SOLID";
         break;
     }
+    if(figure->get_type()!=L"arrow")
     brush_style_buttom = CreateWindow(L"BUTTON", buttom_brush_name, WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
 
         780,         // starting x position 
@@ -467,18 +501,25 @@ void TableRow::draw(HDC dc)
 
     TextOutW(dc, 2, y, L"Name", lstrlen(L"Name"));
     TextOutW(dc, 167, y, L"Id", lstrlen(L"Id"));
-    TextOutW(dc, 245, y, L"Brush:", lstrlen(L"Brush:"));
-    TextOutW(dc, 278, y, L"R:", lstrlen(L"R:"));
-    TextOutW(dc, 328, y, L"G:", lstrlen(L"G:"));
-    TextOutW(dc, 378, y, L"B:", lstrlen(L"B:"));
+
+    if (figure->get_type() != L"arrow")
+    {
+        TextOutW(dc, 245, y, L"Brush:", lstrlen(L"Brush:"));
+        TextOutW(dc, 278, y, L"R:", lstrlen(L"R:"));
+        TextOutW(dc, 328, y, L"G:", lstrlen(L"G:"));
+        TextOutW(dc, 378, y, L"B:", lstrlen(L"B:"));
+    }
 
     TextOutW(dc, 426, y, L"Pen:", lstrlen(L"Pen:"));
     TextOutW(dc, 450, y, L"R:", lstrlen(L"R:"));
     TextOutW(dc, 500, y, L"G:", lstrlen(L"G:"));
     TextOutW(dc, 550, y, L"B:", lstrlen(L"B:"));
 
-    TextOutW(dc, 600, y, L"X:", lstrlen(L"X:"));
-    TextOutW(dc, 650, y, L"Y:", lstrlen(L"Y:"));
+    if (figure->get_type() != L"arrow")
+    {
+        TextOutW(dc, 600, y, L"X:", lstrlen(L"X:"));
+        TextOutW(dc, 650, y, L"Y:", lstrlen(L"Y:"));
+    }
 
     TextOutW(dc, 700, y, L"Pen size", lstrlen(L"Pen size"));
 }

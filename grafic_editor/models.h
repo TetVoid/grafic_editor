@@ -17,7 +17,7 @@ public:
 	Figure(std::vector<std::wstring>);
 	Figure(HDC hDC,std::wstring name, int id, int x, int y, int width, int height,COLOR color,int brush_stile, COLOR border_color, int pen_style, int pen_size);
 	~Figure();
-	void draw(HDC hDC);
+	void virtual draw(HDC hDC);
 	void update(HWND hwnd,int x=0,int y=0, BOOL delta_flag= false);
 	void init(HWND hwnd);
 	void rotate(HWND hWnd);
@@ -32,7 +32,7 @@ public:
 
 	void set_color(COLOR color, HWND hWnd);
 	void set_border_color(COLOR color, HWND hWnd);
-	void set_brush_style(int style);
+	void virtual set_brush_style(int style);
 	void set_pen_style(int style);
 	void set_pen_size(int size);
 	void set_name(std::wstring);
@@ -47,6 +47,8 @@ public:
 	POINT get_center();
 	std::wstring get_name();
 	int get_id();
+	std::wstring get_type();
+
 
 	BOOL check_position(HWND hwnd);
 	BOOL select(HWND hWnd);
@@ -58,7 +60,9 @@ public:
 	POINT get_max_point();
 	POINT get_min_point();
 
-	std::wstring save();
+	std::wstring virtual save();
+
+	POINT get_border_point(double x, double y);
 
 protected:
 	std::wstring name;
@@ -119,4 +123,21 @@ public:
 	Triangle(HDC hDC, std::wstring name, int id, int *x, int *y, COLOR color, int style, COLOR border_color, int pen_style, int pen_size);
 	void normalize(HWND hWnd);
 	void resize(HWND hWnd);
+};
+
+
+class Arrow : public Figure
+{
+public:
+	Arrow(std::vector<std::wstring>, Figure* figur1, Figure* figur2);
+	Arrow(Figure* figur1, Figure* figur2, COLOR border_color, int pen_size, int pen_style, int id, std::wstring name, int arrow_style);
+	void draw(HDC hDC);
+	void set_brush_style(int style);
+	std::wstring save();
+private:
+	void draw_arrow(HDC hDC);
+	int arrow_style = 0;
+	Figure* figur1;
+	Figure* figur2;
+
 };

@@ -29,7 +29,7 @@ MainWindow::MainWindow(HINSTANCE hInstance, WNDPROC WndProc, WNDPROC WndButtomsP
 
     hMainWnd = CreateWindow(
         szClassName, // имя класса
-        L"Полноценная оконная процедура", // имя окошка (то что сверху)
+        L"Grafic editor", // имя окошка (то что сверху)
         WS_OVERLAPPEDWINDOW, // режимы отображения окошка
         CW_USEDEFAULT, // позиция окошка по оси х
         NULL, // позиция окошка по оси у (раз дефолт в х, то писать не нужно)
@@ -71,12 +71,6 @@ MainWindow::MainWindow(HINSTANCE hInstance, WNDPROC WndProc, WNDPROC WndButtomsP
         hInstance,
         NULL);
     hCanvasWnd = child;
-
-   
-
-   
-  
-
 
     HMENU hmenu1 = CreateMenu();
     HMENU hPopMenuFile = CreatePopupMenu();
@@ -359,6 +353,17 @@ void MainWindow:: init_color_buttoms()
         (HINSTANCE)GetWindowLong(hMainWnd, GWL_HINSTANCE),
         NULL);
 
+    HWND arrow_buttom = CreateWindow(L"BUTTON", L"Arrow", WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
+
+        start_x - 380,         // starting x position 
+        start_y,         // starting y position 
+        60,        // button width 
+        40,        // button height 
+        hMainWnd,
+        (HMENU)1303,
+        (HINSTANCE)GetWindowLong(hMainWnd, GWL_HINSTANCE),
+        NULL);
+
 
 
     HWND choose_stile = CreateWindow(L"BUTTON", L"", WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
@@ -499,9 +504,7 @@ void MainWindow::update_scrolls(POINT max, POINT min)
     if (min.y<0)
         new_y_pos = rect.top - min.y;
 
-    std::ofstream fout("log.txt", std::ios::app);
-    fout << new_x_pos << "\n";
-    fout.close();
+    
     xScrollPos = (100 * new_x_pos) / len_x;
     yScrollPos = (100 * new_y_pos) / len_y;
 
